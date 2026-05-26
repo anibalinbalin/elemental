@@ -1,0 +1,15 @@
+public/microcore-sachet-baked.glb
+public/microcore-sachet.glb
+public/sachet-web.glb
+public/sachet.glb
+public/test.glb
+public/ttt-model.glb
+public/testblender/
+public/particle-scroll-source.png
+public/particle-scroll-zoom-reference.png
+public/hero-particle-source.png
+ml-sharp/
+untilcodex/
+viewer/
+*.splat
+replicate-prediction-*.glb

@@ -16,3 +16,4 @@ untilcodex/
 viewer/
 *.splat
 replicate-prediction-*.glb
+.vercel
