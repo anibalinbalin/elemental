@@ -4,7 +4,7 @@ import { useGLTF } from "@react-three/drei";
 import { useEffect } from "react";
 import * as THREE from "three";
 
-useGLTF.preload("/microcore-pouch-opt.glb", false, true);
+useGLTF.preload("/microcore-pouch-opt.glb");
 
 const noiseGLSL = /* glsl */ `
   vec3 mod289(vec3 x) { return x - floor(x * (1.0/289.0)) * 289.0; }
@@ -130,7 +130,7 @@ function patchMaterial(shader: THREE.WebGLProgramParametersWithUniforms) {
 }
 
 export function PouchModel() {
-  const { scene } = useGLTF("/microcore-pouch-opt.glb", false, true);
+  const { scene } = useGLTF("/microcore-pouch-opt.glb");
 
   useEffect(() => {
     scene.traverse((child) => {

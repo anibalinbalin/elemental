@@ -32,7 +32,7 @@ export default function PouchViewer() {
       style={{ background: "transparent" }}
     >
       <Suspense fallback={null}>
-        <Environment resolution={1024}>
+        <Environment resolution={1024} frames={1}>
           <Lightformer
             form="rect"
             intensity={6.0}
@@ -122,7 +122,6 @@ export default function PouchViewer() {
           blur={2.3}
           far={2}
           color="#666666"
-          frames={1}
         />
       </Suspense>
 
