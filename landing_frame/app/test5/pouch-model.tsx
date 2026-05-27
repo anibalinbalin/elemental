@@ -4,7 +4,9 @@ import { useGLTF } from "@react-three/drei";
 import { useEffect } from "react";
 import * as THREE from "three";
 
-useGLTF.preload("/microcore-pouch-test6.glb");
+export function preloadPouchModel() {
+  useGLTF.preload("/microcore-pouch-test6.glb");
+}
 
 const noiseGLSL = /* glsl */ `
   vec3 mod289(vec3 x) { return x - floor(x * (1.0/289.0)) * 289.0; }

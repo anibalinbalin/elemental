@@ -28,6 +28,7 @@ export function HeroSection() {
               <Button
                 variant="primary"
                 size="lg"
+                className="px-8"
                 onPress={() => {
                   document
                     .getElementById("producto")

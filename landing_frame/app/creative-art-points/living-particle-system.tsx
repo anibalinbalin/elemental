@@ -828,12 +828,22 @@ function StoryUniforms({
   return null;
 }
 
+function FrameInvalidator({ paused }: { paused: boolean }) {
+  const { invalidate } = useThree();
+  useFrame(() => {
+    if (!paused) invalidate();
+  });
+  return null;
+}
+
 export function LivingParticleSystem({
   progressRef,
   stageCount,
+  paused = false,
 }: {
   progressRef: MutableRefObject<number>;
   stageCount: number;
+  paused?: boolean;
 }) {
   const [controls, setControls] = useState<ParticleControls>(DEFAULT_CONTROLS);
 
@@ -843,7 +853,9 @@ export function LivingParticleSystem({
         camera={{ position: [0, 0, 115], fov: 50 }}
         dpr={[1, 2]}
         gl={{ antialias: true, alpha: false, powerPreference: "high-performance" }}
+        frameloop="demand"
       >
+        <FrameInvalidator paused={paused} />
         <color args={["#050505"]} attach="background" />
         <StoryCamera progressRef={progressRef} />
         <StoryUniforms progressRef={progressRef} controls={controls} setControls={setControls} />

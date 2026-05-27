@@ -4,9 +4,14 @@ import { DialRoot, useDialKit } from "dialkit";
 import "dialkit/styles.css";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { HeroSection } from "./hero-section";
+import dynamic from "next/dynamic";
+import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { LivingParticleSystem } from "./living-particle-system";
+
+const HeroSection = dynamic(
+  () => import("./hero-section").then((mod) => ({ default: mod.HeroSection })),
+  { ssr: false },
+);
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -135,6 +140,10 @@ function CreativeArtPointsInner() {
   const [activeStage, setActiveStage] = useState(-1);
   const [displayProgress, setDisplayProgress] = useState(0);
   const [darkT, setDarkT] = useState(0);
+  const [heroReady, setHeroReady] = useState(false);
+  const [particlePaused, setParticlePaused] = useState(false);
+  const heroTriggeredRef = useRef(false);
+  const preloadTriggeredRef = useRef(false);
   const dialRef = useRef<VignetteParams | null>(null);
   const peakOpacityRef = useRef(0);
 
@@ -217,30 +226,44 @@ function CreativeArtPointsInner() {
             peakOpacityRef.current = Math.max(peakOpacityRef.current, target);
             updateVignette(Math.min(1, peakOpacityRef.current));
           }
+
+          if (!preloadTriggeredRef.current && p >= 0.70) {
+            preloadTriggeredRef.current = true;
+            import("../test5/pouch-model").then((mod) => mod.preloadPouchModel());
+          }
+          if (!heroTriggeredRef.current && p >= 0.75) {
+            heroTriggeredRef.current = true;
+            setHeroReady(true);
+          }
+          setParticlePaused(p >= 0.98);
         },
       });
-
-      if (heroRef.current) {
-        gsap.fromTo(
-          heroRef.current,
-          { opacity: 0, y: 60 },
-          {
-            opacity: 1,
-            y: 0,
-            ease: "power2.out",
-            scrollTrigger: {
-              trigger: heroRef.current,
-              start: "top 95%",
-              end: "top 50%",
-              scrub: 0.5,
-            },
-          },
-        );
-      }
     }, containerRef);
 
     return () => ctx.revert();
   }, [updateVignette]);
+
+  useEffect(() => {
+    if (!heroReady || !heroRef.current) return;
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        heroRef.current,
+        { opacity: 0, y: 60 },
+        {
+          opacity: 1,
+          y: 0,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: heroRef.current,
+            start: "top 95%",
+            end: "top 50%",
+            scrub: 0.5,
+          },
+        },
+      );
+    });
+    return () => ctx.revert();
+  }, [heroReady]);
 
   const arcBg = `radial-gradient(ellipse ${v.arc.width}% ${v.arc.height}% at 50% ${v.arc.centerY}%, transparent ${v.arc.clearStop}%, rgba(5,5,5,${v.arc.edgeOpacity}) ${v.arc.fadeStop}%)`;
 
@@ -252,7 +275,7 @@ function CreativeArtPointsInner() {
         style={{ height: `${(STAGES.length + 1) * 100}vh` }}
       >
         <div className="sticky top-0 h-screen w-screen overflow-hidden">
-          <LivingParticleSystem progressRef={progressRef} stageCount={STAGES.length} />
+          <LivingParticleSystem progressRef={progressRef} stageCount={STAGES.length} paused={particlePaused} />
           <FrameBadge progress={displayProgress} stage={activeStage} />
 
           <div
@@ -284,7 +307,13 @@ function CreativeArtPointsInner() {
       </div>
 
       <div ref={heroRef}>
-        <HeroSection />
+        {heroReady ? (
+          <Suspense fallback={<section className="relative bg-[#fffff8] min-h-screen" />}>
+            <HeroSection />
+          </Suspense>
+        ) : (
+          <section className="relative bg-[#fffff8] min-h-screen" />
+        )}
       </div>
     </>
   );
