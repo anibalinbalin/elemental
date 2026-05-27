@@ -271,6 +271,7 @@ const postFragmentShader = /* glsl */ `
   uniform float uTime;
   uniform float uVignetteIntensity;
   uniform float uChromaticAberration;
+  uniform float uWhiteProgress;
 
   void main() {
     vec2 uv = vUv;
@@ -283,11 +284,13 @@ const postFragmentShader = /* glsl */ `
 
     float dist = distance(uv, vec2(0.5));
     float vignette = 1.0 - smoothstep(0.4, 0.9, dist * uVignetteIntensity);
-    color *= vignette;
+    color *= mix(vignette, 1.0, uWhiteProgress);
 
     color = pow(color, vec3(0.95));
     color.r *= 1.02;
     color.b *= 0.98;
+
+    color = mix(color, vec3(1.0, 1.0, 0.9882), uWhiteProgress);
 
     gl_FragColor = vec4(color, 1.0);
   }
@@ -469,6 +472,7 @@ function PostProcessedScene({
           uTime: { value: 0 },
           uVignetteIntensity: { value: DEFAULT_CONTROLS.vignetteIntensity },
           uChromaticAberration: { value: DEFAULT_CONTROLS.chromaticAberration },
+          uWhiteProgress: { value: 0 },
         },
         vertexShader: postVertexShader,
       }),
@@ -515,6 +519,8 @@ function PostProcessedScene({
     const g = r;
     const b = base + bgEased * (0.9882 - base);
     (renderScene.background as THREE.Color).setRGB(r, g, b);
+
+    postMaterial.uniforms.uWhiteProgress.value = bgEased;
 
     gl.setRenderTarget(renderTarget);
     gl.clear();
@@ -738,10 +744,10 @@ function ControlsPanel({
 }
 
 const STORY_KEYFRAMES = [
-  { z: 115, x: 0, y: 0, targetY: 0, depthDisplacement: 0, curlStrength: 0.05, breatheAmplitude: 0.01, pointSize: 10 },
-  { z: 60, x: 4, y: 3, targetY: 2, depthDisplacement: 8, curlStrength: 0.10, breatheAmplitude: 0.02, pointSize: 12 },
-  { z: 25, x: -3, y: -4, targetY: -2, depthDisplacement: 16, curlStrength: 0.25, breatheAmplitude: 0.05, pointSize: 16 },
-  { z: 8, x: 2, y: 1, targetY: 0, depthDisplacement: 20, curlStrength: 0.50, breatheAmplitude: 0.12, pointSize: 22 },
+  { z: 115, x: 0, y: 0, targetY: 0, depthDisplacement: 0, curlStrength: 0.05, breatheAmplitude: 0.01, pointSize: 10, vignetteIntensity: 0.3, chromaticAberration: 0.0 },
+  { z: 60, x: 4, y: 3, targetY: 2, depthDisplacement: 8, curlStrength: 0.10, breatheAmplitude: 0.02, pointSize: 12, vignetteIntensity: 0.8, chromaticAberration: 1.5 },
+  { z: 25, x: -3, y: -4, targetY: -2, depthDisplacement: 16, curlStrength: 0.25, breatheAmplitude: 0.05, pointSize: 16, vignetteIntensity: 1.4, chromaticAberration: 3.5 },
+  { z: 8, x: 2, y: 1, targetY: 0, depthDisplacement: 20, curlStrength: 0.50, breatheAmplitude: 0.12, pointSize: 22, vignetteIntensity: 2.2, chromaticAberration: 6.0 },
 ];
 
 function lerpKeyframes(progress: number) {
@@ -816,6 +822,8 @@ function StoryUniforms({
       curlStrength: kf.curlStrength,
       breatheAmplitude: kf.breatheAmplitude,
       pointSize: kf.pointSize,
+      vignetteIntensity: kf.vignetteIntensity,
+      chromaticAberration: kf.chromaticAberration,
     }));
   });
 
