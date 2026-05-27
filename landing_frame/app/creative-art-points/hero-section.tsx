@@ -35,7 +35,7 @@ export function HeroSection() {
                     ?.scrollIntoView({ behavior: "smooth" });
                 }}
               >
-                Quiero empezar
+                <span className="block [text-box-trim:trim-both] [text-box-edge:cap_alphabetic] relative top-px">Quiero empezar</span>
               </Button>
             </div>
           </div>
