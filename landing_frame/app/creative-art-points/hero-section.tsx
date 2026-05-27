@@ -1,10 +1,15 @@
 "use client";
 
-import { Button, Card } from "@heroui/react";
+import { Button } from "@heroui/react";
+import { PouchViewer } from "./pouch-viewer";
 
 export function HeroSection() {
   return (
-    <section className="bg-[#fffffc] min-h-screen flex items-center">
+    <section className="relative bg-[#fffff8] min-h-screen flex items-center">
+      <div
+        className="pointer-events-none absolute inset-x-0 -top-[120px] h-[120px]"
+        style={{ background: "linear-gradient(to bottom, transparent, #fffff8)" }}
+      />
       <div className="mx-auto max-w-7xl px-6 py-20 lg:py-32 w-full">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           <div className="flex flex-col gap-8">
@@ -34,18 +39,9 @@ export function HeroSection() {
             </div>
           </div>
 
-          <Card className="w-full overflow-hidden">
-            <Card.Content className="p-0">
-              <div
-                className="bg-[#E5E5E5] flex items-center justify-center w-full"
-                style={{ aspectRatio: "3/4" }}
-              >
-                <span className="text-sm font-medium text-[#737373]">
-                  Producto
-                </span>
-              </div>
-            </Card.Content>
-          </Card>
+          <div className="w-full" style={{ aspectRatio: "3/4" }}>
+            <PouchViewer />
+          </div>
         </div>
       </div>
     </section>

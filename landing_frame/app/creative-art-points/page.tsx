@@ -1,8 +1,10 @@
 "use client";
 
+import { DialRoot, useDialKit } from "dialkit";
+import "dialkit/styles.css";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { HeroSection } from "./hero-section";
 import { LivingParticleSystem } from "./living-particle-system";
 
@@ -27,12 +29,142 @@ const STAGES = [
   },
 ];
 
-export default function CreativeArtPointsPage() {
+const LAST_STAGE = STAGES.length - 1;
+
+type VignetteParams = {
+  arc: {
+    width: number;
+    height: number;
+    centerY: number;
+    clearStop: number;
+    fadeStop: number;
+    edgeOpacity: number;
+  };
+  boost: {
+    extraOpacity: number;
+    rampIn: number;
+  };
+  text: {
+    panelHeight: number;
+    paddingBottom: number;
+  };
+};
+
+function lerpColor(white: number[], dark: number[], t: number): string {
+  const r = Math.round(white[0] + (dark[0] - white[0]) * t);
+  const g = Math.round(white[1] + (dark[1] - white[1]) * t);
+  const b = Math.round(white[2] + (dark[2] - white[2]) * t);
+  const a = white[3] + (dark[3] - white[3]) * t;
+  return `rgba(${r},${g},${b},${a.toFixed(2)})`;
+}
+
+function StageText({
+  stage,
+  index,
+  active,
+  darkT,
+  paddingBottom,
+}: {
+  stage: (typeof STAGES)[number];
+  index: number;
+  active: boolean;
+  darkT: number;
+  paddingBottom: number;
+}) {
+  const labelColor = lerpColor([255, 255, 255, 0.4], [23, 23, 23, 0.4], darkT);
+  const titleColor = lerpColor([255, 255, 255, 1], [23, 23, 23, 1], darkT);
+  const bodyColor = lerpColor([255, 255, 255, 0.55], [23, 23, 23, 0.55], darkT);
+
+  return (
+    <div
+      className="absolute inset-0 flex flex-col justify-end px-6"
+      style={{
+        opacity: active ? 1 : 0,
+        transform: active ? "translateY(0)" : "translateY(16px)",
+        transition: "opacity 700ms ease-out, transform 700ms ease-out",
+        paddingBottom: `${paddingBottom}vh`,
+      }}
+    >
+      <div className="mx-auto max-w-lg text-center">
+        <h2
+          className="mb-3 font-mono text-xs font-medium uppercase tracking-[0.25em]"
+          style={{ color: labelColor }}
+        >
+          {String(index + 1).padStart(2, "0")} / {String(STAGES.length).padStart(2, "0")}
+        </h2>
+        <h3
+          className="mb-4 text-2xl font-normal leading-tight md:text-3xl"
+          style={{ color: titleColor }}
+        >
+          {stage.title}
+        </h3>
+        <p
+          className="text-sm leading-relaxed md:text-base"
+          style={{ color: bodyColor }}
+        >
+          {stage.body}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function FrameBadge({ progress, stage }: { progress: number; stage: number }) {
+  const frame = Math.round(progress * 100);
+  const label = stage >= 0 ? STAGES[stage].title.split(" ").slice(0, 3).join(" ") : "intro";
+  return (
+    <div
+      className="pointer-events-none absolute left-4 top-4 z-50 flex items-baseline gap-1.5 rounded-full px-3 py-2 font-mono text-[11px] leading-none tracking-wide"
+      style={{ background: "rgba(0,0,0,0.5)", backdropFilter: "blur(8px)" }}
+    >
+      <span className="font-bold text-white">{frame}</span>
+      <span className="text-white/40">/</span>
+      <span className="text-white/40">100</span>
+      <span className="mx-1 inline-block h-2.5 w-px translate-y-[-1px] bg-white/20" />
+      <span className="text-white/60">{label}</span>
+    </div>
+  );
+}
+
+function CreativeArtPointsInner() {
   const progressRef = useRef(0);
   const containerRef = useRef<HTMLDivElement>(null);
-  const stageRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const veilRef = useRef<HTMLDivElement>(null);
+  const vignetteRef = useRef<HTMLDivElement>(null);
+  const textPanelRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLDivElement>(null);
+  const [activeStage, setActiveStage] = useState(-1);
+  const [displayProgress, setDisplayProgress] = useState(0);
+  const [darkT, setDarkT] = useState(0);
+  const dialRef = useRef<VignetteParams | null>(null);
+  const peakOpacityRef = useRef(0);
+
+  const v = useDialKit("Bottom Vignette", {
+    arc: {
+      width: [140, 60, 400],
+      height: [110, 20, 200],
+      centerY: [10, -50, 80],
+      clearStop: [44, 0, 90],
+      fadeStop: [74, 20, 100],
+      edgeOpacity: [0.76, 0, 1],
+    },
+    boost: {
+      extraOpacity: [0.2, 0, 0.5],
+      rampIn: [0.15, 0, 0.4],
+    },
+    text: {
+      panelHeight: [45, 10, 80],
+      paddingBottom: [6, 0, 20],
+    },
+  }) as VignetteParams;
+
+  dialRef.current = v;
+
+  const updateVignette = useCallback((opacity: number) => {
+    const el = vignetteRef.current;
+    const d = dialRef.current;
+    if (!el || !d) return;
+    el.style.background = `radial-gradient(ellipse ${d.arc.width}% ${d.arc.height}% at 50% ${d.arc.centerY}%, transparent ${d.arc.clearStop}%, rgba(5,5,5,${opacity}) ${d.arc.fadeStop}%)`;
+  }, []);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -45,55 +177,48 @@ export default function CreativeArtPointsPage() {
         scrub: 0.5,
         onUpdate: (self) => {
           progressRef.current = self.progress;
+          setDisplayProgress(self.progress);
+          const d = dialRef.current;
+          if (!d) return;
+
+          const p = self.progress;
+          const slotCount = STAGES.length + 1;
+          const slotFloat = p * slotCount;
+          const slot = Math.floor(slotFloat);
+          const stageIndex = slot - 1;
+          const clamped = Math.max(-1, Math.min(STAGES.length - 1, stageIndex));
+          setActiveStage(clamped);
+
+          const dt = Math.max(0, Math.min(1, (p - 0.90) / 0.10));
+          setDarkT(dt * dt * (3 - 2 * dt));
+
+          const isLast = clamped === LAST_STAGE;
+
+          if (isLast) {
+            const vigEl = vignetteRef.current;
+            if (vigEl) vigEl.style.opacity = "0";
+            peakOpacityRef.current = 0;
+          } else {
+            const vigEl = vignetteRef.current;
+            if (vigEl) vigEl.style.opacity = "1";
+
+            let intensity = 0;
+            if (clamped >= 0) {
+              const frac = slotFloat - slot;
+              const rampIn = d.boost.rampIn;
+              if (frac < rampIn) {
+                intensity = frac / rampIn;
+              } else {
+                intensity = 1;
+              }
+            }
+
+            const target = d.arc.edgeOpacity + intensity * d.boost.extraOpacity;
+            peakOpacityRef.current = Math.max(peakOpacityRef.current, target);
+            updateVignette(Math.min(1, peakOpacityRef.current));
+          }
         },
       });
-
-      stageRefs.current.forEach((el) => {
-        if (!el) return;
-        gsap.fromTo(
-          el,
-          { opacity: 0, y: 40 },
-          {
-            opacity: 1,
-            y: 0,
-            duration: 0.5,
-            scrollTrigger: {
-              trigger: el,
-              start: "top 75%",
-              end: "top 35%",
-              scrub: 0.3,
-            },
-          },
-        );
-        gsap.to(el, {
-          opacity: 0,
-          y: -30,
-          scrollTrigger: {
-            trigger: el,
-            start: "bottom 40%",
-            end: "bottom 15%",
-            scrub: 0.3,
-          },
-        });
-      });
-
-      if (veilRef.current) {
-        const veilEl = veilRef.current;
-        ScrollTrigger.create({
-          trigger: containerRef.current,
-          start: "88% top",
-          end: "bottom top",
-          scrub: 0.5,
-          onUpdate: (self) => {
-            const p = self.progress;
-            const eased = p * p * (3 - 2 * p);
-            const blur = eased * 24;
-            veilEl.style.backdropFilter = `blur(${blur}px)`;
-            (veilEl.style as unknown as Record<string, string>).webkitBackdropFilter = `blur(${blur}px)`;
-            veilEl.style.backgroundColor = `rgba(255,255,252,${eased})`;
-          },
-        });
-      }
 
       if (heroRef.current) {
         gsap.fromTo(
@@ -115,44 +240,61 @@ export default function CreativeArtPointsPage() {
     }, containerRef);
 
     return () => ctx.revert();
-  }, []);
+  }, [updateVignette]);
+
+  const arcBg = `radial-gradient(ellipse ${v.arc.width}% ${v.arc.height}% at 50% ${v.arc.centerY}%, transparent ${v.arc.clearStop}%, rgba(5,5,5,${v.arc.edgeOpacity}) ${v.arc.fadeStop}%)`;
 
   return (
     <>
-      <div ref={containerRef} className="relative bg-[#050505]" style={{ height: `${(STAGES.length + 1) * 100}vh` }}>
+      <div
+        ref={containerRef}
+        className="relative bg-[#050505]"
+        style={{ height: `${(STAGES.length + 1) * 100}vh` }}
+      >
         <div className="sticky top-0 h-screen w-screen overflow-hidden">
           <LivingParticleSystem progressRef={progressRef} stageCount={STAGES.length} />
-          <div
-            ref={veilRef}
-            className="pointer-events-none absolute inset-0 z-10"
-          />
-        </div>
+          <FrameBadge progress={displayProgress} stage={activeStage} />
 
-        {STAGES.map((stage, i) => (
           <div
-            key={i}
-            ref={(el) => { stageRefs.current[i] = el; }}
-            className="pointer-events-none absolute left-0 flex h-screen w-full items-center"
-            style={{ top: `${(i + 0.5) * 100}vh` }}
+            ref={vignetteRef}
+            className="pointer-events-none absolute inset-x-0 bottom-0 z-20 h-full"
+            style={{
+              background: arcBg,
+              transition: "opacity 600ms ease-out",
+            }}
+          />
+
+          <div
+            ref={textPanelRef}
+            className="pointer-events-none absolute inset-x-0 bottom-0 z-30"
+            style={{ height: `${v.text.panelHeight}vh` }}
           >
-            <div className="pointer-events-auto mx-auto max-w-lg px-6 text-center">
-              <h2 className="mb-4 font-mono text-sm font-medium uppercase tracking-[0.2em] text-white/50">
-                {String(i + 1).padStart(2, "0")}
-              </h2>
-              <h3 className="mb-5 text-3xl font-light leading-tight text-white md:text-4xl">
-                {stage.title}
-              </h3>
-              <p className="text-base leading-relaxed text-white/60">
-                {stage.body}
-              </p>
-            </div>
+            {STAGES.map((stage, i) => (
+              <StageText
+                key={i}
+                stage={stage}
+                index={i}
+                active={activeStage === i}
+                darkT={darkT}
+                paddingBottom={v.text.paddingBottom}
+              />
+            ))}
           </div>
-        ))}
+        </div>
       </div>
 
       <div ref={heroRef}>
         <HeroSection />
       </div>
+    </>
+  );
+}
+
+export default function CreativeArtPointsPage() {
+  return (
+    <>
+      <CreativeArtPointsInner />
+      <DialRoot position="top-right" productionEnabled />
     </>
   );
 }

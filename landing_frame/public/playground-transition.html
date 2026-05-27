@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Transition Playground</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400&family=DM+Sans:wght@300;400;500&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #111;
+    color: #fff;
+    overflow-x: hidden;
+  }
+
+  .controls {
+    position: fixed;
+    top: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+    display: flex;
+    gap: 8px;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(12px);
+    padding: 6px;
+    border-radius: 24px;
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+  .controls button {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 18px;
+    cursor: pointer;
+    background: transparent;
+    color: rgba(255,255,255,0.5);
+    transition: all 200ms;
+    letter-spacing: 0.05em;
+  }
+  .controls button.active {
+    background: rgba(255,255,255,0.15);
+    color: #fff;
+  }
+
+  .label {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: rgba(0,0,0,0.35);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .scene {
+    width: 100%;
+  }
+
+  /* Simulated particle canvas area */
+  .canvas-zone {
+    height: 100vh;
+    position: relative;
+    overflow: hidden;
+  }
+  .canvas-zone .bg {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, #050505 0%, #e8ddd0 60%, #faf6f0 100%);
+  }
+  .canvas-zone .dots {
+    position: absolute;
+    inset: 0;
+  }
+  .dot {
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0.8;
+  }
+
+  .canvas-zone .text-overlay {
+    position: absolute;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    z-index: 2;
+  }
+  .canvas-zone .text-overlay h2 {
+    font-size: 11px;
+    font-family: 'DM Mono', monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: rgba(23,23,23,0.35);
+    margin-bottom: 12px;
+  }
+  .canvas-zone .text-overlay h3 {
+    font-size: 28px;
+    font-weight: 300;
+    color: #171717;
+    margin-bottom: 12px;
+  }
+  .canvas-zone .text-overlay p {
+    font-size: 14px;
+    color: rgba(23,23,23,0.5);
+    max-width: 400px;
+    line-height: 1.6;
+  }
+
+  /* Hero section */
+  .hero {
+    min-height: 100vh;
+    background: #fffff8;
+    display: flex;
+    align-items: center;
+    padding: 80px 48px;
+    position: relative;
+  }
+  .hero h1 {
+    font-size: clamp(40px, 6vw, 72px);
+    font-weight: 700;
+    color: #171717;
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+  }
+  .hero p {
+    margin-top: 24px;
+    font-size: 18px;
+    color: #737373;
+    max-width: 420px;
+    line-height: 1.6;
+  }
+
+  /* === OPTION A: Gradient bleed === */
+  .option-a .hero::before {
+    content: '';
+    position: absolute;
+    top: -120px;
+    left: 0;
+    right: 0;
+    height: 120px;
+    background: linear-gradient(to bottom, transparent 0%, #fffff8 100%);
+    pointer-events: none;
+    z-index: 5;
+  }
+
+  /* === OPTION B: Overlap + frosted strip === */
+  .option-b .hero {
+    margin-top: -80px;
+    position: relative;
+    z-index: 3;
+  }
+  .option-b .hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 80px;
+    background: linear-gradient(to bottom, rgba(255,255,248,0.6) 0%, #fffff8 100%);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    pointer-events: none;
+    z-index: 5;
+  }
+
+  /* === OPTION: No treatment (hard line) === */
+  .option-none .hero::before {
+    display: none;
+  }
+</style>
+</head>
+<body>
+
+<div class="controls">
+  <button onclick="setOption('none')" id="btn-none">No treatment</button>
+  <button onclick="setOption('a')" id="btn-a" class="active">A: Gradient bleed</button>
+  <button onclick="setOption('b')" id="btn-b">B: Overlap + blur</button>
+</div>
+
+<div class="label" id="label">Option A: Gradient bleed</div>
+
+<div class="scene option-a" id="scene">
+  <div class="canvas-zone">
+    <div class="bg"></div>
+    <div class="dots" id="dots"></div>
+    <div class="text-overlay">
+      <h2>04 / 04</h2>
+      <h3>Balance is everything</h3>
+      <p>When diversity drops — from stress, antibiotics, or poor diet — the ecosystem destabilizes.</p>
+    </div>
+  </div>
+
+  <div class="hero">
+    <div>
+      <h1>Ciencia aplicada<br>al bienestar<br>cotidiano</h1>
+      <p>Formulas funcionales para tu microbiota, con dosis claras y disenadas para integrarse a tu comida diaria.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Generate particle dots
+  const dotsContainer = document.getElementById('dots');
+  const colors = ['#c4956a', '#8b7355', '#d4a574', '#a68b6b', '#e8c9a0', '#706050'];
+  for (let i = 0; i < 80; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'dot';
+    const size = 8 + Math.random() * 40;
+    const x = Math.random() * 100;
+    const y = 30 + Math.random() * 65;
+    dot.style.cssText = `
+      width: ${size}px;
+      height: ${size}px;
+      left: ${x}%;
+      top: ${y}%;
+      background: ${colors[Math.floor(Math.random() * colors.length)]};
+      filter: blur(${Math.random() * 3}px);
+      opacity: ${0.4 + Math.random() * 0.5};
+    `;
+    dotsContainer.appendChild(dot);
+  }
+
+  const labels = {
+    none: 'No treatment (hard line)',
+    a: 'Option A: Gradient bleed',
+    b: 'Option B: Overlap + frosted blur',
+  };
+
+  function setOption(opt) {
+    const scene = document.getElementById('scene');
+    scene.className = 'scene option-' + opt;
+    document.querySelectorAll('.controls button').forEach(b => b.classList.remove('active'));
+    document.getElementById('btn-' + opt).classList.add('active');
+    document.getElementById('label').textContent = labels[opt];
+  }
+</script>
+</body>
+</html>

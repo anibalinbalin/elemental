@@ -1,3 +1,4 @@
+import { Agentation } from "agentation";
 import type { Metadata } from "next";
 import "./globals.css";
 import { ShapeProvider } from "@/lib/shape-context";
@@ -22,6 +23,7 @@ export default function RootLayout({
             {children}
           </ThemeProvider>
         </ShapeProvider>
+        {process.env.NODE_ENV === "development" && <Agentation />}
       </body>
     </html>
   );

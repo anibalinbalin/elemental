@@ -290,8 +290,6 @@ const postFragmentShader = /* glsl */ `
     color.r *= 1.02;
     color.b *= 0.98;
 
-    color = mix(color, vec3(1.0, 1.0, 0.9882), uWhiteProgress);
-
     gl_FragColor = vec4(color, 1.0);
   }
 `;
@@ -512,7 +510,7 @@ function PostProcessedScene({
     postMaterial.uniforms.uVignetteIntensity.value = controls.vignetteIntensity;
     postMaterial.uniforms.uChromaticAberration.value = controls.chromaticAberration;
 
-    const bgT = Math.max(0, Math.min(1, (progressRef.current - 0.75) / 0.2));
+    const bgT = Math.max(0, Math.min(1, (progressRef.current - 0.88) / 0.12));
     const bgEased = bgT * bgT * (3 - 2 * bgT);
     const base = 0.0196;
     const r = base + bgEased * (1 - base);
