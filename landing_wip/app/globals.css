@@ -1,0 +1,166 @@
+@import "tailwindcss";
+@import "@heroui/styles/css";
+
+@font-face {
+  font-family: "Monument Grotesk";
+  src: url("/fonts/MonumentGrotesk-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  ascent-override: 90%;
+  descent-override: 25%;
+}
+
+@font-face {
+  font-family: "Monument Grotesk";
+  src: url("/fonts/MonumentGrotesk-Italic.woff2") format("woff2");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+  ascent-override: 90%;
+  descent-override: 25%;
+}
+
+@font-face {
+  font-family: "Monument Grotesk";
+  src: url("/fonts/MonumentGrotesk-Medium.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+  ascent-override: 90%;
+  descent-override: 25%;
+}
+
+@font-face {
+  font-family: "Monument Grotesk";
+  src: url("/fonts/MonumentGrotesk-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  ascent-override: 90%;
+  descent-override: 25%;
+}
+
+@font-face {
+  font-family: "Monument Grotesk Mono";
+  src: url("/fonts/MonumentGrotesk-Mono.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  ascent-override: 90%;
+  descent-override: 25%;
+}
+
+/* HeroUI v3 "Uber" preset (light variant) — monochrome black accent.
+   Source: heroui-inc/heroui v3, apps/docs/src/styles/theme-presets.css */
+:root {
+  --background: oklch(97.02% 0.005 0);
+  --border: oklch(90% 0.005 0);
+  --default: oklch(94% 0.005 0);
+  --default-foreground: oklch(21.03% 0.0059 0);
+  --field-background: oklch(100% 0.0025 0);
+  --field-border: oklch(90% 0.005 0);
+  --field-foreground: oklch(21.03% 0.005 0);
+  --field-placeholder: oklch(55.17% 0.01 0);
+  --foreground: oklch(21.03% 0.005 0);
+  --link: oklch(21.03% 0.005 0);
+  --muted: oklch(55.17% 0.01 0);
+  --overlay: oklch(100% 0.0015 0);
+  --overlay-foreground: oklch(21.03% 0.005 0);
+  --scrollbar: oklch(87.1% 0.005 0);
+  --segment: oklch(100% 0.005 0);
+  --segment-foreground: oklch(21.03% 0.005 0);
+  --separator: oklch(92% 0.005 0);
+  --surface: oklch(100% 0.0025 0);
+  --surface-foreground: oklch(21.03% 0.005 0);
+  --surface-secondary: oklch(95.24% 0.0075 0);
+  --surface-secondary-foreground: oklch(21.03% 0.005 0);
+  --surface-tertiary: oklch(93.73% 0.0075 0);
+  --surface-tertiary-foreground: oklch(21.03% 0.005 0);
+  --accent: oklch(0% 0 0);
+  --accent-foreground: oklch(99.11% 0 0);
+  --focus: oklch(0% 0 0);
+  --success: oklch(0.6277 0.1604 153.06);
+  --success-foreground: oklch(99.11% 0 0);
+  --warning: oklch(0.8446 0.1525 80.6);
+  --warning-foreground: oklch(15% 0.0457 80.6);
+  --danger: oklch(0.573 0.2249 21.97);
+  --danger-foreground: oklch(99.11% 0 0);
+  --radius: 0.25rem;
+  --field-radius: 0.25rem;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: "Monument Grotesk", Arial, Helvetica, sans-serif;
+  --font-mono: "Monument Grotesk Mono", ui-monospace, monospace;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+}
+
+button,
+[role="button"],
+a {
+  text-box-trim: trim-both;
+  text-box-edge: cap alphabetic;
+}
+
+/* ─────────────────────────────────────────────────────────────
+ * BLOG MOTION — Emil Kowalski easing blueprint, calm/editorial.
+ * All values tunable here; entrance animations are transform+opacity
+ * only (GPU), and every one is disabled under prefers-reduced-motion.
+ * ───────────────────────────────────────────────────────────── */
+:root {
+  --ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-out-cubic: cubic-bezier(0.215, 0.61, 0.355, 1);
+
+  --blog-stagger: 60ms; /* gap between card reveals */
+  --blog-card-in: 560ms; /* card entrance duration */
+  --blog-article-in: 420ms; /* article entrance duration */
+}
+
+@keyframes blog-card-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 12px, 0) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes blog-article-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 10px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.blog-card {
+  animation: blog-card-in var(--blog-card-in) var(--ease-out-quint) both;
+  animation-delay: calc(var(--blog-stagger) * var(--card-index, 0));
+  will-change: transform, opacity;
+}
+
+.blog-article-enter {
+  animation: blog-article-in var(--blog-article-in) var(--ease-out-quint) both;
+  will-change: transform, opacity;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .blog-card,
+  .blog-article-enter {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
