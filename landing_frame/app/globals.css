@@ -235,3 +235,93 @@ h1, h2, h3, p {
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }
+
+/* HeroUI "Uber" preset — verbatim from HeroUI v3's theme builder.
+   Activated via data-design-theme="uber" on <html> (see layout.tsx).
+   Black accent, warm-neutral surfaces, small (.25rem) radius.
+   Higher specificity than :root / .dark, so it wins for shared tokens. */
+[data-design-theme="uber"]:not(.dark):not([data-theme="dark"]) {
+  --background: #f8f4f5;
+  --foreground: #1a1718;
+  --border: #e1ddde;
+  --separator: #e8e3e4;
+  --muted: #777072;
+  --link: #1a1718;
+  --default: #eeeaeb;
+  --default-foreground: #1b1718;
+  --surface: #fff;
+  --surface-foreground: #1a1718;
+  --surface-secondary: #f4edef;
+  --surface-secondary-foreground: #1a1718;
+  --surface-tertiary: #efe8ea;
+  --surface-tertiary-foreground: #1a1718;
+  --overlay: #fff;
+  --overlay-foreground: #1a1718;
+  --segment: #fff;
+  --segment-foreground: #1a1718;
+  --field-background: #fff;
+  --field-border: #e1ddde;
+  --field-foreground: #1a1718;
+  --field-placeholder: #777072;
+  --scrollbar: #d7d3d4;
+  --accent: #000;
+  --accent-foreground: #fcfcfc;
+  --focus: #000;
+  --success: #05a357;
+  --success-foreground: #fcfcfc;
+  --warning: #ffc043;
+  --warning-foreground: #120900;
+  --danger: #de1135;
+  --danger-foreground: #fcfcfc;
+  --radius: .25rem;
+  --field-radius: .25rem;
+  --chart-1: oklch(from var(--accent) calc(l - .24) c h);
+  --chart-2: oklch(from var(--accent) calc(l - .12) c h);
+  --chart-3: var(--accent);
+  --chart-4: oklch(from var(--accent) calc(l + .12) c h);
+  --chart-5: oklch(from var(--accent) calc(l + .24) c h);
+}
+
+[data-design-theme="uber"].dark,
+[data-design-theme="uber"][data-theme="dark"] {
+  color-scheme: dark;
+  --background: #070506;
+  --foreground: #fffbfc;
+  --border: #2b2829;
+  --separator: #242121;
+  --muted: #a69da0;
+  --link: #fffbfc;
+  --default: #2a2627;
+  --default-foreground: #fcfcfc;
+  --surface: #1c1718;
+  --surface-foreground: #fffbfc;
+  --surface-secondary: #272223;
+  --surface-secondary-foreground: #fffbfc;
+  --surface-tertiary: #2a2527;
+  --surface-tertiary-foreground: #fffbfc;
+  --overlay: #1c1718;
+  --overlay-foreground: #fffbfc;
+  --segment: #494646;
+  --segment-foreground: #fffbfc;
+  --field-background: #1c1718;
+  --field-border: #2b2829;
+  --field-foreground: #fffbfc;
+  --field-placeholder: #a69da0;
+  --scrollbar: #a39fa0;
+  --accent: #fafafa;
+  --accent-foreground: #0b0b0b;
+  --focus: #fafafa;
+  --success: #3aa76d;
+  --success-foreground: #001005;
+  --warning: #ffd166;
+  --warning-foreground: #120a00;
+  --danger: #f66;
+  --danger-foreground: #1c0203;
+  --radius: .25rem;
+  --field-radius: .25rem;
+  --chart-1: oklch(from var(--accent) calc(l - .24) c h);
+  --chart-2: oklch(from var(--accent) calc(l - .12) c h);
+  --chart-3: var(--accent);
+  --chart-4: oklch(from var(--accent) calc(l + .12) c h);
+  --chart-5: oklch(from var(--accent) calc(l + .24) c h);
+}

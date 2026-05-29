@@ -16,7 +16,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es">
+    <html lang="es" data-design-theme="uber">
       <body className="antialiased bg-background text-foreground">
         <ShapeProvider defaultShape="rounded">
           <ThemeProvider defaultTheme="light">
