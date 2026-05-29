@@ -3,27 +3,36 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+    "dev": "TINA_PUBLIC_IS_LOCAL=true tinacms dev -c \"next dev -p 3020\"",
+    "dev:prod": "TINA_PUBLIC_IS_LOCAL=false tinacms dev -c \"next dev -p 3020\"",
+    "build": "tinacms build --partial-reindex && next build",
     "start": "next start",
     "lint": "eslint"
   },
   "dependencies": {
+    "@clerk/backend": "0.38.15",
+    "@clerk/clerk-js": "4.73.14",
     "@heroui/react": "^3.1.0",
     "@heroui/styles": "^3.1.0",
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.6.1",
+    "@tinacms/datalayer": "2.0.22",
     "gray-matter": "^4.0.3",
     "gsap": "^3.15.0",
+    "mongodb-level": "0.0.4",
     "next": "16.2.6",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "react-markdown": "^10.1.0",
     "remark-gfm": "^4.0.1",
-    "three": "^0.184.0"
+    "three": "^0.184.0",
+    "tinacms": "3.8.3",
+    "tinacms-clerk": "22.0.3",
+    "tinacms-gitprovider-github": "4.1.9"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@tinacms/cli": "2.4.1",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
@@ -38,6 +47,11 @@
     "unrs-resolver"
   ],
   "trustedDependencies": [
+    "better-sqlite3",
+    "browser-tabs-lock",
+    "core-js",
+    "esbuild",
+    "protobufjs",
     "sharp",
     "unrs-resolver"
   ]
