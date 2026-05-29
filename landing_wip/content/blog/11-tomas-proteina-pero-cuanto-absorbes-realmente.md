@@ -1,7 +1,7 @@
 ---
 title: "Tomás proteína, pero ¿cuánto absorbés realmente?"
 dek: "Por qué tu intestino decide si esa proteína llega a tu músculo o se pierde en el camino."
-category: "Intestino · Deporte"
+category: "Deporte"
 author: "Lc. Laura Fuentes"
 authorRole: "Nutricionista"
 readTime: "9 min"

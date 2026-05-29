@@ -1,7 +1,7 @@
 ---
 title: "Por qué creamos MicroKore"
 dek: "La historia, la ciencia, y el problema que resuelve."
-category: "Categoría"
+category: "Producto"
 author: "Lc. Laura Fuentes"
 authorRole: "Nutricionista"
 order: 10

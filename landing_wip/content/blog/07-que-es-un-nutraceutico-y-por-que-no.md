@@ -1,7 +1,7 @@
 ---
 title: "Qué es un nutracéutico (y por qué no es un suplemento más)"
 dek: "Educación de categoría. Dónde entra MicroKore."
-category: "Categoría"
+category: "Ciencia"
 author: "Lc. Laura Fuentes"
 authorRole: "Nutricionista"
 order: 7

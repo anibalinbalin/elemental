@@ -1,9 +1,13 @@
 import type { Collection } from 'tinacms';
 
-// Mirrors the frontmatter that lib/blog.ts reads (gray-matter) and that
-// app/blog/post-body.tsx renders. Field `name`s MUST match those keys, or
-// the existing site stops reading them. Body stays standard markdown so
-// react-markdown + remark-gfm keep rendering it unchanged.
+// Keep these in sync with the categories actually used across the blog. A
+// fixed list (vs. free text) keeps the tags consistent on the index/cards.
+const CATEGORIES = ['Intestino', 'Cerebro', 'Piel', 'Ciencia', 'Deporte', 'Producto'];
+
+// Field `name`s MUST stay flat and match what lib/blog.ts reads via gray-matter
+// (title/dek/category/author/authorRole/order/readTime/references) + the md
+// body. Do NOT wrap them in an `object` field — that nests the YAML and breaks
+// both the existing posts and the frontend reader.
 const Post: Collection = {
   label: 'Posts del Blog',
   name: 'post',
@@ -14,6 +18,13 @@ const Post: Collection = {
     // same rule as fileToSlug() in lib/blog.ts.
     router: ({ document }) =>
       `/blog/${document._sys.filename.replace(/^\d+-/, '')}`,
+    // Pre-fill author + a sane order on NEW posts so the non-technical editor
+    // doesn't retype boilerplate every time.
+    defaultItem: () => ({
+      author: 'Lc. Laura Fuentes',
+      authorRole: 'Nutricionista',
+      order: 99,
+    }),
   },
   fields: [
     {
@@ -22,46 +33,45 @@ const Post: Collection = {
       name: 'title',
       isTitle: true,
       required: true,
+      description: 'El titular del post.',
     },
     {
       type: 'string',
       label: 'Bajada',
       name: 'dek',
-      description: 'Subtítulo / resumen — se muestra bajo el título y en las tarjetas.',
+      required: true,
+      description:
+        'Resumen de 1–2 líneas. Se muestra bajo el título y en las tarjetas del blog.',
       ui: { component: 'textarea' },
     },
     {
       type: 'string',
       label: 'Categoría',
       name: 'category',
-    },
-    {
-      type: 'string',
-      label: 'Autor',
-      name: 'author',
-    },
-    {
-      type: 'string',
-      label: 'Rol del autor',
-      name: 'authorRole',
+      required: true,
+      options: CATEGORIES,
+      description:
+        'Elegí una de la lista — mantiene las etiquetas consistentes en todo el blog.',
     },
     {
       type: 'number',
       label: 'Orden',
       name: 'order',
-      description: 'Controla el orden en el índice del blog (menor primero).',
+      required: true,
+      description:
+        'Posición en el índice: 1 aparece primero, los números más altos van después.',
     },
     {
       type: 'string',
       label: 'Tiempo de lectura',
       name: 'readTime',
-      description: 'Opcional. Ej: "5 min".',
+      description: 'Opcional. Ej.: "5 min". Dejalo vacío para no mostrarlo.',
     },
     {
       type: 'string',
       label: 'Referencias',
       name: 'references',
-      description: 'Cita(s) al pie del artículo.',
+      description: 'Cita(s) científicas que aparecen al pie del artículo.',
       ui: { component: 'textarea' },
     },
     {
@@ -69,6 +79,19 @@ const Post: Collection = {
       label: 'Contenido',
       name: 'body',
       isBody: true,
+      description:
+        'El cuerpo del artículo. Usá los títulos (##) y la cita (>) para resaltar la evidencia.',
+    },
+    {
+      type: 'string',
+      label: 'Autor',
+      name: 'author',
+      description: 'Se completa solo en posts nuevos.',
+    },
+    {
+      type: 'string',
+      label: 'Rol del autor',
+      name: 'authorRole',
     },
   ],
 };
