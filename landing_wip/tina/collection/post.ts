@@ -18,14 +18,15 @@ const Post: Collection = {
     // same rule as fileToSlug() in lib/blog.ts.
     router: ({ document }) =>
       `/blog/${document._sys.filename.replace(/^\d+-/, '')}`,
-    // Pre-fill author + a sane order on NEW posts so the non-technical editor
-    // doesn't retype boilerplate every time.
-    defaultItem: () => ({
-      author: 'Lc. Laura Fuentes',
-      authorRole: 'Nutricionista',
-      order: 99,
-    }),
   },
+  // Pre-fill author + a sane order on NEW posts so the non-technical editor
+  // doesn't retype boilerplate every time. (Collection-level, NOT ui — the
+  // ui-level form is deprecated/untyped.)
+  defaultItem: () => ({
+    author: 'Lc. Laura Fuentes',
+    authorRole: 'Nutricionista',
+    order: 99,
+  }),
   fields: [
     {
       type: 'string',
