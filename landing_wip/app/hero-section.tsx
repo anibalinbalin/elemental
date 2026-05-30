@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@heroui/react";
+import { Button } from "@/components/ui/button";
 import { PouchViewer } from "./pouch-viewer";
 
 export function HeroSection() {
@@ -27,8 +27,7 @@ export function HeroSection() {
             <div>
               <Button
                 size="lg"
-                className="rounded-full px-8 font-medium"
-                onPress={() => {
+                onClick={() => {
                   document
                     .getElementById("producto")
                     ?.scrollIntoView({ behavior: "smooth" });
