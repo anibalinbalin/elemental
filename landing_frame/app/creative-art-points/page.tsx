@@ -17,20 +17,20 @@ gsap.registerPlugin(ScrollTrigger);
 
 const STAGES = [
   {
-    title: "Your body is an ecosystem",
-    body: "Right now, trillions of microorganisms live on and inside you. They outnumber your own cells and form a hidden world that shapes your health every day.",
+    title: "Tu cuerpo es un ecosistema",
+    body: "En este momento, billones de microorganismos viven sobre tu cuerpo y dentro de él. Superan en número a tus propias células y forman un mundo oculto que moldea tu salud día a día.",
   },
   {
-    title: "Meet your microbiota",
-    body: "Bacteria, fungi, viruses, and archaea — together they form the microbiota. Most live in your gut, but they colonize your skin, mouth, and lungs too.",
+    title: "Esta es tu microbiota",
+    body: "Bacterias, hongos, virus y arqueas: juntos forman la microbiota. La mayoría habita en tu intestino, pero también colonizan tu piel, tu boca y tus pulmones.",
   },
   {
-    title: "A living pharmacy",
-    body: "Your microbiota produces vitamins, trains your immune system, breaks down fiber into energy, and even communicates with your brain through the gut-brain axis.",
+    title: "Una farmacia viva",
+    body: "Tu microbiota produce vitaminas, entrena a tu sistema inmunitario, convierte la fibra en energía e incluso se comunica con tu cerebro a través del eje intestino-cerebro.",
   },
   {
-    title: "Balance is everything",
-    body: "When diversity drops — from stress, antibiotics, or poor diet — the ecosystem destabilizes. Restoring it means feeding the right organisms with the right inputs.",
+    title: "El equilibrio lo es todo",
+    body: "Cuando la diversidad cae —por estrés, antibióticos o una mala alimentación—, el ecosistema se desestabiliza. Recuperarlo significa alimentar a los organismos adecuados con los nutrientes adecuados.",
   },
 ];
 
@@ -116,7 +116,7 @@ function StageText({
 
 function FrameBadge({ progress, stage }: { progress: number; stage: number }) {
   const frame = Math.round(progress * 100);
-  const label = stage >= 0 ? STAGES[stage].title.split(" ").slice(0, 3).join(" ") : "intro";
+  const label = stage >= 0 ? STAGES[stage].title.split(" ").slice(0, 3).join(" ") : "inicio";
   return (
     <div
       className="pointer-events-none absolute left-4 top-4 z-50 flex items-baseline gap-1.5 rounded-full px-3 py-2 font-mono text-[11px] leading-none tracking-wide"
