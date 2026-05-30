@@ -119,61 +119,6 @@ function StageText({
 }
 
 
-function FrameBadge({ progress, stage }: { progress: number; stage: number }) {
-  const frame = Math.round(progress * 100);
-  const label = stage >= 0 ? STAGES[stage].title.split(" ").slice(0, 3).join(" ") : "inicio";
-  return (
-    <div
-      className="pointer-events-none absolute left-4 top-4 z-50 flex items-baseline gap-1.5 rounded-full px-3 py-2 font-mono text-[11px] leading-none tracking-wide"
-      style={{ background: "rgba(0,0,0,0.5)", backdropFilter: "blur(8px)" }}
-    >
-      <span className="font-bold text-white">{frame}</span>
-      <span className="text-white/40">/</span>
-      <span className="text-white/40">100</span>
-      <span className="mx-1 inline-block h-2.5 w-px translate-y-[-1px] bg-white/20" />
-      <span className="text-white/60">{label}</span>
-    </div>
-  );
-}
-
-function FpsMeter() {
-  const [fps, setFps] = useState(0);
-
-  useEffect(() => {
-    let raf = 0;
-    let frames = 0;
-    let last = performance.now();
-
-    const tick = (now: number) => {
-      frames++;
-      const elapsed = now - last;
-      if (elapsed >= 500) {
-        setFps(Math.round((frames * 1000) / elapsed));
-        frames = 0;
-        last = now;
-      }
-      raf = requestAnimationFrame(tick);
-    };
-
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, []);
-
-  const color = fps >= 55 ? "#4ade80" : fps >= 30 ? "#fbbf24" : "#f87171";
-
-  return (
-    <div
-      className="pointer-events-none absolute right-4 top-4 z-50 flex items-baseline gap-1.5 rounded-full px-3 py-2 font-mono text-[11px] leading-none tracking-wide tabular-nums"
-      style={{ background: "rgba(0,0,0,0.5)", backdropFilter: "blur(8px)" }}
-    >
-      <span className="font-bold" style={{ color }}>
-        {fps}
-      </span>
-      <span className="text-white/40">fps</span>
-    </div>
-  );
-}
-
 function HomeContent() {
   const progressRef = useRef(0);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -181,7 +126,6 @@ function HomeContent() {
   const textPanelRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLDivElement>(null);
   const [activeStage, setActiveStage] = useState(-1);
-  const [displayProgress, setDisplayProgress] = useState(0);
   const [darkT, setDarkT] = useState(0);
   const [heroReady, setHeroReady] = useState(false);
   const SKIP_3D_HERO = false;
@@ -230,7 +174,6 @@ function HomeContent() {
         scrub: 0.5,
         onUpdate: (self) => {
           progressRef.current = self.progress;
-          setDisplayProgress(self.progress);
           const d = dialRef.current;
           if (!d) return;
 
@@ -334,8 +277,6 @@ function HomeContent() {
         style={{ height: `${(OVERLAY_COUNT + 1) * 100}vh` }}
       >
         <div className="sticky top-0 h-screen w-screen overflow-hidden">
-          <FrameBadge progress={displayProgress} stage={activeStage} />
-          <FpsMeter />
           <LivingParticleSystem progressRef={progressRef} stageCount={OVERLAY_COUNT} paused={particlePaused} />
 
           <div
