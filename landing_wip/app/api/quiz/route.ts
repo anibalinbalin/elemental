@@ -37,7 +37,7 @@ export async function POST(req: Request) {
       .join("\n");
 
     const { error } = await resend.emails.send({
-      from: "MicroCore Quiz <onboarding@resend.dev>",
+      from: "MicroCore Quiz <quiz@elementalbloomco.com>",
       to: "hola@elementalbloomco.com",
       subject: `Quiz MicroCore - ${profileName} - ${esc(email)}`,
       html: [
