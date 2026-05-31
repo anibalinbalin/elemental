@@ -5,10 +5,24 @@ import { useShape } from "@/lib/shape-context";
 import { PlaceholderImage } from "./placeholder-image";
 import { SectionReveal } from "./section-reveal";
 
+// Curated from the real blog (content/blog → /blog/<slug>). Slugs match
+// lib/blog.ts (filename minus the "NN-" order prefix and ".md").
 const articles = [
-  { title: "La Microbiota", slug: "microbiota" },
-  { title: "Las proteinas tu batido", slug: "proteinas" },
-  { title: "Las rutinas", slug: "rutinas" },
+  {
+    title: "Tu intestino decide más de lo que pensás",
+    category: "Cerebro",
+    slug: "tu-intestino-decide-mas-de-lo-que-pensas",
+  },
+  {
+    title: "Tomás proteína, pero ¿cuánto absorbés realmente?",
+    category: "Deporte",
+    slug: "tomas-proteina-pero-cuanto-absorbes-realmente",
+  },
+  {
+    title: "Por qué te hinchás después de comer",
+    category: "Intestino",
+    slug: "por-que-te-hinchas-despues-de-comer-y",
+  },
 ];
 
 export function ScienceBlog() {
@@ -18,16 +32,24 @@ export function ScienceBlog() {
     <section id="ciencia-cotidiana" className="bg-surface-1">
       <div className="mx-auto max-w-7xl px-6 py-20 lg:py-28">
         <SectionReveal>
-          <h2 className="text-3xl lg:text-5xl font-bold tracking-tight mb-12">
-            Ciencia cotidiana
-          </h2>
+          <div className="mb-12 flex flex-wrap items-end justify-between gap-4">
+            <h2 className="text-3xl lg:text-5xl font-bold tracking-tight">
+              Ciencia cotidiana
+            </h2>
+            <a
+              href="/blog"
+              className="text-sm font-medium underline underline-offset-4 hover:text-muted-foreground transition-colors"
+            >
+              Ver todas las notas
+            </a>
+          </div>
         </SectionReveal>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {articles.map((article, i) => (
             <SectionReveal key={article.slug} delay={i * 0.08}>
               <a
-                href="#"
+                href={`/blog/${article.slug}`}
                 className={cn(
                   "group block",
                   "bg-surface-3 shadow-surface-3",
@@ -39,11 +61,16 @@ export function ScienceBlog() {
                 <PlaceholderImage
                   className="w-full"
                   aspectRatio="16/10"
-                  label={article.title}
+                  label={article.category}
                 />
                 <div className="p-6">
-                  <h3 className="text-lg font-bold mb-2">{article.title}</h3>
-                  <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider group-hover:text-foreground transition-colors">
+                  <span className="text-xs font-mono uppercase tracking-wider text-muted-foreground">
+                    {article.category}
+                  </span>
+                  <h3 className="mt-2 text-lg font-bold leading-snug">
+                    {article.title}
+                  </h3>
+                  <span className="mt-3 inline-block text-xs font-medium text-muted-foreground uppercase tracking-wider group-hover:text-foreground transition-colors">
                     Ver mas
                   </span>
                 </div>

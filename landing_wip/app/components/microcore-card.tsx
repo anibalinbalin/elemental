@@ -23,7 +23,7 @@ export function MicrocoreCard() {
   const shape = useShape();
 
   return (
-    <section id="producto" className="dark">
+    <section id="producto">
       <div className="bg-surface-1 text-foreground py-20 lg:py-28">
         <div className="mx-auto max-w-7xl px-6">
           <SectionReveal>
@@ -51,7 +51,7 @@ export function MicrocoreCard() {
                     <span
                       className={cn(
                         "inline-flex items-center gap-1.5",
-                        "bg-surface-5 px-3 py-1.5",
+                        "bg-neutral-200 px-3 py-1.5",
                         "text-xs font-mono",
                         shape.button
                       )}

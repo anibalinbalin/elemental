@@ -30,7 +30,7 @@ const socialIcons = [
 
 export function Footer() {
   return (
-    <footer className="dark">
+    <footer>
       <div className="bg-surface-1 text-foreground">
         <div className="mx-auto max-w-7xl px-6 pt-20 lg:pt-28 pb-12">
           <SectionReveal>
@@ -67,7 +67,7 @@ export function Footer() {
                   key={social.label}
                   href="#"
                   aria-label={social.label}
-                  className="w-9 h-9 rounded-full bg-surface-3 flex items-center justify-center hover:bg-surface-4 transition-colors"
+                  className="w-9 h-9 rounded-full bg-neutral-100 flex items-center justify-center hover:bg-neutral-200 transition-colors"
                 >
                   <HugeiconsIcon
                     icon={social.icon}
