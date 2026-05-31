@@ -20,8 +20,8 @@ export function HeroSection() {
               cotidiano
             </h1>
             <p className="text-lg leading-relaxed max-w-md text-[#737373]">
-              Formulas funcionales para tu microbiota, con dosis claras y
-              disenadas para integrarse a tu comida diaria.
+              Fórmulas funcionales para tu microbiota, con dosis claras y
+              diseñadas para integrarse a tu comida diaria.
             </p>
             <div>
               <Button

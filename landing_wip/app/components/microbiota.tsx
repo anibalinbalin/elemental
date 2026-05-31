@@ -49,7 +49,7 @@ export function Microbiota() {
               <p className="text-muted-foreground leading-relaxed max-w-md">
                 La microbiota intestinal participa en procesos clave del cuerpo.
                 Cuando ese equilibrio se altera, el cuerpo lo siente. MICROCORE
-                fue disenado para apoyar ese equilibrio.
+                fue diseñado para apoyar ese equilibrio.
               </p>
 
               <div className="flex flex-wrap gap-6">
