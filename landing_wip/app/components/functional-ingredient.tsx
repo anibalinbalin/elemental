@@ -2,7 +2,7 @@
 
 import { cn } from "@/lib/utils";
 import { useShape } from "@/lib/shape-context";
-import { PlaceholderImage } from "./placeholder-image";
+import { CursorDrivenParticleImage } from "./cursor-driven-particle-crest";
 import { SectionReveal } from "./section-reveal";
 
 export function FunctionalIngredient() {
@@ -13,11 +13,29 @@ export function FunctionalIngredient() {
       <div className="mx-auto max-w-7xl px-6 py-20 lg:py-28">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           <SectionReveal>
-            <PlaceholderImage
-              className={cn("w-full", shape.container)}
-              aspectRatio="4/3"
-              label="Ingrediente"
-            />
+            {/* Particle coat of arms — reinforces "desarrollado en Uruguay".
+             * Tuned values baked in as constants (no DialKit in production). */}
+            <div
+              className={cn(
+                "relative w-full overflow-hidden bg-surface-2",
+                shape.container
+              )}
+              style={{ aspectRatio: "4/3" }}
+            >
+              <CursorDrivenParticleImage
+                className="!min-h-0"
+                src="/coat-of-arms-uruguay.svg"
+                color="#171717"
+                particleDensity={5}
+                particleSize={1.5}
+                scale={0.46}
+                alphaThreshold={128}
+                dispersionStrength={15}
+                returnSpeed={0.08}
+                friction={0.85}
+                interactionRadius={75}
+              />
+            </div>
           </SectionReveal>
 
           <SectionReveal delay={0.1}>

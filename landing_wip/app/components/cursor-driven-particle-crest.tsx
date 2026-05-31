@@ -169,6 +169,9 @@ export function CursorDrivenParticleImage({
     let w = 0;
     let h = 0;
     let disposed = false;
+    let running = false;
+    let visible = true;
+    let ready = false;
 
     const img = new Image();
 
@@ -223,6 +226,19 @@ export function CursorDrivenParticleImage({
       rafId = requestAnimationFrame(animate);
     };
 
+    // Only animate while ready (image sampled) AND on-screen — saves GPU when
+    // the section is scrolled away.
+    const start = () => {
+      if (running || disposed || !ready || !visible) return;
+      running = true;
+      cancelAnimationFrame(rafId);
+      animate();
+    };
+    const stop = () => {
+      running = false;
+      cancelAnimationFrame(rafId);
+    };
+
     const onMove = (e: MouseEvent) => {
       const rect = canvas.getBoundingClientRect();
       mouseX = e.clientX - rect.left;
@@ -241,13 +257,22 @@ export function CursorDrivenParticleImage({
     };
 
     const ro = new ResizeObserver(() => sample());
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        visible = entry.isIntersecting;
+        if (visible) start();
+        else stop();
+      },
+      { threshold: 0 },
+    );
 
     img.onload = () => {
       if (disposed) return;
       sample();
+      ready = true;
       ro.observe(container);
-      cancelAnimationFrame(rafId);
-      animate();
+      io.observe(container);
+      start();
     };
     img.src = src;
 
@@ -261,6 +286,7 @@ export function CursorDrivenParticleImage({
       disposed = true;
       cancelAnimationFrame(rafId);
       ro.disconnect();
+      io.disconnect();
       canvas.removeEventListener("mousemove", onMove);
       canvas.removeEventListener("mouseleave", onLeave);
       canvas.removeEventListener("touchstart", onTouch);

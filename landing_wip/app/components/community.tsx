@@ -5,6 +5,15 @@ import { useShape } from "@/lib/shape-context";
 import { PlaceholderImage } from "./placeholder-image";
 import { SectionReveal } from "./section-reveal";
 
+const posts = [
+  { src: "/images/lifestyle-orange-water.webp", alt: "Mujer disfrutando un vaso de agua con naranja" },
+  { src: "/images/pancakes.webp", alt: "Panqueques con banana y miel" },
+  { src: "/images/recipe-orange-bread.webp", alt: "Budín de naranja y avena con polifenoles" },
+  { src: "/images/shaker.webp", alt: "Preparando un shake con una medida de MICROCORE" },
+  { src: "/images/bloom-yellow.webp", alt: "Detalle floral abstracto de Elemental Bloom" },
+  { src: "/images/bloom-purple.webp", alt: "Detalle floral abstracto de Elemental Bloom" },
+];
+
 export function Community() {
   const shape = useShape();
 
@@ -22,12 +31,13 @@ export function Community() {
 
         <SectionReveal delay={0.08}>
           <div className="flex gap-4 overflow-x-auto scrollbar-hide pb-4 -mx-6 px-6">
-            {Array.from({ length: 6 }).map((_, i) => (
+            {posts.map((post, i) => (
               <PlaceholderImage
                 key={i}
                 className={cn("shrink-0 w-48 h-48", shape.item)}
                 aspectRatio="1/1"
-                label={`Post ${i + 1}`}
+                src={post.src}
+                alt={post.alt}
               />
             ))}
           </div>

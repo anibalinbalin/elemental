@@ -2,25 +2,30 @@
 
 import { SectionReveal } from "./section-reveal";
 
+// Elemental Bloom green, used as a single deliberate accent on the key word.
+const ACCENT = "#3f6f2f";
+
 export function Testimonial() {
   return (
     <section className="bg-surface-2">
-      <div className="mx-auto max-w-3xl px-6 py-20 lg:py-28 text-center">
+      <div className="mx-auto max-w-4xl px-6 py-20 lg:py-28">
         <SectionReveal>
-          <blockquote className="flex flex-col items-center gap-8">
-            <span className="text-6xl text-neutral-300 leading-none select-none">
-              &ldquo;
-            </span>
-            <p className="text-xl lg:text-2xl italic leading-relaxed">
+          <blockquote>
+            <p className="text-3xl font-medium leading-[1.15] tracking-tight lg:text-[2.75rem]">
               En anos de consulta clinica, los cambios mas sostenibles en
-              digestion y piel siempre tuvieron una cosa en comun: consistencia.
-              MICROCORE existe para hacer eso facil.
+              digestion y piel siempre tuvieron una cosa en comun:{" "}
+              <span style={{ color: ACCENT }}>consistencia</span>. MICROCORE
+              existe para hacer eso facil.
             </p>
-            <footer className="flex flex-col gap-1">
-              <cite className="not-italic text-sm font-bold">Laura,</cite>
-              <span className="text-xs text-muted-foreground font-medium uppercase tracking-wider">
-                Fundadora y Nutricionista
-              </span>
+            <footer className="mt-10 flex items-center gap-3">
+              <span
+                aria-hidden
+                className="h-px w-8 shrink-0"
+                style={{ backgroundColor: ACCENT }}
+              />
+              <cite className="font-mono text-xs uppercase not-italic tracking-[0.2em] text-muted-foreground">
+                Laura — Fundadora y Nutricionista
+              </cite>
             </footer>
           </blockquote>
         </SectionReveal>

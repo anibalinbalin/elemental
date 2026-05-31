@@ -1,9 +1,21 @@
 "use client";
 
+import type { ComponentType } from "react";
 import { cn } from "@/lib/utils";
 import { useShape } from "@/lib/shape-context";
 import { PlaceholderImage } from "./placeholder-image";
+import { CerebroShader } from "./cerebro-shader";
+import { DeporteShader } from "./deporte-shader";
+import { IntestinoShader } from "./intestino-shader";
 import { SectionReveal } from "./section-reveal";
+
+// Per-category Paper shaders that fill a card's image slot. Categories not
+// listed here fall back to a plain placeholder.
+const CARD_SHADERS: Record<string, ComponentType<{ className?: string }>> = {
+  Cerebro: CerebroShader,
+  Deporte: DeporteShader,
+  Intestino: IntestinoShader,
+};
 
 // Curated from the real blog (content/blog → /blog/<slug>). Slugs match
 // lib/blog.ts (filename minus the "NN-" order prefix and ".md").
@@ -46,37 +58,44 @@ export function ScienceBlog() {
         </SectionReveal>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {articles.map((article, i) => (
-            <SectionReveal key={article.slug} delay={i * 0.08}>
+          {articles.map((article, i) => {
+            const Shader = CARD_SHADERS[article.category];
+            return (
+            <SectionReveal key={article.slug} delay={i * 0.08} className="h-full">
               <a
                 href={`/blog/${article.slug}`}
                 className={cn(
-                  "group block",
+                  "group flex h-full flex-col",
                   "bg-surface-3 shadow-surface-3",
                   "overflow-hidden",
                   "hover:shadow-surface-5 transition-shadow",
                   shape.container
                 )}
               >
-                <PlaceholderImage
-                  className="w-full"
-                  aspectRatio="16/10"
-                  label={article.category}
-                />
-                <div className="p-6">
+                {Shader ? (
+                  <Shader className="w-full" />
+                ) : (
+                  <PlaceholderImage
+                    className="w-full"
+                    aspectRatio="16/10"
+                    label={article.category}
+                  />
+                )}
+                <div className="flex flex-1 flex-col p-6">
                   <span className="text-xs font-mono uppercase tracking-wider text-muted-foreground">
                     {article.category}
                   </span>
                   <h3 className="mt-2 text-lg font-bold leading-snug">
                     {article.title}
                   </h3>
-                  <span className="mt-3 inline-block text-xs font-medium text-muted-foreground uppercase tracking-wider group-hover:text-foreground transition-colors">
+                  <span className="mt-auto pt-4 inline-block text-xs font-medium text-muted-foreground uppercase tracking-wider group-hover:text-foreground transition-colors">
                     Ver mas
                   </span>
                 </div>
               </a>
             </SectionReveal>
-          ))}
+            );
+          })}
         </div>
       </div>
     </section>

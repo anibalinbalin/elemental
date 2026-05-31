@@ -46,6 +46,25 @@ const nutritionFacts = [
   { nutrient: "Sodio", amount: "15 mg", dailyValue: "1%" },
 ];
 
+/**
+ * Splits a leading "[CODE]" tag off an ingredient name and renders it as a
+ * pill (e.g. "[VSA111] Gluconato…" → a mono pill + the rest of the label).
+ * Names without a bracketed code render unchanged.
+ */
+function renderComponent(component: string) {
+  const match = component.match(/^\[([^\]]+)\]\s*(.*)$/);
+  if (!match) return component;
+  const [, code, label] = match;
+  return (
+    <span className="inline-flex flex-wrap items-center gap-2">
+      <span className="inline-flex items-center rounded-full bg-neutral-100 px-2 py-0.5 font-mono text-[11px] font-medium tracking-tight text-foreground/70">
+        {code}
+      </span>
+      <span>{label}</span>
+    </span>
+  );
+}
+
 export function Microbiota() {
   const shape = useShape();
 

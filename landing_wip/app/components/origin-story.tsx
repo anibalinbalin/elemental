@@ -52,7 +52,8 @@ export function OriginStory() {
             <PlaceholderImage
               className={cn("w-full", shape.container)}
               aspectRatio="4/5"
-              label="Fundadora"
+              src="/images/founder.webp"
+              alt="Laura, fundadora y nutricionista de Elemental Bloom"
             />
           </SectionReveal>
         </div>
