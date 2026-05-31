@@ -5,6 +5,16 @@ import { GitHubProvider } from 'tinacms-gitprovider-github';
 // Toggled by the package.json scripts. MUST be false/unset in production.
 const isLocal = process.env.TINA_PUBLIC_IS_LOCAL === 'true';
 
+// The shared Atlas data layer's MONGODB_URI is only scoped to the Production
+// Vercel environment, so Preview/Development builds have no connection string —
+// without this guard their `tinacms build --partial-reindex` step crashes with
+// "Database is not open" and takes the whole deploy down. Fall back to the
+// filesystem-backed local database whenever the URI is absent. This is safe:
+// the public site reads content straight from content/*.md (see lib/blog.ts)
+// and never queries this DB, so previews still build and render identically;
+// only the /admin editing backend (pages/api/tina) depends on the data layer.
+const hasMongo = Boolean(process.env.MONGODB_URI);
+
 const token = process.env.GITHUB_PERSONAL_ACCESS_TOKEN as string;
 const owner = (process.env.GITHUB_OWNER ||
   process.env.VERCEL_GIT_REPO_OWNER) as string;
@@ -18,7 +28,7 @@ const branch = (process.env.GITHUB_BRANCH ||
 // unique per project so their indexes never collide.
 const dbName = 'elemental';
 
-export default isLocal
+export default isLocal || !hasMongo
   ? createLocalDatabase()
   : createDatabase({
       gitProvider: new GitHubProvider({
