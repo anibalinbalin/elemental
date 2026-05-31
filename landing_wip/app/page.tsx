@@ -24,7 +24,7 @@ const STAGES = [
     body: "Bacterias, hongos, virus y arqueas: juntos forman la microbiota. La mayoría habita en tu intestino, pero también colonizan tu piel, tu boca y tus pulmones.",
   },
   {
-    title: "Una farmacia viva",
+    title: "Tu aliado invisible",
     body: "Tu microbiota produce vitaminas, entrena a tu sistema inmunitario, convierte la fibra en energía e incluso se comunica con tu cerebro a través del eje intestino-cerebro.",
   },
   {
