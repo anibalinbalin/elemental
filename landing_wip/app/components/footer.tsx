@@ -5,6 +5,7 @@ import Facebook01Icon from "@hugeicons/core-free-icons/Facebook01Icon";
 import InstagramIcon from "@hugeicons/core-free-icons/InstagramIcon";
 import Mail01Icon from "@hugeicons/core-free-icons/Mail01Icon";
 import { SectionReveal } from "./section-reveal";
+import { QuizSheetTrigger } from "./quiz-sheet";
 
 const colLeft = [
   { label: "Microbiota", href: "#microbiota" },
@@ -57,6 +58,22 @@ export function Footer() {
                   </a>
                 ))}
               </div>
+            </div>
+          </SectionReveal>
+
+          <SectionReveal delay={0.06}>
+            <div className="mb-16 flex flex-col gap-4 sm:flex-row sm:items-center">
+              <QuizSheetTrigger asChild>
+                <button
+                  type="button"
+                  className="rounded-full bg-foreground px-6 py-3 text-sm font-semibold text-background shadow-surface-3 transition-[transform,opacity] duration-100 hover:opacity-90 active:scale-[0.97]"
+                >
+                  Descubrí tu perfil MicroCore
+                </button>
+              </QuizSheetTrigger>
+              <p className="text-sm text-muted-foreground">
+                2 min &middot; personalizado &middot; con menú de 7 días
+              </p>
             </div>
           </SectionReveal>
 

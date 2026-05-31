@@ -18,6 +18,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { QuizSheetTrigger } from "./quiz-sheet";
 
 const LINKS = [
   { href: "/", label: "Inicio" },
@@ -74,10 +75,10 @@ export function NavbarPill() {
       className="fixed inset-x-0 top-0 z-[100] flex justify-center px-4 pt-4"
       style={navMotion(hidden)}
     >
-      <nav className="flex items-center gap-1 rounded-[20px] border border-white/10 bg-[#171717]/70 p-1.5 shadow-[0_12px_34px_-14px_rgba(0,0,0,0.55)] backdrop-blur-[14px]">
+      <nav className="flex items-center gap-1 rounded-xl border border-white/10 bg-[#171717]/70 p-1.5 shadow-[0_12px_34px_-14px_rgba(0,0,0,0.55)] backdrop-blur-[14px]">
         <Link
           href="/"
-          className="rounded-[16px] px-3 py-2.5 font-mono text-xs font-semibold uppercase tracking-[0.2em] text-white"
+          className="rounded-lg px-3 py-2.5 font-mono text-xs font-semibold uppercase tracking-[0.2em] text-white"
         >
           Elemental
         </Link>
@@ -85,22 +86,19 @@ export function NavbarPill() {
           <Link
             key={l.href}
             href={l.href}
-            className="rounded-[16px] px-3 py-2.5 text-sm text-white/75 transition-colors duration-200 hover:bg-white/10 hover:text-white"
+            className="rounded-lg px-3 py-2.5 text-sm text-white/75 transition-colors duration-200 hover:bg-white/10 hover:text-white"
           >
             {l.label}
           </Link>
         ))}
-        <button
-          type="button"
-          onClick={() =>
-            document
-              .getElementById("producto")
-              ?.scrollIntoView({ behavior: "smooth" })
-          }
-          className="ml-1 rounded-[16px] bg-white px-4 py-2.5 text-sm font-medium text-[#171717] transition-[transform,background-color] duration-100 hover:bg-white/90 active:scale-[0.97]"
-        >
-          Empezar
-        </button>
+        <QuizSheetTrigger asChild>
+          <button
+            type="button"
+            className="ml-1 rounded-lg bg-white px-4 py-2.5 text-sm font-medium text-[#171717] transition-[transform,background-color] duration-100 hover:bg-white/90 active:scale-[0.97]"
+          >
+            Tu perfil
+          </button>
+        </QuizSheetTrigger>
       </nav>
     </div>
   );

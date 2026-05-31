@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
 import "./globals.css";
-import { NavbarPill } from "./components/navbar";
+import { LayoutShell } from "./layout-shell";
 
 export const metadata: Metadata = {
   title: "Elemental",
@@ -20,8 +20,7 @@ export default function RootLayout({
       className={`h-full antialiased ${GeistSans.variable} ${GeistMono.variable}`}
     >
       <body className="min-h-full flex flex-col font-sans">
-        <NavbarPill />
-        {children}
+        <LayoutShell>{children}</LayoutShell>
       </body>
     </html>
   );
