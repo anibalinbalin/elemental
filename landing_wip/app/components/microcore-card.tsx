@@ -7,9 +7,11 @@ import PillIcon from "@hugeicons/core-free-icons/PillIcon";
 import LabsIcon from "@hugeicons/core-free-icons/LabsIcon";
 import { cn } from "@/lib/utils";
 import { useShape } from "@/lib/shape-context";
-import { PlaceholderImage } from "./placeholder-image";
+import { PouchViewer } from "../pouch-viewer";
 import { SectionReveal } from "./section-reveal";
 import { FeatureIcon } from "./feature-icon";
+import { BuyButton } from "./buy-button";
+import { PRODUCT, formatPrice } from "@/lib/product";
 
 const features = [
   { label: "Probiotico", icon: MicroscopeIcon },
@@ -73,27 +75,36 @@ export function MicrocoreCard() {
                     ))}
                   </div>
 
-                  <div className="pt-4">
-                    <a
-                      href="#"
+                  <div className="flex flex-col gap-4 pt-4">
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-3xl font-bold tracking-tight">
+                        {formatPrice(PRODUCT.unitPrice)}
+                      </span>
+                      <span className="text-xs font-mono uppercase text-muted-foreground">
+                        / pouch 250 g
+                      </span>
+                    </div>
+                    <BuyButton
                       className={cn(
                         "inline-flex items-center justify-center",
                         "bg-foreground text-background",
                         "px-8 py-3 text-sm font-medium",
                         "hover:opacity-90 transition-opacity",
+                        "disabled:opacity-60 disabled:cursor-wait",
                         shape.button
                       )}
                     >
-                      Conocer MICROCORE
-                    </a>
+                      Comprar ahora
+                    </BuyButton>
                   </div>
                 </div>
 
-                <PlaceholderImage
-                  className={cn("w-full", shape.container)}
-                  aspectRatio="3/4"
-                  label="MICROCORE"
-                />
+                <div
+                  className={cn("w-full overflow-hidden", shape.container)}
+                  style={{ aspectRatio: "3/4" }}
+                >
+                  <PouchViewer />
+                </div>
               </div>
             </div>
           </SectionReveal>

@@ -1,3 +1,7 @@
+/* Silk (@silk-hq/components) overlay styles. Imported BEFORE tailwindcss so
+ * Silk's @layer registrations come first (Tailwind v4 is layer-based). Using
+ * the layered build sidesteps the known Next.js layered-import bug. */
+@import "@silk-hq/components/layered-styles.css";
 @import "tailwindcss";
 
 /* Brand typeface: Geist Sans + Geist Mono, self-hosted via the `geist`
