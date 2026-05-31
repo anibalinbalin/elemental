@@ -1,0 +1,440 @@
+/* Quiz Sheet — Silk LongSheet variant for the wellness quiz.
+ * Follows the same BEM-ish structure as silk-long-sheet.css. */
+
+.QuizSheet-view {
+  z-index: 1;
+  top: 0;
+  bottom: initial;
+  height: calc(var(--silk-100-lvh-dvh-pct) + 60px);
+}
+
+.QuizSheet-content {
+  box-sizing: border-box;
+}
+
+.QuizSheet-scrollRoot {
+  width: 100%;
+  height: 100%;
+  background-color: transparent;
+  scroll-behavior: smooth;
+}
+
+.QuizSheet-scrollContent {
+  height: auto;
+  display: grid;
+  place-items: center;
+}
+
+.QuizSheet-innerContent {
+  margin: max(env(safe-area-inset-top, 0px), 0.75rem) 0
+    max(env(safe-area-inset-bottom, 0px), 0.75rem);
+  width: 100%;
+  border-radius: 24px;
+  overflow: clip;
+  background-color: var(--surface-1);
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+@media (min-width: 800px) {
+  .QuizSheet-innerContent {
+    margin: 0.75rem 0;
+    width: calc(100% - 1.5rem);
+    max-width: 580px;
+  }
+}
+
+.QuizSheet-backdrop {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+/* Top bar — back (left) + dismiss (right) */
+.QuizSheet-topBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 0.5rem;
+  min-height: 40px;
+}
+
+/* iOS-style back button */
+.QuizSheet-back {
+  appearance: none;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 4px 2px;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  color: var(--muted-foreground);
+  transition: color 150ms;
+}
+.QuizSheet-back:hover {
+  color: var(--foreground);
+}
+.QuizSheet-back:active {
+  opacity: 0.6;
+}
+.QuizSheet-backIcon {
+  width: 22px;
+  height: 22px;
+  stroke-width: 2px;
+}
+
+/* Spacer when no back button is shown */
+.QuizSheet-backSpacer {
+  width: 22px;
+}
+
+/* Dismiss button */
+.QuizSheet-dismiss {
+  appearance: none;
+  border: none;
+  border-radius: 9999px;
+  width: 30px;
+  height: 30px;
+  background-color: var(--accent);
+  cursor: pointer;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  color: var(--muted-foreground);
+  transition: background-color 150ms;
+}
+.QuizSheet-dismiss:hover {
+  background-color: var(--selected);
+}
+.QuizSheet-dismiss svg {
+  width: 16px;
+  height: 16px;
+  stroke-width: 2.5px;
+}
+
+/* Quiz body */
+.QuizSheet-body {
+  position: relative;
+  display: grid;
+  min-height: calc(100dvh - 1.5rem);
+}
+
+.QuizSheet-wrap {
+  justify-self: center;
+  width: min(100% - 2.5rem, 480px);
+  padding-block: 2rem 2.5rem;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+/* Progress bar */
+.QuizSheet-progress {
+  height: 3px;
+  background: var(--accent);
+  border-radius: 9999px;
+  overflow: hidden;
+  margin-bottom: 2rem;
+}
+.QuizSheet-progressBar {
+  height: 100%;
+  background: var(--foreground);
+  border-radius: 9999px;
+  /* Width animated by Framer Motion spring */
+}
+
+/* Stage */
+.QuizSheet-stage {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Framer Motion handles enter/exit — no CSS keyframes needed */
+
+/* Option buttons */
+.QuizSheet-opt {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  background: var(--card);
+  border: 1.5px solid var(--border);
+  border-radius: 14px;
+  padding: 14px 16px;
+  font: inherit;
+  font-size: 15px;
+  color: var(--foreground);
+  font-weight: 500;
+  transition: border-color 200ms, transform 120ms, background 200ms, box-shadow 200ms;
+}
+.QuizSheet-opt:hover {
+  border-color: color-mix(in oklab, var(--foreground) 24%, transparent);
+}
+.QuizSheet-opt:active {
+  transform: scale(0.985);
+}
+
+/* Mark (radio/check indicator) */
+.QuizSheet-mark {
+  flex: 0 0 20px;
+  height: 20px;
+  border-radius: 6px;
+  border: 1.5px solid var(--border);
+  display: grid;
+  place-items: center;
+  transition: 200ms;
+}
+.QuizSheet-opt[data-multi="false"] .QuizSheet-mark {
+  border-radius: 50%;
+}
+.QuizSheet-mark svg {
+  width: 12px;
+  height: 12px;
+  opacity: 0;
+  transform: scale(0.5);
+  transition: 200ms;
+}
+
+/* Selected state */
+.QuizSheet-opt.is-selected {
+  border-color: var(--foreground);
+  background: color-mix(in oklab, var(--foreground) 4%, var(--card));
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--foreground) 8%, transparent);
+}
+.QuizSheet-opt.is-selected .QuizSheet-mark {
+  background: var(--foreground);
+  border-color: var(--foreground);
+}
+.QuizSheet-opt.is-selected .QuizSheet-mark svg {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Nav row */
+.QuizSheet-nav {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+/* Buttons */
+.QuizSheet-btn {
+  appearance: none;
+  border: none;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 600;
+  border-radius: 9999px;
+  padding: 14px 24px;
+  font-size: 15px;
+  transition: 180ms;
+  letter-spacing: 0.01em;
+}
+.QuizSheet-btnPrimary {
+  background: var(--foreground);
+  color: var(--background);
+  box-shadow: var(--shadow-3);
+}
+.QuizSheet-btnPrimary:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+.QuizSheet-btnPrimary:disabled {
+  opacity: 0.25;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+.QuizSheet-btnPrimary.is-full {
+  width: 100%;
+}
+
+.QuizSheet-btnGhost {
+  background: transparent;
+  color: var(--muted-foreground);
+  padding: 14px 6px;
+}
+.QuizSheet-btnGhost:hover {
+  color: var(--foreground);
+}
+
+/* Email input */
+.QuizSheet-emailInput {
+  width: 100%;
+  font: inherit;
+  font-size: 16px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1.5px solid var(--border);
+  background: var(--card);
+  color: var(--foreground);
+  transition: 200ms;
+}
+.QuizSheet-emailInput:focus {
+  outline: none;
+  border-color: var(--foreground);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--foreground) 10%, transparent);
+}
+.QuizSheet-emailInput::placeholder {
+  color: var(--muted-foreground);
+}
+
+/* Consent checkbox */
+.QuizSheet-check {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  cursor: pointer;
+}
+.QuizSheet-check input {
+  position: absolute;
+  opacity: 0;
+}
+.QuizSheet-checkBox {
+  flex: 0 0 20px;
+  height: 20px;
+  border-radius: 6px;
+  border: 1.5px solid var(--border);
+  background: var(--card);
+  display: grid;
+  place-items: center;
+  transition: 200ms;
+  margin-top: 1px;
+}
+.QuizSheet-checkBox svg {
+  width: 12px;
+  height: 12px;
+  opacity: 0;
+  transition: 200ms;
+}
+.QuizSheet-check input:checked + .QuizSheet-checkBox {
+  background: var(--foreground);
+  border-color: var(--foreground);
+}
+.QuizSheet-check input:checked + .QuizSheet-checkBox svg {
+  opacity: 1;
+}
+
+/* Result section */
+.QuizSheet-pillars {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  background: var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1.5px solid var(--border);
+}
+.QuizSheet-pillar {
+  background: var(--card);
+  padding: 12px 16px;
+  font-size: 14.5px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.QuizSheet-pillarDot {
+  flex: 0 0 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--foreground);
+  display: block;
+}
+
+.QuizSheet-closing {
+  padding: 18px;
+  background: var(--surface-2);
+  border-radius: 14px;
+  border: 1.5px solid var(--border);
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+/* Menu tabs */
+.QuizSheet-tabs {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding: 4px 0 8px;
+  scrollbar-width: none;
+}
+.QuizSheet-tabs::-webkit-scrollbar {
+  display: none;
+}
+.QuizSheet-tab {
+  flex: 0 0 auto;
+  border: 1.5px solid var(--border);
+  background: var(--card);
+  color: var(--muted-foreground);
+  border-radius: 9999px;
+  padding: 8px 14px;
+  font: inherit;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  transition: 180ms;
+  white-space: nowrap;
+}
+.QuizSheet-tab.is-on {
+  background: var(--foreground);
+  color: var(--background);
+  border-color: var(--foreground);
+}
+
+/* Meal cards */
+.QuizSheet-meal {
+  background: var(--card);
+  border: 1.5px solid var(--border);
+  border-radius: 14px;
+  padding: 13px 15px;
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+.QuizSheet-mealWhen {
+  flex: 0 0 78px;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--muted-foreground);
+  padding-top: 2px;
+}
+.QuizSheet-mealTxt {
+  font-size: 14.5px;
+  font-weight: 500;
+  line-height: 1.45;
+}
+
+.QuizSheet-meal.is-mc {
+  background: color-mix(in oklab, var(--foreground) 3%, var(--card));
+  border-color: color-mix(in oklab, var(--foreground) 24%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--foreground) 5%, transparent);
+}
+.QuizSheet-meal.is-mc .QuizSheet-mealWhen {
+  color: var(--foreground);
+}
+.QuizSheet-meal.is-mc .QuizSheet-mealTxt b {
+  font-weight: 700;
+}
+
+.QuizSheet-footnote {
+  font-size: 12px;
+  color: var(--muted-foreground);
+  text-align: center;
+  line-height: 1.5;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .QuizSheet-stage *,
+  .QuizSheet-progressBar {
+    transition: none !important;
+    animation: none !important;
+  }
+}

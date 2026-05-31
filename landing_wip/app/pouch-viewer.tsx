@@ -11,7 +11,7 @@ import {
 } from "@react-three/drei";
 import { ACESFilmicToneMapping, SRGBColorSpace } from "three";
 import { Suspense, useEffect, useRef, useState } from "react";
-import { PouchModel } from "../test5/pouch-model";
+import { PouchModel } from "./test5/pouch-model";
 
 export function PouchViewer() {
   const wrapRef = useRef<HTMLDivElement>(null);

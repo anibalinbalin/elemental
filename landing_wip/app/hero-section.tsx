@@ -1,7 +1,6 @@
 "use client";
 
-import { Button } from "@heroui/react";
-import { PouchViewer } from "./pouch-viewer";
+import { Button } from "@/components/ui/button";
 
 export function HeroSection() {
   return (
@@ -27,8 +26,7 @@ export function HeroSection() {
             <div>
               <Button
                 size="lg"
-                className="rounded-full px-8 font-medium"
-                onPress={() => {
+                onClick={() => {
                   document
                     .getElementById("producto")
                     ?.scrollIntoView({ behavior: "smooth" });
@@ -39,8 +37,11 @@ export function HeroSection() {
             </div>
           </div>
 
-          <div className="w-full" style={{ aspectRatio: "3/4" }}>
-            <PouchViewer />
+          <div
+            className="w-full flex items-center justify-center rounded-3xl border border-dashed border-[#d8d2c4] bg-[#f4f1e9] text-[#a59f8f] text-xs font-mono uppercase tracking-[0.2em]"
+            style={{ aspectRatio: "3/4" }}
+          >
+            Placeholder
           </div>
         </div>
       </div>
