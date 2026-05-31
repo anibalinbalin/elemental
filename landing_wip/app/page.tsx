@@ -158,6 +158,11 @@ function HomeContent() {
         scrub: 0.5,
         onUpdate: (self) => {
           progressRef.current = self.progress;
+          // Kill R3F loop once past the storyline so it doesn't fight the
+          // 2D escudo canvas for GPU time.
+          if (self.progress >= 0.98) setParticlePaused(true);
+          else if (self.progress < 0.98) setParticlePaused(false);
+
           const d = dialRef.current;
           if (!d) return;
 
@@ -217,9 +222,9 @@ function HomeContent() {
     return () => ctx.revert();
   }, [updateVignette]);
 
-  // Keep particles animating the whole time the section is visible — including
-  // at the end of the storyline. Only pause (to save GPU) once it's fully
-  // scrolled off-screen into the hero below.
+  // Pause the R3F particle system once the storyline scroll completes OR the
+  // container leaves the viewport. Prevents the 65k-particle GPU loop from
+  // competing with the 2D escudo canvas further down the page.
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;

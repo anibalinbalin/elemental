@@ -1,11 +1,22 @@
 import { NextResponse } from "next/server";
+import { Resend } from "resend";
+
+const resend = new Resend(process.env.RESEND_API_KEY);
+
+function esc(s: string) {
+  return String(s)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
 
 export async function POST(req: Request) {
   try {
     const body = await req.json();
     const { email, consent, profile, answers } = body;
 
-    if (!email || typeof email !== "string") {
+    if (!email || typeof email !== "string" || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       return NextResponse.json({ error: "email requerido" }, { status: 400 });
     }
 
@@ -17,54 +28,32 @@ export async function POST(req: Request) {
 
     const profileName = PROFILE_NAMES[profile] || "Desconocido";
 
-    const text = [
-      `Nuevo quiz completado`,
-      ``,
-      `Email: ${email}`,
-      `Consiente newsletter: ${consent ? "Sí" : "No"}`,
-      `Perfil: ${profileName} (${profile})`,
-      ``,
-      `Respuestas (índice de opciones por pregunta):`,
-      ...Object.entries(answers).map(
-        ([q, opts]) => `  Pregunta ${Number(q) + 1}: ${(opts as number[]).join(", ")}`,
-      ),
-    ].join("\n");
+    const answersHtml = Object.entries(answers)
+      .map(([q, opts]) => {
+        const qNum = Number(q);
+        const optNums = (opts as number[]).filter((n) => Number.isFinite(n));
+        return `<li>Pregunta ${qNum + 1}: opción(es) ${optNums.join(", ")}</li>`;
+      })
+      .join("\n");
 
-    const html = [
-      `<h2>Nuevo quiz completado</h2>`,
-      `<p><strong>Email:</strong> ${email}</p>`,
-      `<p><strong>Newsletter:</strong> ${consent ? "Sí" : "No"}</p>`,
-      `<p><strong>Perfil:</strong> ${profileName}</p>`,
-      `<hr>`,
-      `<h3>Respuestas</h3>`,
-      `<ul>`,
-      ...Object.entries(answers).map(
-        ([q, opts]) =>
-          `<li>Pregunta ${Number(q) + 1}: opción(es) ${(opts as number[]).join(", ")}</li>`,
-      ),
-      `</ul>`,
-    ].join("\n");
+    const { error } = await resend.emails.send({
+      from: "MicroCore Quiz <quiz@elementalbloomco.com>",
+      to: "hola@elementalbloomco.com",
+      subject: `Quiz MicroCore - ${profileName} - ${esc(email)}`,
+      html: [
+        `<h2>Nuevo quiz completado</h2>`,
+        `<p><strong>Email:</strong> ${esc(email)}</p>`,
+        `<p><strong>Newsletter:</strong> ${consent ? "Sí" : "No"}</p>`,
+        `<p><strong>Perfil:</strong> ${esc(profileName)}</p>`,
+        `<hr>`,
+        `<h3>Respuestas</h3>`,
+        `<ul>${answersHtml}</ul>`,
+      ].join("\n"),
+    });
 
-    // Send via simple SMTP fetch to a mail relay or use a transactional service.
-    // For now, log and store. Replace with your preferred email service.
-    // Example with Resend, Brevo, etc:
-    //
-    // await fetch("https://api.resend.com/emails", {
-    //   method: "POST",
-    //   headers: {
-    //     Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
-    //     "Content-Type": "application/json",
-    //   },
-    //   body: JSON.stringify({
-    //     from: "quiz@elementalbloomco.com",
-    //     to: "hola@elementalbloomco.com",
-    //     subject: `Quiz MicroCore - ${profileName} - ${email}`,
-    //     text,
-    //     html,
-    //   }),
-    // });
-
-    console.log("[quiz] submission:", { email, profile: profileName, consent });
+    if (error) {
+      console.error("[quiz] resend error:", error);
+    }
 
     return NextResponse.json({ ok: true, profile });
   } catch (err) {
