@@ -15,23 +15,23 @@ export function OriginStory() {
           <SectionReveal>
             <div className="flex flex-col gap-6">
               <h2 className="text-3xl lg:text-5xl font-bold tracking-tight">
-                Nacio de una busqueda personal de bienestar
+                Nació de una búsqueda personal de bienestar
               </h2>
               <p className="text-muted-foreground leading-relaxed">
-                Laura es nutricionista. En anos de consulta clinica vio como
-                cambios reales en la alimentacion transformaban la digestion, la
-                piel, la energia de sus pacientes. Tambien vio lo mas dificil:
-                mantener esos cambios cuando la vida es caotica.
+                Laura es nutricionista. En años de consulta clínica vio cómo
+                cambios reales en la alimentación transformaban la digestión, la
+                piel, la energía de sus pacientes. También vio lo más difícil:
+                mantener esos cambios cuando la vida es caótica.
               </p>
               <p className="text-muted-foreground leading-relaxed">
-                MICROCORE nacio de esa observacion, un alimento funcional que
-                hace el trabajo aunque el dia sea complicado. Sin capsulas, sin
-                rutinas extra. Se mezcla con lo que ya comes.
+                MICROCORE nació de esa observación, un alimento funcional que
+                hace el trabajo aunque el día sea complicado. Sin cápsulas, sin
+                rutinas extra. Se mezcla con lo que ya comés.
               </p>
               <blockquote className="border-l-2 border-foreground pl-4 mt-2">
                 <p className="text-sm italic leading-relaxed">
-                  &ldquo;Queria algo que mis propios pacientes pudieran usar de
-                  verdad todos los dias, sin esfuerzo adicional.&rdquo;
+                  &ldquo;Quería algo que mis propios pacientes pudieran usar de
+                  verdad todos los días, sin esfuerzo adicional.&rdquo;
                 </p>
                 <footer className="mt-2">
                   <cite className="not-italic text-xs font-bold">
@@ -43,7 +43,7 @@ export function OriginStory() {
                 </footer>
               </blockquote>
               <p className="text-sm text-muted-foreground">
-                Asi nacio <span className="font-bold">Elemental Bloom.</span>
+                Así nació <span className="font-bold">Elemental Bloom.</span>
               </p>
             </div>
           </SectionReveal>

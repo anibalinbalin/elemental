@@ -45,7 +45,7 @@ export function MicrocoreCard() {
                     MICROCORE
                   </h2>
                   <p className="text-lg text-muted-foreground leading-relaxed">
-                    Una sola cucharada. Cinco funciones. Sin capsulas. Frio o
+                    Una sola cucharada. Cinco funciones. Sin cápsulas. Frío o
                     caliente, llega activo igual.
                   </p>
 
