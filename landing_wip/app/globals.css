@@ -1,61 +1,18 @@
 @import "tailwindcss";
 
-@font-face {
-  font-family: "Monument Grotesk";
-  src: url("/fonts/MonumentGrotesk-Regular.woff2") format("woff2");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-  ascent-override: 90%;
-  descent-override: 25%;
-}
-
-@font-face {
-  font-family: "Monument Grotesk";
-  src: url("/fonts/MonumentGrotesk-Italic.woff2") format("woff2");
-  font-weight: 400;
-  font-style: italic;
-  font-display: swap;
-  ascent-override: 90%;
-  descent-override: 25%;
-}
-
-@font-face {
-  font-family: "Monument Grotesk";
-  src: url("/fonts/MonumentGrotesk-Medium.woff2") format("woff2");
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
-  ascent-override: 90%;
-  descent-override: 25%;
-}
-
-@font-face {
-  font-family: "Monument Grotesk";
-  src: url("/fonts/MonumentGrotesk-Bold.woff2") format("woff2");
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-  ascent-override: 90%;
-  descent-override: 25%;
-}
-
-@font-face {
-  font-family: "Monument Grotesk Mono";
-  src: url("/fonts/MonumentGrotesk-Mono.woff2") format("woff2");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-  ascent-override: 90%;
-  descent-override: 25%;
-}
+/* Brand typeface: Geist Sans + Geist Mono, self-hosted via the `geist`
+ * package (next/font/local). The CSS variables --font-geist-sans and
+ * --font-geist-mono are defined on <html> in app/layout.tsx; this file
+ * just maps them into Tailwind's --font-sans / --font-mono (see @theme).
+ * Geist has normal vertical metrics, so the ascent/descent overrides that
+ * the old Monument Grotesk @font-face blocks needed are gone. */
 
 /* ─────────────────────────────────────────────────────────────
  * Fluid Functionalism theme — surfaces, shadows, and color tokens.
  * Ported from fluidfunctionalism/app/globals.css. Light is the default;
  * dark is opt-in via a `.dark` class (we intentionally drop FF's
  * prefers-color-scheme auto-flip so this landing page stays light).
- * Brand typeface stays Monument Grotesk (see @font-face above).
+ * Brand typeface is Geist Sans (see the @font note above).
  * ───────────────────────────────────────────────────────────── */
 @custom-variant dark (&:is(.dark *));
 
@@ -167,8 +124,8 @@
 }
 
 @theme inline {
-  --font-sans: "Monument Grotesk", Arial, Helvetica, sans-serif;
-  --font-mono: "Monument Grotesk Mono", ui-monospace, monospace;
+  --font-sans: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
