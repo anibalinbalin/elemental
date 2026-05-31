@@ -57,7 +57,7 @@ function renderComponent(component: string) {
   const [, code, label] = match;
   return (
     <span className="inline-flex flex-wrap items-center gap-2">
-      <span className="inline-flex items-center rounded-full bg-neutral-100 px-2 py-0.5 font-mono text-[11px] font-medium tracking-tight text-foreground/70">
+      <span className="inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5 font-mono text-[11px] font-medium tracking-tight text-gray-500">
         {code}
       </span>
       <span>{label}</span>
@@ -134,12 +134,6 @@ export function Microbiota() {
                             <h2 className="ExampleLongSheet-subtitle">
                               Una sola cucharada. Cinco funciones.
                             </h2>
-                            <div className="ExampleLongSheet-author">
-                              por{" "}
-                              <span className="ExampleLongSheet-authorName">
-                                Microcore
-                              </span>
-                            </div>
                             <section className="ExampleLongSheet-articleBody">
                               <div className="grid gap-4">
                                 <h3 className="text-lg font-semibold text-gray-950">
@@ -179,7 +173,7 @@ export function Microbiota() {
                                       {formulaComponents.map((item) => (
                                         <tr key={item.component}>
                                           <td className="px-4 py-3 text-gray-800">
-                                            {item.component}
+                                            {renderComponent(item.component)}
                                           </td>
                                           <td className="px-4 py-3 text-right font-medium text-gray-950">
                                             {item.percentage}

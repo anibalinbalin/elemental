@@ -25,7 +25,6 @@ export function FunctionalIngredient() {
               <CursorDrivenParticleImage
                 className="!min-h-0"
                 src="/coat-of-arms-uruguay.svg"
-                color="#171717"
                 particleDensity={5}
                 particleSize={1.5}
                 scale={0.46}
