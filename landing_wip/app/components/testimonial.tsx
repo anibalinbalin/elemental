@@ -12,10 +12,10 @@ export function Testimonial() {
         <SectionReveal>
           <blockquote>
             <p className="text-3xl font-medium leading-[1.15] tracking-tight lg:text-[2.75rem]">
-              En anos de consulta clinica, los cambios mas sostenibles en
-              digestion y piel siempre tuvieron una cosa en comun:{" "}
+              En años de consulta clínica, los cambios más sostenibles en
+              digestión y piel siempre tuvieron una cosa en común:{" "}
               <span style={{ color: ACCENT }}>consistencia</span>. MICROCORE
-              existe para hacer eso facil.
+              existe para hacer eso fácil.
             </p>
             <footer className="mt-10 flex items-center gap-3">
               <span

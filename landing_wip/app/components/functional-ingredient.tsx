@@ -16,21 +16,21 @@ const usageSteps = [
   {
     number: "02",
     title: "Mezclalo con lo que quieras",
-    body: "Agua, yogur, avena, smoothie, jugo, mate, cafe. Frio, tibio o caliente hasta 80 °C.",
+    body: "Agua, yogur, avena, smoothie, jugo, mate, café. Frío, tibio o caliente hasta 80 °C.",
   },
   {
     number: "03",
     title: "Listo. No hay paso tres.",
-    body: "Sin capsulas, sin horarios, sin refrigerar. Se adapta a tu rutina, no al reves.",
+    body: "Sin cápsulas, sin horarios, sin refrigerar. Se adapta a tu rutina, no al revés.",
   },
 ];
 
 const compatibilityItems = [
   { name: "Agua o jugo", temp: "Ambiente", status: "ideal" as const, bg: "/images/badge-agua.webp" },
-  { name: "Yogur o avena", temp: "Frio", status: "ideal" as const, bg: "/images/badge-yogur.webp" },
-  { name: "Cafe o te", temp: "Hasta 80 °C", status: "ideal" as const, bg: "/images/badge-cafe.webp" },
-  { name: "Smoothie o licuado", temp: "Frio", status: "ideal" as const, bg: "/images/badge-smoothie.webp" },
-  { name: "Panqueque o muffin", temp: "Coccion", status: "ok" as const, bg: "/images/badge-panqueque.webp" },
+  { name: "Yogur o avena", temp: "Frío", status: "ideal" as const, bg: "/images/badge-yogur.webp" },
+  { name: "Café o té", temp: "Hasta 80 °C", status: "ideal" as const, bg: "/images/badge-cafe.webp" },
+  { name: "Smoothie o licuado", temp: "Frío", status: "ideal" as const, bg: "/images/badge-smoothie.webp" },
+  { name: "Panqueque o muffin", temp: "Cocción", status: "ok" as const, bg: "/images/badge-panqueque.webp" },
   { name: "Horneado intenso", temp: "> 100 °C", status: "ok" as const, bg: "/images/badge-horneado.webp" },
 ];
 
@@ -38,12 +38,12 @@ const scienceHighlights = [
   {
     value: "94,8%",
     label: "Supervivencia",
-    detail: "tras infusion + transito gastrico simulado",
+    detail: "tras infusión + tránsito gástrico simulado",
   },
   {
     value: "< 1 log",
-    label: "Perdida a 80 °C",
-    detail: "practicamente nula en uso indicado",
+    label: "Pérdida a 80 °C",
+    detail: "prácticamente nula en uso indicado",
   },
   {
     value: "GRAS",
@@ -87,17 +87,17 @@ export function FunctionalIngredient() {
           <SectionReveal delay={0.1}>
             <div className="flex flex-col gap-6">
               <h2 className="text-3xl lg:text-5xl font-bold tracking-tight">
-                Ingrediente funcional termoresistente desarrollado en Uruguay.
+                Ingrediente funcional termorresistente desarrollado en Uruguay.
               </h2>
               <p className="text-muted-foreground leading-relaxed">
-                Los probioticos comunes mueren con el calor. Por eso la mayoria
-                viene en capsulas que no podes mezclar con nada caliente.
-                MICROCORE esta formulado con Bacillus Coagulans esporulado,
-                sobrevive al calor, al frio y al acido estomacal. Llega activo
+                Los probióticos comunes mueren con el calor. Por eso la mayoría
+                viene en cápsulas que no podés mezclar con nada caliente.
+                MICROCORE está formulado con Bacillus Coagulans esporulado,
+                sobrevive al calor, al frío y al ácido estomacal. Llega activo
                 donde tiene que llegar.
               </p>
               <p className="text-muted-foreground leading-relaxed">
-                Mezclalo en tu yogur, tu avena o tu smoothie. Frio o caliente,
+                Mezclalo en tu yogur, tu avena o tu smoothie. Frío o caliente,
                 llega activo igual. No cambies tu rutina. Se adapta a ella.
               </p>
               <div className="pt-2">
@@ -113,7 +113,7 @@ export function FunctionalIngredient() {
                         shape.button
                       )}
                     >
-                      Ver como usarlo
+                      Ver cómo usarlo
                     </button>
                   </LongSheet.Trigger>
                   <LongSheet.Portal>
@@ -140,10 +140,10 @@ export function FunctionalIngredient() {
                           </LongSheet.Trigger>
                           <div className="ExampleLongSheet-articleContent">
                             <LongSheet.Title className="ExampleLongSheet-title" asChild>
-                              <h1>Como usar MICROCORE</h1>
+                              <h1>Cómo usar MICROCORE</h1>
                             </LongSheet.Title>
                             <h2 className="ExampleLongSheet-subtitle">
-                              Un sachet por dia. En lo que ya tomas. Sin cambiar
+                              Un sachet por día. En lo que ya tomás. Sin cambiar
                               nada.
                             </h2>
 
@@ -195,23 +195,23 @@ export function FunctionalIngredient() {
                                   ))}
                                 </div>
                                 <p className="ExampleLongSheet-articleParagraph text-sm text-gray-500">
-                                  En coccion (panqueques, muffins) pierde algo de
+                                  En cocción (panqueques, muffins) pierde algo de
                                   potencia pero sigue siendo funcional. Para
-                                  maximo beneficio, usalo en bebidas o platos
-                                  frios/tibios.
+                                  máximo beneficio, usalo en bebidas o platos
+                                  fríos/tibios.
                                 </p>
                               </div>
 
                               {/* ── Science summary ── */}
                               <div className="grid gap-4">
                                 <h3 className="text-lg font-semibold text-gray-950">
-                                  La ciencia detras
+                                  La ciencia detrás
                                 </h3>
                                 <p className="ExampleLongSheet-articleParagraph text-base text-gray-600">
                                   MICROCORE usa Bacillus coagulans esporulado: una
                                   cepa que forma una coraza natural (espora) que
                                   resiste calor, acidez y procesamiento. No es como
-                                  los probioticos comunes que mueren fuera de la
+                                  los probióticos comunes que mueren fuera de la
                                   heladera.
                                 </p>
                                 <div className="grid gap-2 sm:grid-cols-3">
@@ -237,8 +237,8 @@ export function FunctionalIngredient() {
                               {/* ── Footer note ── */}
                               <div className="rounded-xl border border-gray-200 bg-gray-50 px-4 py-3">
                                 <p className="ExampleLongSheet-articleParagraph text-sm text-gray-500">
-                                  Informacion basada en estudios de la cepa GBI-30,
-                                  6086. No constituye consejo medico. Producto en
+                                  Información basada en estudios de la cepa GBI-30,
+                                  6086. No constituye consejo médico. Producto en
                                   proceso de registro.
                                 </p>
                               </div>

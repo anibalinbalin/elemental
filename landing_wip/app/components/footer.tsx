@@ -11,15 +11,15 @@ const colLeft = [
   { label: "Microbiota", href: "#microbiota" },
   { label: "Producto", href: "#producto" },
   { label: "Ciencia", href: "#ciencia" },
-  { label: "Como funciona", href: "#como-funciona" },
+  { label: "Cómo funciona", href: "#como-funciona" },
   { label: "Origen", href: "#origen" },
   { label: "Comunidad", href: "#comunidad" },
 ];
 
 const colRight = [
-  { label: "Terminos", href: "#" },
-  { label: "Garantia", href: "#" },
-  { label: "Envios", href: "#" },
+  { label: "Términos", href: "#" },
+  { label: "Garantía", href: "#" },
+  { label: "Envíos", href: "#" },
   { label: "FAQ", href: "#" },
 ];
 
