@@ -186,6 +186,17 @@ a {
   text-box-edge: cap alphabetic;
 }
 
+/* Hide scrollbar on horizontally-scrolling rows (e.g. the Community feed).
+ * Ported alongside the marketing sections from landing_frame. */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
 /* ─────────────────────────────────────────────────────────────
  * BLOG MOTION — Emil Kowalski easing blueprint, calm/editorial.
  * All values tunable here; entrance animations are transform+opacity

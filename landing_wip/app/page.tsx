@@ -5,6 +5,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import dynamic from "next/dynamic";
 import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { LivingParticleSystem } from "./living-particle-system";
+import { LandingSections } from "./components/landing-sections";
 
 const HeroSection = dynamic(
   () => import("./hero-section").then((mod) => ({ default: mod.HeroSection })),
@@ -59,31 +60,19 @@ type VignetteParams = {
   };
 };
 
-function lerpColor(white: number[], dark: number[], t: number): string {
-  const r = Math.round(white[0] + (dark[0] - white[0]) * t);
-  const g = Math.round(white[1] + (dark[1] - white[1]) * t);
-  const b = Math.round(white[2] + (dark[2] - white[2]) * t);
-  const a = white[3] + (dark[3] - white[3]) * t;
-  return `rgba(${r},${g},${b},${a.toFixed(2)})`;
-}
-
 function StageText({
   stage,
   index,
   active,
-  darkT,
+  fade,
   paddingBottom,
 }: {
   stage: (typeof STAGES)[number];
   index: number;
   active: boolean;
-  darkT: number;
+  fade: number;
   paddingBottom: number;
 }) {
-  const labelColor = lerpColor([255, 255, 255, 0.4], [23, 23, 23, 0.4], darkT);
-  const titleColor = lerpColor([255, 255, 255, 1], [23, 23, 23, 1], darkT);
-  const bodyColor = lerpColor([255, 255, 255, 0.55], [23, 23, 23, 0.55], darkT);
-
   return (
     <div
       className="absolute inset-0 flex flex-col justify-end px-6"
@@ -94,23 +83,18 @@ function StageText({
         paddingBottom: `${paddingBottom}vh`,
       }}
     >
-      <div className="mx-auto max-w-lg text-center">
-        <h2
-          className="mb-3 font-mono text-xs font-medium uppercase tracking-[0.25em]"
-          style={{ color: labelColor }}
-        >
+      {/* Inner wrapper carries the scroll-linked fade-out (no transition, so it
+          tracks the scrub directly); the outer div owns the enter/exit motion.
+          Text stays white throughout — the last stage fades out rather than
+          swapping its colour to dark as the scene whitens. */}
+      <div className="mx-auto max-w-lg text-center" style={{ opacity: 1 - fade }}>
+        <h2 className="mb-3 font-mono text-xs font-medium uppercase tracking-[0.25em] text-white/40">
           {String(index + 1).padStart(2, "0")} / {String(STAGES.length).padStart(2, "0")}
         </h2>
-        <h3
-          className="mb-4 text-2xl font-normal leading-tight md:text-3xl"
-          style={{ color: titleColor }}
-        >
+        <h3 className="mb-4 text-2xl font-normal leading-tight text-white md:text-3xl">
           {stage.title}
         </h3>
-        <p
-          className="text-sm leading-relaxed md:text-base"
-          style={{ color: bodyColor }}
-        >
+        <p className="text-sm leading-relaxed text-white/55 md:text-base">
           {stage.body}
         </p>
       </div>
@@ -126,7 +110,7 @@ function HomeContent() {
   const textPanelRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLDivElement>(null);
   const [activeStage, setActiveStage] = useState(-1);
-  const [darkT, setDarkT] = useState(0);
+  const [fadeT, setFadeT] = useState(0);
   const [heroReady, setHeroReady] = useState(false);
   const SKIP_3D_HERO = false;
   const [particlePaused, setParticlePaused] = useState(false);
@@ -185,8 +169,10 @@ function HomeContent() {
           const clamped = Math.max(-1, Math.min(OVERLAY_COUNT - 1, stageIndex));
           setActiveStage(clamped);
 
-          const dt = Math.max(0, Math.min(1, (p - 0.90) / 0.10));
-          setDarkT(dt * dt * (3 - 2 * dt));
+          // Fade the last overlay stage out over the final 10% of scroll
+          // (smoothstep) instead of swapping its text colour to dark.
+          const ft = Math.max(0, Math.min(1, (p - 0.9) / 0.1));
+          setFadeT(ft * ft * (3 - 2 * ft));
 
           const isLast = clamped === LAST_STAGE;
 
@@ -299,7 +285,7 @@ function HomeContent() {
                 stage={stage}
                 index={i}
                 active={activeStage === i}
-                darkT={darkT}
+                fade={i === LAST_STAGE ? fadeT : 0}
                 paddingBottom={v.text.paddingBottom}
               />
             ))}
@@ -332,6 +318,8 @@ function HomeContent() {
           <section className="relative bg-[#fffff8] min-h-screen" />
         )}
       </div>
+
+      <LandingSections />
     </>
   );
 }
