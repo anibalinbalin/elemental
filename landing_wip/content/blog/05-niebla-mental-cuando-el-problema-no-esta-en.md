@@ -2,7 +2,7 @@
 title: "Niebla mental: cuando el problema no está en tu cabeza"
 dek: "Brain fog como síntoma de inflamación intestinal. Melena de león como frontera."
 category: "Cerebro"
-author: "Lc. Laura Fuentes"
+author: "Lic. en nutrición Laura Fuentes"
 authorRole: "Nutricionista"
 order: 5
 references: "RCT 2026 medRxiv n=109 · Docherty et al. Nutrients 2023;15(22):4842 · Mori et al. Phytother Res 2009;23:367-372"

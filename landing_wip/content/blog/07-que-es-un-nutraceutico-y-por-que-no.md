@@ -2,7 +2,7 @@
 title: "Qué es un nutracéutico (y por qué no es un suplemento más)"
 dek: "Educación de categoría. Dónde entra MicroKore."
 category: "Ciencia"
-author: "Lc. Laura Fuentes"
+author: "Lic. en nutrición Laura Fuentes"
 authorRole: "Nutricionista"
 order: 7
 references: "Mansour et al. Eur J Clin Nutr 2026. DOI:10.1038/s41430-026-01751-0 · Inulina+BC M-SHIME J Diet Suppl 2024"

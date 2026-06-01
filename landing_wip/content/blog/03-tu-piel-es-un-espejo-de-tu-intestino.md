@@ -2,7 +2,7 @@
 title: "Tu piel es un espejo de tu intestino"
 dek: "Acné, rosácea y dermatitis como síntomas de disbiosis."
 category: "Piel"
-author: "Lc. Laura Fuentes"
+author: "Lic. en nutrición Laura Fuentes"
 authorRole: "Nutricionista"
 order: 3
 references: "Ashkanani et al. Microorganisms 2025;14(1):63 · MDPI Int J Mol Sci 2021;22(23):13074 · Petruk et al. citado en PMC 7346205"

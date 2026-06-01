@@ -2,7 +2,7 @@
 title: "Prebióticos: el combustible que tus bacterias necesitan"
 dek: "Inulina, FOS, fibras fermentables. Por qué un probiótico sin prebiótico rinde la mitad."
 category: "Intestino"
-author: "Lc. Laura Fuentes"
+author: "Lic. en nutrición Laura Fuentes"
 authorRole: "Nutricionista"
 order: 9
 references: "Inulina+BC M-SHIME J Diet Suppl 2024 · Revisión sistemática PMC 2024 · Slykerman et al. Microbial Biotechnol 2025"
