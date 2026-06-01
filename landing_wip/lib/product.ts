@@ -2,8 +2,8 @@
 // Price is in UYU (Uruguayan pesos). Update `unitPrice` to the real number
 // before going live.
 export const PRODUCT = {
-  id: "microcore-250g",
-  title: "MICROCORE — Pouch 250 g",
+  id: "microcore-300g",
+  title: "MICROCORE — 300 g",
   description: "Una sola cucharada. Cinco funciones. Sin cápsulas.",
   unitPrice: 1490, // UYU — TODO: confirmar el precio real de Microcore
   currencyId: "UYU",

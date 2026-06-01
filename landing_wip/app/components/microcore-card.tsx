@@ -83,7 +83,7 @@ export function MicrocoreCard() {
                         {formatPrice(PRODUCT.unitPrice)}
                       </span>
                       <span className="text-xs font-mono uppercase text-muted-foreground">
-                        / pouch 250 g
+                        / 300 g
                       </span>
                     </div>
                     <BuyButton
