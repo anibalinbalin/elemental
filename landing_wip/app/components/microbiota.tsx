@@ -14,10 +14,10 @@ import { FeatureIcon } from "./feature-icon";
 import { LongSheet } from "./silk-long-sheet";
 
 const features = [
-  { label: "Digestion", icon: DigestionIcon },
-  { label: "Estado de animo", icon: HappyIcon },
-  { label: "Inflamacion", icon: Shield01Icon },
-  { label: "Energia", icon: FlashIcon },
+  { label: "Digestión", icon: DigestionIcon },
+  { label: "Estado de ánimo", icon: HappyIcon },
+  { label: "Inflamación", icon: Shield01Icon },
+  { label: "Energía", icon: FlashIcon },
   { label: "Piel", icon: Leaf01Icon },
 ];
 

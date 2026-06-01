@@ -1,10 +1,11 @@
 "use client";
 
-import MicroscopeIcon from "@hugeicons/core-free-icons/MicroscopeIcon";
-import MoleculesIcon from "@hugeicons/core-free-icons/MoleculesIcon";
-import Atom01Icon from "@hugeicons/core-free-icons/Atom01Icon";
-import PillIcon from "@hugeicons/core-free-icons/PillIcon";
-import LabsIcon from "@hugeicons/core-free-icons/LabsIcon";
+import BacteriaIcon from "@hugeicons/core-free-icons/BacteriaIcon";
+import LeafyGreenIcon from "@hugeicons/core-free-icons/LeafyGreenIcon";
+import Bone01Icon from "@hugeicons/core-free-icons/Bone01Icon";
+import NaturalFoodIcon from "@hugeicons/core-free-icons/NaturalFoodIcon";
+import Mushroom01Icon from "@hugeicons/core-free-icons/Mushroom01Icon";
+import Shield01Icon from "@hugeicons/core-free-icons/Shield01Icon";
 import { cn } from "@/lib/utils";
 import { useShape } from "@/lib/shape-context";
 import { PouchViewer } from "../pouch-viewer";
@@ -14,11 +15,12 @@ import { BuyButton } from "./buy-button";
 import { PRODUCT, formatPrice } from "@/lib/product";
 
 const features = [
-  { label: "Probiotico", icon: MicroscopeIcon },
-  { label: "Proteina", icon: MoleculesIcon },
-  { label: "Aminoacidos", icon: Atom01Icon },
-  { label: "Vitaminas", icon: PillIcon },
-  { label: "Zinc", icon: LabsIcon },
+  { label: "Probiótico esporulado", icon: BacteriaIcon },
+  { label: "Prebiótico", icon: LeafyGreenIcon },
+  { label: "Colágeno", icon: Bone01Icon },
+  { label: "Açaí", icon: NaturalFoodIcon },
+  { label: "Hongo funcional", icon: Mushroom01Icon },
+  { label: "Zinc", icon: Shield01Icon },
 ];
 
 export function MicrocoreCard() {
