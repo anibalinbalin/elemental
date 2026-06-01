@@ -35,10 +35,10 @@ export function OriginStory() {
                 </p>
                 <footer className="mt-2">
                   <cite className="not-italic text-xs font-bold">
-                    Laura,
+                    Lic. en nutrición Laura Fuentes,
                   </cite>{" "}
                   <span className="text-xs text-muted-foreground">
-                    Fundadora y Nutricionista
+                    Fundadora
                   </span>
                 </footer>
               </blockquote>

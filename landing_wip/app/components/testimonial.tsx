@@ -24,7 +24,7 @@ export function Testimonial() {
                 style={{ backgroundColor: ACCENT }}
               />
               <cite className="font-mono text-xs uppercase not-italic tracking-[0.2em] text-muted-foreground">
-                Laura — Fundadora y Nutricionista
+                Lic. en nutrición Laura Fuentes — Fundadora
               </cite>
             </footer>
           </blockquote>
