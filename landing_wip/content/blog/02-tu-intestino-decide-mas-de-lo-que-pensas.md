@@ -2,7 +2,7 @@
 title: "Tu intestino decide más de lo que pensás"
 dek: "El 90% de la serotonina se produce en el intestino. Eso cambia todo."
 category: "Cerebro"
-author: "Lc. Laura Fuentes"
+author: "Lic. en nutrición Laura Fuentes"
 authorRole: "Nutricionista"
 order: 2
 references: "Kīmse et al. Medicina 2024;60(4):601 · Taghizadeh et al. Life Sciences 2024;350:122748 · Slykerman et al. Microbial Biotechnol 2025"

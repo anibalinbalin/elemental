@@ -2,7 +2,7 @@
 title: "Por qué te hinchás después de comer (y qué dice la ciencia)"
 dek: "El problema no es el alimento. Es tu ecosistema intestinal."
 category: "Intestino"
-author: "Lc. Laura Fuentes"
+author: "Lic. en nutrición Laura Fuentes"
 authorRole: "Nutricionista"
 order: 1
 references: "Akkoyunlu et al. In Vivo 2025 · Shah et al. J Neurogastroenterol Motil 2021 · Meta-análisis IBS PMC 2025 n=3288 · Gang et al. Beneficial Microbes 2025 · Sant’Ana et al. Front Microbiol 2021;12:623951"

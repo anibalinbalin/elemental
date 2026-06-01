@@ -2,7 +2,7 @@
 title: "Probióticos: no todos son iguales"
 dek: "Esporas vs cápsulas convencionales. Por qué la cepa importa más que el CFU."
 category: "Intestino"
-author: "Lc. Laura Fuentes"
+author: "Lic. en nutrición Laura Fuentes"
 authorRole: "Nutricionista"
 order: 4
 references: "Orrù et al. Genome Announc 2014 · Stecker et al. Nutr Metab 2020;17:93 · Keller et al. 2017 · Nyangale et al. J Nutr 2015;145(7):1446-52 · Inulina+BC M-SHIME J Diet Suppl 2024 · Gang et al. Beneficial Microbes 2025"

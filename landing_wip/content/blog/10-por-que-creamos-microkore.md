@@ -2,7 +2,7 @@
 title: "Por qué creamos MicroKore"
 dek: "La historia, la ciencia, y el problema que resuelve."
 category: "Producto"
-author: "Lc. Laura Fuentes"
+author: "Lic. en nutrición Laura Fuentes"
 authorRole: "Nutricionista"
 order: 10
 references: "Fórmula: B. coagulans GBI-30 · Inulina · Colágeno · Gluconato de zinc · Açaí · Melena de león · Maltodextrina"

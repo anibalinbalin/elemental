@@ -2,7 +2,7 @@
 title: "Colágeno oral: ¿funciona o es puro marketing?"
 dek: "Review honesto. Lo que funciona, lo que no, y lo que nadie te dice."
 category: "Piel"
-author: "Lc. Laura Fuentes"
+author: "Lic. en nutrición Laura Fuentes"
 authorRole: "Nutricionista"
 order: 6
 references: "Stecker et al. Nutr Metab 2020;17:93 · MDPI Int J Mol Sci 2021;22(23):13074 · Sandhu & Radhakrishnan Microbiol Res 2025;16:241"

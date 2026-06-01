@@ -2,7 +2,7 @@
 title: "Cómo leemos un paper científico (y por qué deberías hacerlo vos también)"
 dek: "Transparencia radical. Enseñale al consumidor a cuestionar claims."
 category: "Ciencia"
-author: "Lc. Laura Fuentes"
+author: "Lic. en nutrición Laura Fuentes"
 authorRole: "Nutricionista"
 order: 8
 references: "Stecker et al. Nutr Metab 2020;17:93 (usado como ejemplo de análisis)"
