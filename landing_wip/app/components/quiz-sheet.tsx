@@ -40,7 +40,6 @@ import "./quiz-sheet.css";
  *   200ms   lead text fades in
  *   350ms   pillars cascade (stagger 80ms)
  *   700ms   closing card slides up
- *   900ms   menu section fades in
  * ───────────────────────────────────────────────────────── */
 
 /* ─── Quiz data ─── */
@@ -219,54 +218,6 @@ const RESULTS: Record<number, ProfileResult> = {
   },
 };
 
-/* ─── 7-day menus ─── */
-
-const MEAL_LABELS = ["Desayuno", "Almuerzo", "Merienda", "Cena"] as const;
-
-type DayMenu = { m: string[]; mc: number };
-type MenuProfile = { intro: string; days: DayMenu[] };
-
-const MENUS: Record<number, MenuProfile> = {
-  1: {
-    intro:
-      "Comidas livianas, fáciles de digerir y con fibra gradual para apoyar tu microbiota. MicroCore se integra una vez al día, idealmente con líquidos.",
-    days: [
-      { m: ["Smoothie de banana, frutillas y yogur natural (o de coco) + 1 cda de MicroCore", "Merluza al horno con puré de calabaza y hojas verdes", "Manzana asada con canela y nueces", "Sopa crema de zucchini con tostada de masa madre"], mc: 0 },
-      { m: ["Avena cocida con manzana rallada, canela y chía", "Pollo grillado con arroz integral y zanahoria asada", "Yogur natural (o kéfir) con arándanos + 1 cda de MicroCore", "Tortilla de espinaca con papa al horno"], mc: 2 },
-      { m: ["Tostadas de masa madre con palta y huevo poché", "Bowl de quinoa, garbanzos, pepino y palta", "Smoothie de pera, espinaca y jengibre + 1 cda de MicroCore", "Calabaza rellena con vegetales"], mc: 2 },
-      { m: ["Porridge de avena con banana y manteca de maní + 1 cda de MicroCore", "Salmón al horno con boniato y brócoli al vapor", "Bastones de zanahoria y pepino con hummus", "Caldo de verduras con fideos de arroz y pollo"], mc: 0 },
-      { m: ["Yogur natural (o de coco) con granola sin azúcar y frutillas", "Wok de vegetales con pollo (o tofu) y arroz integral", "Té de jengibre + 1 cda de MicroCore en agua", "Merluza con puré de boniato y rúcula"], mc: 2 },
-      { m: ["Panqueques de avena y banana con yogur + 1 cda de MicroCore", "Ensalada tibia de lentejas, zanahoria y huevo", "Manzana y un puñado de almendras", "Zapallitos rellenos con quinoa y vegetales"], mc: 0 },
-      { m: ["Bowl de yogur (o coco), kiwi, banana y semillas de zapallo", "Pollo al horno con calabaza y ensalada verde", "Smoothie de frutillas, remolacha y jengibre + 1 cda de MicroCore", "Sopa crema de calabaza con tostada de masa madre"], mc: 2 },
-    ],
-  },
-  2: {
-    intro:
-      "Más proteína y carbohidratos complejos para energía estable y recuperación. MicroCore acompaña una comida principal cada día.",
-    days: [
-      { m: ["Huevos revueltos con espinaca y tostada integral + smoothie con 1 cda de MicroCore", "Bife magro a la plancha con arroz integral y ensalada", "Yogur natural con avena, banana y nueces", "Salmón con quinoa y brócoli"], mc: 0 },
-      { m: ["Porridge de avena con frutos rojos, semillas y manteca de maní", "Pechuga de pollo con boniato al horno y hojas verdes + 1 cda de MicroCore en agua", "Tostada integral con palta y huevo", "Lentejas guisadas con vegetales y arroz"], mc: 1 },
-      { m: ["Smoothie de banana, avena, cacao y manteca de maní + 1 cda de MicroCore", "Salmón (o atún) con quinoa, garbanzos y vegetales asados", "Yogur griego con arándanos y semillas de zapallo", "Wok de carne magra con vegetales y fideos de arroz"], mc: 0 },
-      { m: ["Tostadas integrales con queso untable, palta y huevo", "Pollo grillado con arroz integral y verduras salteadas", "Smoothie de frutillas, banana y yogur + 1 cda de MicroCore", "Merluza al horno con puré de calabaza y espinaca"], mc: 2 },
-      { m: ["Bowl de yogur, granola, banana y nueces + 1 cda de MicroCore", "Bife magro con boniato al horno y ensalada", "Fruta y un puñado de almendras", "Tortilla de papa y espinaca con ensalada"], mc: 0 },
-      { m: ["Huevos al plato con tomate y tostada integral", "Salmón con arroz integral y brócoli + 1 cda de MicroCore en agua", "Yogur con avena, frutas y semillas", "Guiso de lentejas con zanahoria y calabaza"], mc: 1 },
-      { m: ["Panqueques de avena y banana con yogur y frutos rojos + 1 cda de MicroCore", "Pollo al horno con quinoa y vegetales asados", "Tostada con palta y huevo poché", "Wok de vegetales y carne magra con arroz integral"], mc: 0 },
-    ],
-  },
-  3: {
-    intro:
-      "Diversidad vegetal, fermentados y alimentos integrales para nutrir la microbiota a largo plazo. MicroCore suma a tu base ya consciente.",
-    days: [
-      { m: ["Bowl de kéfir (o yogur) con frutos rojos, granola sin azúcar y lino + 1 cda de MicroCore", "Buddha bowl de quinoa, garbanzos, palta, remolacha y hojas verdes", "Manzana con manteca de almendras", "Salmón con boniato y vegetales asados"], mc: 0 },
-      { m: ["Tostadas de masa madre con palta, chucrut y huevo", "Pollo con arroz integral, brócoli y zanahoria asada", "Smoothie verde (espinaca, pera, jengibre, chía) + 1 cda de MicroCore", "Sopa de miso con vegetales y tofu"], mc: 2 },
-      { m: ["Porridge de avena con manzana, canela, nueces y lino", "Ensalada completa de lentejas, quinoa, palta y vegetales + 1 cda de MicroCore en agua", "Yogur o kéfir con arándanos y semillas de zapallo", "Merluza con calabaza asada y rúcula"], mc: 1 },
-      { m: ["Smoothie de açaí, banana, frutos rojos y espinaca + 1 cda de MicroCore", "Wok de tofu (o pollo) con vegetales variados y arroz integral", "Crudités con hummus de remolacha", "Salmón con quinoa y espárragos"], mc: 0 },
-      { m: ["Bowl de yogur, kiwi, semillas y granola sin azúcar", "Curry suave de garbanzos y vegetales con arroz integral + 1 cda de MicroCore en agua", "Fruta de estación y frutos secos", "Tortilla de vegetales con ensalada de hojas amargas"], mc: 1 },
-      { m: ["Tostadas integrales con palta, tomate y semillas + kéfir con 1 cda de MicroCore", "Bowl mediterráneo: quinoa, garbanzos, pepino, aceitunas y feta", "Smoothie de pera, espinaca y jengibre", "Pescado al horno con vegetales asados y boniato"], mc: 0 },
-      { m: ["Panqueques de avena con frutos rojos, yogur y semillas", "Ensalada tibia de lentejas, calabaza y rúcula + 1 cda de MicroCore en agua", "Yogur o kéfir con granola y arándanos", "Wok de vegetales y tofu con arroz integral"], mc: 1 },
-    ],
-  },
-};
 
 /* ─── Helpers ─── */
 
@@ -315,19 +266,6 @@ function computeProfile(answers: Record<number, number[]>): number {
   return best;
 }
 
-function BoldMicroCore({ text }: { text: string }) {
-  const match = text.match(/(1 cda de MicroCore(?: en agua)?)/);
-  if (!match) return <>{text}</>;
-  const idx = text.indexOf(match[0]);
-  return (
-    <>
-      {text.slice(0, idx)}
-      <b>{match[0]}</b>
-      {text.slice(idx + match[0].length)}
-    </>
-  );
-}
-
 function isValidEmail(v: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
 }
@@ -362,7 +300,6 @@ const RESULT_TIMING = {
   pillars: 0.35,
   pillarStagger: 0.08,
   closing: 0.7,
-  menu: 0.9,
 } as const;
 
 const RESULT_SPRING = { type: "spring" as const, stiffness: 350, damping: 28 } as const;
@@ -515,7 +452,6 @@ function QuizBody() {
   const [email, setEmail] = useState("");
   const [consent, setConsent] = useState(true);
   const [sending, setSending] = useState(false);
-  const [activeDay, setActiveDay] = useState(0);
 
   const progress =
     step < 0
@@ -582,7 +518,6 @@ function QuizBody() {
     setAnswers({});
     setEmail("");
     setConsent(true);
-    setActiveDay(0);
   }
 
   /* Slide transition variants — direction drives left vs right */
@@ -783,8 +718,6 @@ function QuizBody() {
     /* ── Results ── */
     const profile = computeProfile(answers);
     const r = RESULTS[profile];
-    const menu = MENUS[profile];
-
     return (
       <motion.div
         key="result"
@@ -847,55 +780,6 @@ function QuizBody() {
           {r.closing}
         </motion.div>
 
-        {/* 7-day menu */}
-        <motion.div
-          className="mt-8"
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: RESULT_TIMING.menu, ...RESULT_SPRING }}
-        >
-          <p className="mb-1 font-mono text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
-            Incluido en tu perfil
-          </p>
-          <h3 className="text-lg font-semibold tracking-tight">
-            Tu menú de 7 días con MicroCore
-          </h3>
-          <p className="mt-2 text-sm text-muted-foreground">{menu.intro}</p>
-
-          <div className="QuizSheet-tabs mt-4">
-            {menu.days.map((_, di) => (
-              <button
-                key={di}
-                type="button"
-                className={`QuizSheet-tab ${activeDay === di ? "is-on" : ""}`}
-                onClick={() => setActiveDay(di)}
-              >
-                Día {di + 1}
-              </button>
-            ))}
-          </div>
-
-          {menu.days.map((day, di) => (
-            <div
-              key={di}
-              className="mt-2 flex flex-col gap-2.5"
-              style={{ display: activeDay === di ? "flex" : "none" }}
-            >
-              {day.m.map((meal, mi) => (
-                <div
-                  key={mi}
-                  className={`QuizSheet-meal ${mi === day.mc ? "is-mc" : ""}`}
-                >
-                  <span className="QuizSheet-mealWhen">{MEAL_LABELS[mi]}</span>
-                  <span className="QuizSheet-mealTxt">
-                    {mi === day.mc ? <BoldMicroCore text={meal} /> : meal}
-                  </span>
-                </div>
-              ))}
-            </div>
-          ))}
-        </motion.div>
-
         <div className="QuizSheet-nav mt-6">
           <button
             type="button"
@@ -907,9 +791,9 @@ function QuizBody() {
         </div>
 
         <p className="QuizSheet-footnote mt-6">
-          {email && <>Enviaremos tu perfil y menú a {email}.<br /></>}
-          Menú orientativo de bienestar. MicroCore es un complemento alimentario: no
-          reemplaza una dieta variada ni el consejo de un profesional de la salud.
+          {email && <>Enviaremos tu perfil a {email}.<br /></>}
+          MicroCore es un complemento alimentario: no reemplaza una dieta
+          variada ni el consejo de un profesional de la salud.
         </p>
       </motion.div>
     );
