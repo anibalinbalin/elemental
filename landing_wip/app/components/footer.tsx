@@ -72,7 +72,7 @@ export function Footer() {
                 </button>
               </QuizSheetTrigger>
               <p className="text-sm text-muted-foreground">
-                2 min &middot; personalizado &middot; con menú de 7 días
+                2 min &middot; personalizado
               </p>
             </div>
           </SectionReveal>
