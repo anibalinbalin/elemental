@@ -17,7 +17,7 @@ import { getAllPosts } from "@/lib/blog";
 export const metadata: Metadata = {
   title: "Blog Científico — MicroCore",
   description:
-    "11 artículos respaldados por evidencia real. Por Lc. Laura Fuentes, Nutricionista.",
+    "11 artículos respaldados por evidencia real. Por Lic. en nutrición Laura Fuentes, Nutricionista.",
 };
 
 export default function BlogIndex() {
@@ -36,7 +36,7 @@ export default function BlogIndex() {
         <p className="mt-6 text-lg leading-8 text-[var(--muted)]">
           {posts.length} artículos sobre microbiota, eje intestino-cerebro, piel y
           nutrición — cada afirmación respaldada por estudios. Por{" "}
-          <span className="text-[var(--foreground)]">Lc. Laura Fuentes</span>,
+          <span className="text-[var(--foreground)]">Lic. en nutrición Laura Fuentes</span>,
           Nutricionista.
         </p>
       </header>
