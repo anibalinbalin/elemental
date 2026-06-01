@@ -10,17 +10,12 @@ import { LongSheet } from "./silk-long-sheet";
 const usageSteps = [
   {
     number: "01",
-    title: "Abri el sachet",
-    body: "Cada sachet tiene la dosis diaria exacta. No necesitas medir nada.",
-  },
-  {
-    number: "02",
     title: "Mezclalo con lo que quieras",
     body: "Agua, yogur, avena, smoothie, jugo, mate, café. Frío, tibio o caliente hasta 80 °C.",
   },
   {
-    number: "03",
-    title: "Listo. No hay paso tres.",
+    number: "02",
+    title: "Listo. No hay paso dos.",
     body: "Sin cápsulas, sin horarios, sin refrigerar. Se adapta a tu rutina, no al revés.",
   },
 ];
@@ -143,7 +138,7 @@ export function FunctionalIngredient() {
                               <h1>Cómo usar MICROCORE</h1>
                             </LongSheet.Title>
                             <h2 className="ExampleLongSheet-subtitle">
-                              Un sachet por día. En lo que ya tomás. Sin cambiar
+                              1 cda por día. En lo que ya tomás. Sin cambiar
                               nada.
                             </h2>
 
