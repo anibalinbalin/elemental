@@ -60,14 +60,25 @@ const SHELL_OPEN = `<div style="font-family:-apple-system,Segoe UI,Roboto,Helvet
 const LABEL = `<p style="font-family:ui-monospace,SFMono-Regular,Menlo,monospace;text-transform:uppercase;letter-spacing:2px;font-size:11px;color:#999;margin:0 0 8px">Elemental Bloom</p>`;
 const FOOTER = `<p style="color:#999;font-size:12px;margin-top:32px">Elemental Bloom · Uruguay</p></div>`;
 
+// Escape any value interpolated into email HTML. buyerEmail comes from the
+// payer, so treat all dynamic values as untrusted.
+function esc(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 function row(label: string, value: string): string {
-  return `<tr><td style="padding:6px 0;color:#666;font-size:14px">${label}</td><td style="padding:6px 0;text-align:right;font-weight:600;font-size:14px">${value}</td></tr>`;
+  return `<tr><td style="padding:6px 0;color:#666;font-size:14px">${esc(label)}</td><td style="padding:6px 0;text-align:right;font-weight:600;font-size:14px">${esc(value)}</td></tr>`;
 }
 
 function buyerHtml(amountLabel: string, ref: string): string {
   return `${SHELL_OPEN}${LABEL}
     <h1 style="font-size:24px;margin:0 0 12px">¡Gracias por tu compra!</h1>
-    <p style="margin:0 0 20px">Tu pago fue aprobado y ya estamos preparando tu pedido de <strong>${PRODUCT.title}</strong>.</p>
+    <p style="margin:0 0 20px">Tu pago fue aprobado y ya estamos preparando tu pedido de <strong>${esc(PRODUCT.title)}</strong>.</p>
     <table style="width:100%;border-collapse:collapse;border-top:1px solid #eee;border-bottom:1px solid #eee;margin:0 0 20px">
       ${row("Producto", PRODUCT.title)}
       ${row("Total", amountLabel)}
