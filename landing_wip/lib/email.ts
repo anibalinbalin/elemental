@@ -29,28 +29,38 @@ export async function sendOrderEmails(order: OrderInfo): Promise<void> {
   const amountLabel =
     typeof order.amount === "number" ? formatPrice(order.amount) : "—";
   const ref = String(order.reference ?? order.paymentId ?? "—");
+  // Idempotency anchor: the same payment never sends a given email twice, even
+  // if MP retries the notification or a valid one is replayed (Resend dedupes by
+  // this key for 24h). This is our replay/duplicate defense — see the webhook.
+  const idem = String(order.paymentId ?? ref);
 
   // 1) Confirmation to the buyer.
   if (order.buyerEmail) {
-    const { error } = await resend.emails.send({
-      from: FROM,
-      to: order.buyerEmail,
-      replyTo: STORE_EMAIL,
-      subject: "Confirmación de tu compra — MICROCORE",
-      html: buyerHtml(amountLabel, ref),
-    });
+    const { error } = await resend.emails.send(
+      {
+        from: FROM,
+        to: order.buyerEmail,
+        replyTo: STORE_EMAIL,
+        subject: "Confirmación de tu compra — MICROCORE",
+        html: buyerHtml(amountLabel, ref),
+      },
+      { idempotencyKey: `microcore-buyer-${idem}` }
+    );
     if (error) {
       console.error("[email] fallo al enviar confirmación al cliente", error);
     }
   }
 
   // 2) Heads-up to the store.
-  const { error: storeError } = await resend.emails.send({
-    from: FROM,
-    to: STORE_EMAIL,
-    subject: `Nueva orden — MICROCORE (${ref})`,
-    html: storeHtml({ ...order, amountLabel, ref }),
-  });
+  const { error: storeError } = await resend.emails.send(
+    {
+      from: FROM,
+      to: STORE_EMAIL,
+      subject: `Nueva orden — MICROCORE (${ref})`,
+      html: storeHtml({ ...order, amountLabel, ref }),
+    },
+    { idempotencyKey: `microcore-store-${idem}` }
+  );
   if (storeError) {
     console.error("[email] fallo al enviar aviso a la tienda", storeError);
   }
