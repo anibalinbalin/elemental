@@ -4,6 +4,7 @@ import {
   InvalidWebhookSignatureError,
 } from "mercadopago";
 import { paymentClient } from "@/lib/mercadopago";
+import { sendOrderEmails } from "@/lib/email";
 
 export const runtime = "nodejs";
 
@@ -65,13 +66,27 @@ export async function POST(request: NextRequest) {
     try {
       const payment = await paymentClient().get({ id: dataId });
       if (payment.status === "approved") {
-        // TODO: fulfillment real — enviar email de confirmación + registrar la orden.
         console.log("[mp-webhook] pago aprobado", {
           id: payment.id,
           amount: payment.transaction_amount,
           email: payment.payer?.email,
           reference: payment.external_reference,
         });
+        // Email is best-effort: the payment is already captured, so a mail
+        // failure must not 500 (that would make MP retry the whole notification).
+        // Note: MP may deliver the same notification more than once — for one
+        // product this can occasionally double-send; fine for MVP, revisit with
+        // an order record if it becomes a problem.
+        try {
+          await sendOrderEmails({
+            paymentId: payment.id,
+            buyerEmail: payment.payer?.email,
+            amount: payment.transaction_amount,
+            reference: payment.external_reference,
+          });
+        } catch (err) {
+          console.error("[mp-webhook] no se pudieron enviar los correos", err);
+        }
       } else {
         console.log("[mp-webhook] actualización de pago", {
           id: payment.id,
