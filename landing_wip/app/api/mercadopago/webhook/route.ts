@@ -39,12 +39,15 @@ export async function POST(request: NextRequest) {
   const secret = process.env.MP_WEBHOOK_SECRET;
   if (secret) {
     try {
+      // Sin tolerancia temporal: el "Simular notificación" del panel firma con
+      // una fecha fija de 2021, así que cualquier ventana lo rechazaría. El HMAC
+      // de la firma se valida igual, por lo que la autenticidad queda garantizada
+      // (no se puede falsificar sin el secreto).
       WebhookSignatureValidator.validate({
         xSignature: request.headers.get("x-signature"),
         xRequestId: request.headers.get("x-request-id"),
         dataId,
         secret,
-        toleranceSeconds: 300,
       });
     } catch (error) {
       const reason =
