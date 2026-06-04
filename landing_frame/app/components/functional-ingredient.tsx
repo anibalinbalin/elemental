@@ -1,9 +1,51 @@
 "use client";
 
+import { VisuallyHidden } from "@silk-hq/components";
 import { cn } from "@/lib/utils";
 import { useShape } from "@/lib/shape-context";
 import { PlaceholderImage } from "./placeholder-image";
 import { SectionReveal } from "./section-reveal";
+import { LongSheet } from "./silk-long-sheet";
+
+const usageSteps = [
+  {
+    number: "01",
+    title: "Mezclalo con lo que quieras",
+    body: "Agua, yogur, avena, smoothie, jugo, mate, cafe. Frio, tibio o caliente hasta 80 °C.",
+  },
+  {
+    number: "02",
+    title: "Listo. No hay paso dos.",
+    body: "Sin capsulas, sin horarios, sin refrigerar. Se adapta a tu rutina, no al reves.",
+  },
+];
+
+const compatibilityItems = [
+  { name: "Agua o jugo", temp: "Ambiente", status: "ideal" as const },
+  { name: "Yogur o avena", temp: "Frio", status: "ideal" as const },
+  { name: "Cafe o te", temp: "Hasta 80 °C", status: "ideal" as const },
+  { name: "Smoothie o licuado", temp: "Frio", status: "ideal" as const },
+  { name: "Panqueque o muffin", temp: "Coccion", status: "ok" as const },
+  { name: "Horneado intenso", temp: "> 100 °C", status: "ok" as const },
+];
+
+const scienceHighlights = [
+  {
+    value: "94,8%",
+    label: "Supervivencia",
+    detail: "tras infusion + transito gastrico simulado",
+  },
+  {
+    value: "< 1 log",
+    label: "Perdida a 80 °C",
+    detail: "practicamente nula en uso indicado",
+  },
+  {
+    value: "GRAS",
+    label: "Estatus FDA",
+    detail: "cepa documentada y aprobada (EE.UU.)",
+  },
+];
 
 function CienciaClaraSticker({ className }: { className?: string }) {
   return (
@@ -82,18 +124,143 @@ export function FunctionalIngredient() {
                 llega activo igual. No cambies tu rutina. Se adapta a ella.
               </p>
               <div className="pt-2">
-                <a
-                  href="#"
-                  className={cn(
-                    "inline-flex items-center justify-center",
-                    "border border-foreground",
-                    "px-8 py-3 text-sm font-medium",
-                    "hover:bg-foreground hover:text-background transition-colors",
-                    shape.button
-                  )}
-                >
-                  Ver como usarlo
-                </a>
+                <LongSheet.Root>
+                  <LongSheet.Trigger asChild>
+                    <button
+                      type="button"
+                      className={cn(
+                        "inline-flex items-center justify-center",
+                        "border border-foreground",
+                        "px-8 py-3 text-sm font-medium",
+                        "hover:bg-foreground hover:text-background transition-colors cursor-pointer",
+                        shape.button
+                      )}
+                    >
+                      Ver como usarlo
+                    </button>
+                  </LongSheet.Trigger>
+                  <LongSheet.Portal>
+                    <LongSheet.View>
+                      <LongSheet.Backdrop />
+                      <LongSheet.Content>
+                        <article className="ExampleLongSheet-article">
+                          <LongSheet.Trigger action="dismiss" asChild>
+                            <button className="ExampleLongSheet-dismissTrigger">
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                className="ExampleLongSheet-dismissIcon"
+                              >
+                                <path d="M18 6 6 18" />
+                                <path d="m6 6 12 12" />
+                              </svg>
+                              <VisuallyHidden.Root>Cerrar</VisuallyHidden.Root>
+                            </button>
+                          </LongSheet.Trigger>
+                          <div className="ExampleLongSheet-articleContent">
+                            <LongSheet.Title className="ExampleLongSheet-title" asChild>
+                              <h1>Como usar MICROCORE</h1>
+                            </LongSheet.Title>
+                            <h2 className="ExampleLongSheet-subtitle">
+                              1 cda por dia. En lo que ya tomas. Sin cambiar
+                              nada.
+                            </h2>
+
+                            <section className="ExampleLongSheet-articleBody">
+                              <div className="grid gap-6">
+                                {usageSteps.map((step) => (
+                                  <div key={step.number} className="flex gap-5">
+                                    <span className="shrink-0 font-mono text-3xl font-bold text-gray-200 leading-none pt-0.5">
+                                      {step.number}
+                                    </span>
+                                    <div className="grid gap-1">
+                                      <h3 className="text-lg font-semibold text-gray-950 leading-snug">
+                                        {step.title}
+                                      </h3>
+                                      <p className="ExampleLongSheet-articleParagraph text-base text-gray-600">
+                                        {step.body}
+                                      </p>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+
+                              <div className="grid gap-4">
+                                <h3 className="text-lg font-semibold text-gray-950">
+                                  Funciona con todo
+                                </h3>
+                                <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                                  {compatibilityItems.map((item) => (
+                                    <div
+                                      key={item.name}
+                                      className="rounded-xl border border-gray-200 bg-gray-50 px-4 py-3"
+                                    >
+                                      <p className="text-sm font-medium text-gray-900 leading-snug">
+                                        {item.name}
+                                      </p>
+                                      <p className="mt-0.5 font-mono text-xs text-gray-500">
+                                        {item.temp}
+                                      </p>
+                                    </div>
+                                  ))}
+                                </div>
+                                <p className="ExampleLongSheet-articleParagraph text-sm text-gray-500">
+                                  En coccion (panqueques, muffins) pierde algo de
+                                  potencia pero sigue siendo funcional. Para
+                                  maximo beneficio, usalo en bebidas o platos
+                                  frios/tibios.
+                                </p>
+                              </div>
+
+                              <div className="grid gap-4">
+                                <h3 className="text-lg font-semibold text-gray-950">
+                                  La ciencia detras
+                                </h3>
+                                <p className="ExampleLongSheet-articleParagraph text-base text-gray-600">
+                                  MICROCORE usa Bacillus coagulans esporulado: una
+                                  cepa que forma una coraza natural (espora) que
+                                  resiste calor, acidez y procesamiento. No es como
+                                  los probioticos comunes que mueren fuera de la
+                                  heladera.
+                                </p>
+                                <div className="grid gap-2 sm:grid-cols-3">
+                                  {scienceHighlights.map((item) => (
+                                    <div
+                                      key={item.label}
+                                      className="rounded-xl border border-gray-200 px-4 py-3 text-center"
+                                    >
+                                      <p className="font-mono text-lg font-bold text-gray-950">
+                                        {item.value}
+                                      </p>
+                                      <p className="mt-1 text-xs font-medium leading-snug text-gray-700">
+                                        {item.label}
+                                      </p>
+                                      <p className="mt-0.5 text-xs leading-snug text-gray-500">
+                                        {item.detail}
+                                      </p>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+
+                              <div className="rounded-xl border border-gray-200 bg-gray-50 px-4 py-3">
+                                <p className="ExampleLongSheet-articleParagraph text-sm text-gray-500">
+                                  Informacion basada en estudios de la cepa GBI-30,
+                                  6086. No constituye consejo medico. Producto en
+                                  proceso de registro.
+                                </p>
+                              </div>
+                            </section>
+                          </div>
+                        </article>
+                      </LongSheet.Content>
+                    </LongSheet.View>
+                  </LongSheet.Portal>
+                </LongSheet.Root>
               </div>
             </div>
           </SectionReveal>

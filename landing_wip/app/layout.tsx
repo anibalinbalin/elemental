@@ -21,6 +21,8 @@ export default function RootLayout({
       className={`h-full antialiased ${GeistSans.variable} ${GeistMono.variable}`}
     >
       <body className="min-h-full flex flex-col font-sans">
+        {/* loupe.css provides the microscope visual reused by the image loupe. */}
+        <link rel="stylesheet" href="/loupe.css" />
         <LayoutShell>{children}</LayoutShell>
         <Analytics />
       </body>

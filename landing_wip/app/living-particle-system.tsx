@@ -7,6 +7,72 @@ import * as THREE from "three";
 
 const TEXTURE_ROOT = "/creative-art-points";
 const TEXTURE_SIZE = 256;
+
+// --- Brand colour ramps -----------------------------------------------------
+// Eight stops, dark -> light, extracted from the EB botanical key art
+// (EB-1/EB-5 greens, EB-2/EB-4 violets + cornflower). The particle vertex
+// shader gradient-maps each dot's luminance through the selected ramp.
+// Switch live with the `?palette=balanced|green|violet` query param.
+type PaletteVariant = "balanced" | "green" | "violet";
+
+const RAW_PALETTES: Record<PaletteVariant, string[]> = {
+  // violet shadows -> pale bridge -> lime highlights (both families even)
+  balanced: ["#2a2f6e", "#3d51bc", "#8f71a4", "#b89ccb", "#dcd6ee", "#cfe3b0", "#8fbf4e", "#c4e58a"],
+  // mostly greens; violet only in the deepest shadow
+  green: ["#3a3f78", "#4f7e4a", "#5aa356", "#82b352", "#a1c15d", "#adda77", "#9fcf63", "#dff0c8"],
+  // mostly lavender/violet; lime only as a highlight sparkle
+  violet: ["#2a2f6e", "#3d51bc", "#6f5d9e", "#8f71a4", "#a98fbf", "#c2a6d5", "#d9d2ec", "#b9d488"],
+};
+
+function hexToRgb(hex: string): [number, number, number] {
+  const n = parseInt(hex.slice(1), 16);
+  return [((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255];
+}
+
+// "Softer / dreamy": desaturate toward luminance and lift toward a milky warm
+// white, so the ramp reads like the hazy, low-contrast EB source photos rather
+// than vivid confetti.
+const DREAMY_DESAT = 0.62; // keep 62% of chroma (≈38% desaturated)
+const DREAMY_LIFT = 0.14; // 14% toward off-white
+
+function soften([r, g, b]: [number, number, number]): [number, number, number] {
+  const L = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+  const d = DREAMY_DESAT;
+  let rr = r * d + L * (1 - d);
+  let gg = g * d + L * (1 - d);
+  let bb = b * d + L * (1 - d);
+  const k = DREAMY_LIFT;
+  rr = rr * (1 - k) + 1.0 * k;
+  gg = gg * (1 - k) + 1.0 * k;
+  bb = bb * (1 - k) + 0.99 * k;
+  return [rr, gg, bb];
+}
+
+function buildPalette(variant: PaletteVariant): THREE.Vector3[] {
+  return RAW_PALETTES[variant].map((hex) => {
+    const [r, g, b] = soften(hexToRgb(hex));
+    return new THREE.Vector3(r, g, b);
+  });
+}
+
+function readPaletteVariant(): PaletteVariant {
+  if (typeof window === "undefined") return "balanced";
+  const p = new URLSearchParams(window.location.search).get("palette");
+  return p === "green" || p === "violet" || p === "balanced" ? p : "balanced";
+}
+
+// How strongly the brand ramp tints the particles. 0 = original photo colours,
+// 1 = full palette replacement (loses the image). Kept low so the lifestyle
+// photo stays legible and the palette reads as a wash. Override with `?mix=`.
+const DEFAULT_COLOR_MIX = 0.3;
+
+function readColorMix(): number {
+  if (typeof window === "undefined") return DEFAULT_COLOR_MIX;
+  const raw = new URLSearchParams(window.location.search).get("mix");
+  if (raw === null) return DEFAULT_COLOR_MIX;
+  const n = Number(raw);
+  return Number.isFinite(n) ? Math.max(0, Math.min(1, n)) : DEFAULT_COLOR_MIX;
+}
 const PARTICLE_COUNT = TEXTURE_SIZE * TEXTURE_SIZE;
 const BOUNDS_MIN = new THREE.Vector3(-60, 0, -60);
 const BOUNDS_MAX = new THREE.Vector3(60, 0.5, 60);
@@ -68,6 +134,8 @@ const vertexShader = /* glsl */ `
   uniform sampler2D uParticlesColors;
   uniform sampler2D uParticlesDensity;
   uniform sampler2D uParticlesDepth;
+  uniform float uColorMix;
+  uniform vec3 uPalette[8];
   uniform float uDepthDisplacement;
   uniform float uDepthPointScale;
   uniform float uFocusDepth;
@@ -139,6 +207,24 @@ const vertexShader = /* glsl */ `
     return worldPosition;
   }
 
+  // Elemental Bloom brand palette — extracted from the EB botanical key art
+  // (EB-1/EB-5 lime greens, EB-2/EB-4 violets + cornflower blue). Eight stops
+  // (uPalette), dark -> light, supplied from JS so the green/violet balance can
+  // be swapped at runtime. Stops are routed through a near-white bridge so the
+  // green and violet poles never cross-fade into mud.
+  vec3 brandPalette(float t) {
+    float s = clamp(t, 0.0, 1.0) * 7.0;
+    vec3 col = uPalette[0];
+    col = mix(col, uPalette[1], clamp(s - 0.0, 0.0, 1.0));
+    col = mix(col, uPalette[2], clamp(s - 1.0, 0.0, 1.0));
+    col = mix(col, uPalette[3], clamp(s - 2.0, 0.0, 1.0));
+    col = mix(col, uPalette[4], clamp(s - 3.0, 0.0, 1.0));
+    col = mix(col, uPalette[5], clamp(s - 4.0, 0.0, 1.0));
+    col = mix(col, uPalette[6], clamp(s - 5.0, 0.0, 1.0));
+    col = mix(col, uPalette[7], clamp(s - 6.0, 0.0, 1.0));
+    return col;
+  }
+
   void main() {
     vec3 sampledHigh = texture2D(uParticlesPositionHigh, aParticleUv).rgb;
     vec3 sampledLow = texture2D(uParticlesPositionLow, aParticleUv).rgb;
@@ -151,7 +237,14 @@ const vertexShader = /* glsl */ `
     );
 
     vec3 particlePosition = remapPosition(position16bit / uParticleCount);
-    vColor = texture2D(uParticlesColors, aParticleUv).rgb;
+
+    // Recolor each particle through the brand palette by luminance: keep the
+    // baked image's light/dark structure, swap the hue. The photo's luminance
+    // clusters in the mids, so stretch [0.10, 0.88] across the full ramp.
+    vec3 bakedColor = texture2D(uParticlesColors, aParticleUv).rgb;
+    float lum = dot(bakedColor, vec3(0.2126, 0.7152, 0.0722));
+    float t = clamp((lum - 0.10) / 0.78, 0.0, 1.0);
+    vColor = mix(bakedColor, brandPalette(t), uColorMix);
 
     float sampledDensity = texture2D(uParticlesDensity, aParticleUv).r;
     float densityScale = valueRemap(sampledDensity, 0.0, 1.0, 0.8, 1.5);
@@ -280,7 +373,9 @@ const postFragmentShader = /* glsl */ `
 
     float dist = distance(uv, vec2(0.5));
     float vignette = 1.0 - smoothstep(0.4, 0.9, dist * uVignetteIntensity);
-    color *= mix(vignette, 1.0, uWhiteProgress);
+    // Blend the vignette toward the (now light) background instead of
+    // multiplying toward black, so edges fade to cream rather than a black oval.
+    color = mix(uBackground, color, mix(vignette, 1.0, uWhiteProgress));
 
     color = pow(color, vec3(0.95));
     color.r *= 1.02;
@@ -321,9 +416,13 @@ function createParticleGeometry() {
 function Particles({
   controls,
   storyRef,
+  palette,
+  colorMix,
 }: {
   controls: ParticleControls;
   storyRef: MutableRefObject<StoryValues>;
+  palette: THREE.Vector3[];
+  colorMix: number;
 }) {
   const materialRef = useRef<THREE.ShaderMaterial | null>(null);
   const { size, viewport } = useThree();
@@ -369,6 +468,8 @@ function Particles({
       uParticlesPositionHigh: { value: positionHigh },
       uParticlesPositionLow: { value: positionLow },
       uParticlesColors: { value: colorTexture },
+      uColorMix: { value: colorMix },
+      uPalette: { value: palette },
       uParticlesDensity: { value: densityTexture },
       uParticlesDepth: { value: depthTexture },
       uDepthDisplacement: { value: controls.depthDisplacement },
@@ -383,7 +484,7 @@ function Particles({
       uTextureSize: { value: TEXTURE_SIZE },
       uScreenScale: { value: screenScale },
     }),
-    [colorTexture, controls, densityTexture, depthTexture, positionHigh, positionLow, screenScale],
+    [colorMix, colorTexture, controls, densityTexture, depthTexture, palette, positionHigh, positionLow, screenScale],
   );
 
   useEffect(
@@ -443,7 +544,7 @@ function PostProcessedScene({
   const { camera, gl, size, viewport } = useThree();
   const renderScene = useMemo(() => {
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color("#050505");
+    scene.background = new THREE.Color("#fffff9");
     return scene;
   }, []);
   const quadScene = useMemo(() => new THREE.Scene(), []);
@@ -472,7 +573,7 @@ function PostProcessedScene({
           uVignetteIntensity: { value: DEFAULT_CONTROLS.vignetteIntensity },
           uChromaticAberration: { value: DEFAULT_CONTROLS.chromaticAberration },
           uWhiteProgress: { value: 0 },
-          uBackground: { value: new THREE.Color("#050505") },
+          uBackground: { value: new THREE.Color("#fffff9") },
           uBottomFade: { value: BOTTOM_FADE },
         },
         vertexShader: postVertexShader,
@@ -515,10 +616,11 @@ function PostProcessedScene({
 
     const bgT = Math.max(0, Math.min(1, (progressRef.current - 0.88) / 0.12));
     const bgEased = bgT * bgT * (3 - 2 * bgT);
-    const base = 0.0196;
-    const r = base + bgEased * (1 - base);
-    const g = r;
-    const b = base + bgEased * (0.9882 - base);
+    // #fffff9 background to match the site surface, easing to pure white only at
+    // the very end of the storyline (unused by the band, which caps at ~0.85).
+    const r = 1.0;
+    const g = 1.0;
+    const b = 0.9765 + bgEased * (1 - 0.9765);
     (renderScene.background as THREE.Color).setRGB(r, g, b);
     (postMaterial.uniforms.uBackground.value as THREE.Color).setRGB(r, g, b);
 
@@ -841,6 +943,15 @@ export function LivingParticleSystem({
   paused?: boolean;
 }) {
   const [controls] = useState<ParticleControls>(DEFAULT_CONTROLS);
+  // Brand colour ramp. Defaults to "balanced"; `?palette=green|violet` swaps it
+  // live so the green/violet balance can be A/B'd on the deployed page.
+  const [paletteVariant, setPaletteVariant] = useState<PaletteVariant>("balanced");
+  const [colorMix, setColorMix] = useState(DEFAULT_COLOR_MIX);
+  useEffect(() => {
+    setPaletteVariant(readPaletteVariant());
+    setColorMix(readColorMix());
+  }, []);
+  const palette = useMemo(() => buildPalette(paletteVariant), [paletteVariant]);
   // Story-driven values change every scroll frame; keep them in a ref so
   // updating them never re-renders the Canvas subtree. Seeded from keyframe 0.
   const storyRef = useRef<StoryValues>({
@@ -861,12 +972,12 @@ export function LivingParticleSystem({
         frameloop="demand"
       >
         <FrameInvalidator paused={paused} />
-        <color args={["#050505"]} attach="background" />
+        <color args={["#fffff9"]} attach="background" />
         <StoryCamera progressRef={progressRef} />
         <StoryUniforms progressRef={progressRef} storyRef={storyRef} />
         <PostProcessedScene progressRef={progressRef} storyRef={storyRef}>
           <Suspense fallback={null}>
-            <Particles controls={controls} storyRef={storyRef} />
+            <Particles controls={controls} storyRef={storyRef} palette={palette} colorMix={colorMix} />
           </Suspense>
         </PostProcessedScene>
       </Canvas>
