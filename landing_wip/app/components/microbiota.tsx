@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import DigestionIcon from "@hugeicons/core-free-icons/DigestionIcon";
 import HappyIcon from "@hugeicons/core-free-icons/HappyIcon";
 import Shield01Icon from "@hugeicons/core-free-icons/Shield01Icon";
@@ -34,6 +35,7 @@ const nutritionFacts = [
 
 export function Microbiota() {
   const shape = useShape();
+  const [formulaOpen, setFormulaOpen] = useState(false);
 
   return (
     <section id="microbiota" className="bg-surface-1">
@@ -63,7 +65,10 @@ export function Microbiota() {
               </div>
 
               <div>
-                <LongSheet.Root>
+                <LongSheet.Root
+                  presented={formulaOpen}
+                  onPresentedChange={setFormulaOpen}
+                >
                   <LongSheet.Trigger asChild>
                     <button
                       type="button"
@@ -211,7 +216,10 @@ export function Microbiota() {
           </SectionReveal>
 
           <SectionReveal delay={0.1}>
-            <MicrobiotaShader className={cn("w-full", shape.container)} />
+            <MicrobiotaShader
+              className={cn("w-full", shape.container)}
+              loupeHidden={formulaOpen}
+            />
           </SectionReveal>
         </div>
       </div>

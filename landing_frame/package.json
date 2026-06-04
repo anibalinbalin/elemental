@@ -3,13 +3,16 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
-    "build": "next build",
+    "dev": "TINA_PUBLIC_IS_LOCAL=true tinacms dev -c \"next dev --turbopack\"",
+    "dev:prod": "TINA_PUBLIC_IS_LOCAL=false tinacms dev -c \"next dev --turbopack\"",
+    "build": "tinacms build --partial-reindex && next build",
     "start": "next start",
     "lint": "next lint"
   },
   "dependencies": {
     "@base-ui-components/react": "^1.0.0-rc.0",
+    "@clerk/backend": "0.38.15",
+    "@clerk/clerk-js": "4.73.14",
     "@gsap/react": "^2.1.2",
     "@heroui/react": "^3.1.0",
     "@heroui/styles": "^3.1.0",
@@ -19,6 +22,7 @@
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.6.1",
     "@silk-hq/components": "^0.10.1",
+    "@tinacms/datalayer": "2.0.22",
     "agentation": "^3.0.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -27,6 +31,7 @@
     "gray-matter": "4.0.3",
     "gsap": "^3.15.0",
     "mercadopago": "^3.0.0",
+    "mongodb-level": "0.0.4",
     "next": "^16.2.6",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
@@ -35,10 +40,14 @@
     "resend": "^6.12.4",
     "tailwind-merge": "^3.4.0",
     "tailwind-variants": "^3.2.2",
-    "three": "^0.184.0"
+    "three": "^0.184.0",
+    "tinacms": "3.8.3",
+    "tinacms-clerk": "22.0.3",
+    "tinacms-gitprovider-github": "4.1.9"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.18",
+    "@tinacms/cli": "2.4.1",
     "@types/node": "^20.19.9",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",

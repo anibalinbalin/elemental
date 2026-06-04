@@ -23,7 +23,13 @@ const PerlinNoise = dynamic(
   { ssr: false },
 );
 
-export function MicrobiotaShader({ className }: { className?: string }) {
+export function MicrobiotaShader({
+  className,
+  loupeHidden = false,
+}: {
+  className?: string;
+  loupeHidden?: boolean;
+}) {
   const reducedMotion = useReducedMotion();
 
   return (
@@ -73,7 +79,7 @@ export function MicrobiotaShader({ className }: { className?: string }) {
         </InViewMount>
       </div>
       {/* Microscope loupe — rests on top of the card, never clipped by its edges. */}
-      <ImageLoupe src={BG} />
+      <ImageLoupe src={BG} hidden={loupeHidden} />
     </div>
   );
 }

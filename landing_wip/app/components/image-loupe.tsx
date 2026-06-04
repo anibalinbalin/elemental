@@ -18,6 +18,12 @@ const MAX_ZOOM = 4;
 const DEFAULT_ZOOM = 2.5;
 const LENS = 160; // must match --lens-size below
 const HALF = LENS / 2;
+// Limited zoom dial: rotation travels a fixed sweep and hard-clamps at both
+// ends (no wrap-around), like the diagnostic-page loupe.
+const DIAL_START = 90; // deg at MIN_ZOOM
+const DIAL_SWEEP = 330; // deg of travel from MIN_ZOOM to MAX_ZOOM
+const zoomToRotation = (z: number) =>
+  DIAL_START + ((z - MIN_ZOOM) / (MAX_ZOOM - MIN_ZOOM)) * DIAL_SWEEP;
 
 // Round so server and client render byte-identical SVG (avoids hydration drift).
 const f = (v: number) => v.toFixed(2);
@@ -45,13 +51,19 @@ function DialTicks() {
   return <g>{ticks}</g>;
 }
 
-export function ImageLoupe({ src }: { src: string }) {
+export function ImageLoupe({ src, hidden = false }: { src: string; hidden?: boolean }) {
   const stageRef = useRef<HTMLDivElement>(null);
   const loupeRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLDivElement>(null);
   const dialRef = useRef<HTMLDivElement>(null);
   const magRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  // Hide the loupe while an overlay (e.g. the formula sheet) is open so it
+  // doesn't float over the sheet.
+  useEffect(() => {
+    loupeRef.current?.classList.toggle("is-hidden", hidden);
+  }, [hidden]);
 
   useEffect(() => {
     const container = stageRef.current?.parentElement;
@@ -67,12 +79,12 @@ export function ImageLoupe({ src }: { src: string }) {
       x: 0,
       y: 0,
       zoom: DEFAULT_ZOOM,
-      dialRotation: ((DEFAULT_ZOOM - MIN_ZOOM) / (MAX_ZOOM - MIN_ZOOM)) * 360 + 90,
+      dialRotation: zoomToRotation(DEFAULT_ZOOM),
       dragging: false,
       dialDragging: false,
       dragOffX: 0,
       dragOffY: 0,
-      dialAngleOffset: 0,
+      lastPointerAngle: 0,
     };
     const clamp = (v: number, a: number, b: number) => Math.min(b, Math.max(a, v));
     const dims = () => {
@@ -82,8 +94,13 @@ export function ImageLoupe({ src }: { src: string }) {
 
     function render() {
       const { w, h } = dims();
-      s.x = clamp(s.x, 0, w);
-      s.y = clamp(s.y, 0, h);
+      // Keep the whole loupe bezel inside the image: clamp the center by the
+      // dial radius (responsive via --dial-size) so it can't slide off the edge.
+      const R = (loupe.offsetWidth || 220) / 2;
+      const rx = Math.min(R, w / 2);
+      const ry = Math.min(R, h / 2);
+      s.x = clamp(s.x, rx, w - rx);
+      s.y = clamp(s.y, ry, h - ry);
       loupe.style.setProperty("--loupe-x", `${s.x}px`);
       loupe.style.setProperty("--loupe-y", `${s.y}px`);
       loupe.style.setProperty("--dial-rotation", `${s.dialRotation}deg`);
@@ -190,18 +207,23 @@ export function ImageLoupe({ src }: { src: string }) {
       const r = loupe.getBoundingClientRect();
       return (Math.atan2(e.clientY - (r.top + r.height / 2), e.clientX - (r.left + r.width / 2)) * 180) / Math.PI;
     };
-    const normalize = (a: number) => ((a + 450) % 360) / 360;
     const onDialDown = (e: PointerEvent) => {
       e.preventDefault();
       s.dialDragging = true;
-      s.dialAngleOffset = angleFromEvent(e) - (s.dialRotation - 180);
+      s.lastPointerAngle = angleFromEvent(e);
       dial.setPointerCapture(e.pointerId);
     };
     const onDialMove = (e: PointerEvent) => {
       if (!s.dialDragging) return;
-      const n = normalize(angleFromEvent(e) - s.dialAngleOffset);
-      s.zoom = n > 0.985 ? MAX_ZOOM : MIN_ZOOM + n * (MAX_ZOOM - MIN_ZOOM);
-      s.dialRotation = n * 360 + 90;
+      // Accumulate the angular delta and clamp to the sweep so zoom stops hard
+      // at MIN/MAX instead of wrapping around the dial.
+      const cur = angleFromEvent(e);
+      let delta = cur - s.lastPointerAngle;
+      if (delta > 180) delta -= 360;
+      else if (delta < -180) delta += 360;
+      s.lastPointerAngle = cur;
+      s.dialRotation = clamp(s.dialRotation + delta, DIAL_START, DIAL_START + DIAL_SWEEP);
+      s.zoom = MIN_ZOOM + ((s.dialRotation - DIAL_START) / DIAL_SWEEP) * (MAX_ZOOM - MIN_ZOOM);
       render();
     };
     const onDialUp = (e: PointerEvent) => {
@@ -252,7 +274,7 @@ export function ImageLoupe({ src }: { src: string }) {
       <div
         ref={loupeRef}
         className="loupe"
-        style={{ "--loupe-x": "50%", "--loupe-y": "50%", "--dial-rotation": "234deg", pointerEvents: "auto" } as CSSProperties}
+        style={{ "--loupe-x": "50%", "--loupe-y": "50%", "--dial-rotation": "222deg", pointerEvents: "auto" } as CSSProperties}
       >
         <div ref={triggerRef} className="loupe-trigger" role="region" tabIndex={0} aria-label="Microscope loupe">
           <div className="loupe-lens">
