@@ -2,6 +2,7 @@ import { Microbiota } from "./microbiota";
 import { MicrocoreCard } from "./microcore-card";
 import { Testimonial } from "./testimonial";
 import { FunctionalIngredient } from "./functional-ingredient";
+import { Supporters } from "./supporters";
 import { OriginStory } from "./origin-story";
 import { ScienceBlog } from "./science-blog";
 import { Community } from "./community";
@@ -21,6 +22,7 @@ export function LandingSections() {
         <MicrocoreCard />
         <Testimonial />
         <FunctionalIngredient />
+        <Supporters />
         <OriginStory />
         <ScienceBlog />
         <Community />
