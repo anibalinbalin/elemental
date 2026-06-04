@@ -2,6 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { useReducedMotion } from "@/lib/use-reduced-motion";
+import { InViewMount } from "./in-view-mount";
 
 const BG = "/images/deporte-paper.webp";
 
@@ -28,23 +29,25 @@ export function DeporteShader({ className }: { className?: string }) {
         backgroundPosition: "50%",
       }}
     >
-      <Dithering
-        speed={reducedMotion ? 0 : 0.32}
-        shape="simplex"
-        type="8x8"
-        size={4.4}
-        scale={1.31}
-        colorBack="#00000000"
-        colorFront="#D87FDE"
-        style={{
-          position: "absolute",
-          inset: 0,
-          backgroundColor: "#000000",
-          mixBlendMode: "lighten",
-          height: "100%",
-          width: "100%",
-        }}
-      />
+      <InViewMount>
+        <Dithering
+          speed={reducedMotion ? 0 : 0.32}
+          shape="simplex"
+          type="8x8"
+          size={4.4}
+          scale={1.31}
+          colorBack="#00000000"
+          colorFront="#D87FDE"
+          style={{
+            position: "absolute",
+            inset: 0,
+            backgroundColor: "#000000",
+            mixBlendMode: "lighten",
+            height: "100%",
+            width: "100%",
+          }}
+        />
+      </InViewMount>
     </div>
   );
 }

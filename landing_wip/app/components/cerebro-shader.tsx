@@ -2,6 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { useReducedMotion } from "@/lib/use-reduced-motion";
+import { InViewMount } from "./in-view-mount";
 
 /**
  * Dithering shader (lavender dots) over a brain/neural photo, tuned in Paper
@@ -25,6 +26,7 @@ export function CerebroShader({ className }: { className?: string }) {
     <div
       className={className}
       style={{
+        position: "relative",
         aspectRatio: "16/10",
         overflow: "hidden",
         backgroundImage: `url(${BG})`,
@@ -32,22 +34,24 @@ export function CerebroShader({ className }: { className?: string }) {
         backgroundPosition: "50%",
       }}
     >
-      <Dithering
-        speed={reducedMotion ? 0 : 0.26}
-        shape="dots"
-        type="4x4"
-        size={1.4}
-        scale={1.14}
-        colorBack="#00000000"
-        colorFront="#C4B3E4"
-        style={{
-          backgroundImage: `url(${BG})`,
-          backgroundPosition: "50%",
-          backgroundSize: "cover",
-          height: "100%",
-          width: "100%",
-        }}
-      />
+      <InViewMount>
+        <Dithering
+          speed={reducedMotion ? 0 : 0.26}
+          shape="dots"
+          type="4x4"
+          size={1.4}
+          scale={1.14}
+          colorBack="#00000000"
+          colorFront="#C4B3E4"
+          style={{
+            backgroundImage: `url(${BG})`,
+            backgroundPosition: "50%",
+            backgroundSize: "cover",
+            height: "100%",
+            width: "100%",
+          }}
+        />
+      </InViewMount>
     </div>
   );
 }

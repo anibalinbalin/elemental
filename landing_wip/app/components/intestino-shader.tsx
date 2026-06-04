@@ -2,6 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { useReducedMotion } from "@/lib/use-reduced-motion";
+import { InViewMount } from "./in-view-mount";
 
 /**
  * "Intestino" card in the Ciencia cotidiana grid — a layered Paper composite:
@@ -44,6 +45,7 @@ export function IntestinoShader({ className }: { className?: string }) {
         backgroundPosition: "50%",
       }}
     >
+      <InViewMount>
       <SmokeRing
         speed={reducedMotion ? 0 : 0.29}
         scale={1.06}
@@ -88,6 +90,7 @@ export function IntestinoShader({ className }: { className?: string }) {
           width: "100%",
         }}
       />
+      </InViewMount>
     </div>
   );
 }

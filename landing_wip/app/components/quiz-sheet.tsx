@@ -321,7 +321,7 @@ const QuizSheetRoot = React.forwardRef<
   React.ElementRef<typeof Sheet.Root>,
   Omit<SheetRootProps, "license"> & { license?: SheetRootProps["license"] }
 >(({ children, ...props }, ref) => (
-  <Sheet.Root license="commercial" {...props} ref={ref}>
+  <Sheet.Root license="non-commercial" {...props} ref={ref}>
     {children}
   </Sheet.Root>
 ));

@@ -1,27 +1,11 @@
 "use client";
 
-import BacteriaIcon from "@hugeicons/core-free-icons/BacteriaIcon";
-import LeafyGreenIcon from "@hugeicons/core-free-icons/LeafyGreenIcon";
-import Bone01Icon from "@hugeicons/core-free-icons/Bone01Icon";
-import NaturalFoodIcon from "@hugeicons/core-free-icons/NaturalFoodIcon";
-import Mushroom01Icon from "@hugeicons/core-free-icons/Mushroom01Icon";
-import Shield01Icon from "@hugeicons/core-free-icons/Shield01Icon";
 import { cn } from "@/lib/utils";
 import { useShape } from "@/lib/shape-context";
 import { PouchViewer } from "../pouch-viewer";
 import { SectionReveal } from "./section-reveal";
-import { FeatureIcon } from "./feature-icon";
 import { BuyButton } from "./buy-button";
 import { PRODUCT, formatPrice } from "@/lib/product";
-
-const features = [
-  { label: "Probiótico esporulado", icon: BacteriaIcon },
-  { label: "Prebiótico", icon: LeafyGreenIcon },
-  { label: "Colágeno", icon: Bone01Icon },
-  { label: "Açaí", icon: NaturalFoodIcon },
-  { label: "Hongo funcional", icon: Mushroom01Icon },
-  { label: "Zinc", icon: Shield01Icon },
-];
 
 export function MicrocoreCard() {
   const shape = useShape();
@@ -65,16 +49,6 @@ export function MicrocoreCard() {
                     <span className="text-xs text-muted-foreground font-mono uppercase">
                       Microcore
                     </span>
-                  </div>
-
-                  <div className="flex flex-wrap gap-6 pt-4">
-                    {features.map((feature) => (
-                      <FeatureIcon
-                        key={feature.label}
-                        label={feature.label}
-                        icon={feature.icon}
-                      />
-                    ))}
                   </div>
 
                   <div className="flex flex-col gap-4 pt-4">
