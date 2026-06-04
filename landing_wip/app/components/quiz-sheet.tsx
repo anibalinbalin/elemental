@@ -824,9 +824,17 @@ function QuizBody() {
 
 /* ─── Exported compound component ─── */
 
-export function QuizSheet({ children }: { children: React.ReactNode }) {
+export function QuizSheet({
+  children,
+  presented,
+  onPresentedChange,
+}: {
+  children: React.ReactNode;
+  presented?: boolean;
+  onPresentedChange?: (presented: boolean) => void;
+}) {
   return (
-    <QuizSheetRoot>
+    <QuizSheetRoot presented={presented} onPresentedChange={onPresentedChange}>
       {children}
       <Sheet.Portal>
         <QuizSheetView>

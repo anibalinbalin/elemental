@@ -68,8 +68,26 @@ function navMotion(hidden: boolean): CSSProperties {
   };
 }
 
-export function NavbarPill() {
-  const hidden = useHideOnScroll();
+/* Mobile = below the 800px breakpoint where the quiz sheet switches from a
+ * full-width sheet to a centered card. Below it, the full-width profile sheet
+ * sits under the fixed pill and the pill reads as intrusive. */
+function useIsMobile(query = "(max-width: 800px)") {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia(query);
+    const sync = () => setIsMobile(mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, [query]);
+  return isMobile;
+}
+
+export function NavbarPill({ sheetOpen = false }: { sheetOpen?: boolean }) {
+  const hiddenByScroll = useHideOnScroll();
+  const isMobile = useIsMobile();
+  // On mobile, get out of the way while the "Tu perfil" sheet is open.
+  const hidden = hiddenByScroll || (sheetOpen && isMobile);
   return (
     <div
       className="fixed inset-x-0 top-0 z-[100] flex justify-center px-4 pt-4"
