@@ -4,7 +4,8 @@ import { SectionReveal } from "./section-reveal";
 import { PlaceholderImage } from "./placeholder-image";
 
 const BURGUNDY = "#5a2d42";
-const LIME = "#c5e847";
+const LIME = "#C8F670";
+const CREAM = "#F0F1E5";
 
 function IconProbiotico() {
   return (
@@ -140,33 +141,29 @@ export function MicrocoreCard() {
 
             {/* Right: badges + ingredient circles */}
             <div className="flex flex-col gap-8">
-              {/* Top badges row */}
-              <div className="flex items-center gap-4">
-                {/* Star circle + "5 en 1" pill, overlapping */}
-                <div className="flex items-center">
-                  <span
-                    className="relative z-10 inline-flex items-center justify-center w-12 h-12 rounded-full"
-                    style={{ backgroundColor: BURGUNDY, boxShadow: `0 0 0 1.5px #e8ddd0` }}
-                  >
-                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#e8ddd0" strokeWidth="2" strokeLinecap="round">
-                      <line x1="10" y1="1" x2="10" y2="19" />
-                      <line x1="1" y1="10" x2="19" y2="10" />
-                      <line x1="3.5" y1="3.5" x2="16.5" y2="16.5" />
-                      <line x1="16.5" y1="3.5" x2="3.5" y2="16.5" />
-                    </svg>
-                  </span>
-                  <span
-                    className="-ml-4 inline-flex items-center justify-center rounded-full pl-7 pr-5 py-2.5 text-sm font-medium tracking-wide"
-                    style={{ color: "#e8ddd0", boxShadow: `0 0 0 1.5px #e8ddd0` }}
-                  >
-                    5 en 1
-                  </span>
-                </div>
-                <span
-                  className="inline-flex items-center justify-center rounded-full px-6 py-2.5 text-sm font-bold tracking-wider"
-                  style={{ color: "#e8ddd0", boxShadow: `0 0 0 1.5px #e8ddd0` }}
-                >
-                  MICROCORE
+              {/* Paper-designed badge: circle + 5 en 1 pill + MICROCORE pill */}
+              <div className="relative" style={{ height: 50, width: 396 }}>
+                {/* Star circle */}
+                <svg viewBox="0 0 50.08 50" xmlns="http://www.w3.org/2000/svg" style={{ width: 50, height: 50, position: "absolute", left: 0, top: 0, overflow: "visible" }}>
+                  <path d="M42.770 7.370C47.510 12.090 50.100 18.350 50.080 25.000C50.050 31.670 47.410 37.970 42.650 42.710C37.870 47.410 31.580 50.000 24.920 50.000C11.150 49.960 -0.020 38.710 0.000 24.900C0.040 11.170 11.270 0.000 25.020 0.000C31.720 0.010 38.030 2.630 42.760 7.380C42.760 7.380 42.770 7.370 42.770 7.370Z" fill="none" stroke={CREAM} strokeWidth="1.36" vectorEffect="non-scaling-stroke" strokeMiterlimit="10" />
+                </svg>
+                {/* Star glyph inside circle */}
+                <svg viewBox="0 0 19.37 16.72" xmlns="http://www.w3.org/2000/svg" style={{ width: 19, height: 17, position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", overflow: "visible" }}>
+                  <path d="M1.900 3.100C1.900 3.100 8.820 8.360 8.820 8.360C8.820 8.360 8.930 8.360 8.930 8.360C8.930 8.360 7.820 0.000 7.820 0.000C7.820 0.000 11.580 0.000 11.580 0.000C11.580 0.000 10.580 8.360 10.580 8.360C10.580 8.360 10.690 8.360 10.690 8.360C10.690 8.360 17.330 3.050 17.330 3.050C17.330 3.050 19.320 6.540 19.320 6.540C19.320 6.540 11.570 9.860 11.570 9.860C11.570 9.860 11.570 9.970 11.570 9.970C11.570 9.970 19.370 13.570 19.370 13.570C19.370 13.570 17.380 16.720 17.380 16.720C17.380 16.720 10.630 11.460 10.630 11.460C10.630 11.460 10.520 11.460 10.520 11.460C10.520 11.460 8.860 11.520 8.860 11.520C8.860 11.520 8.750 11.520 8.750 11.520C8.750 11.520 2.000 16.720 2.000 16.720C2.000 16.720 0.060 13.340 0.060 13.340C0.060 13.340 7.750 9.910 7.750 9.910C7.750 9.910 7.750 9.800 7.750 9.800C7.750 9.800 0.000 6.420 0.000 6.420C0.000 6.420 1.880 3.100 1.880 3.100C1.880 3.100 1.900 3.100 1.900 3.100Z" fill={CREAM} fillRule="evenodd" />
+                </svg>
+                {/* "5 en 1" pill */}
+                <svg viewBox="0 0 131.11 48.25" xmlns="http://www.w3.org/2000/svg" style={{ width: 131, height: 48, position: "absolute", left: 40, top: 1, overflow: "visible" }}>
+                  <path d="M24.120 0.000C24.120 0.000 106.990 0.000 106.990 0.000C120.311 0.000 131.110 10.799 131.110 24.120C131.110 24.120 131.110 24.130 131.110 24.130C131.110 37.451 120.311 48.250 106.990 48.250C106.990 48.250 24.120 48.250 24.120 48.250C10.799 48.250 0.000 37.451 0.000 24.130C0.000 24.130 0.000 24.120 0.000 24.120C0.000 10.799 10.799 0.000 24.120 0.000Z" fill="none" stroke={CREAM} strokeWidth="1.36" vectorEffect="non-scaling-stroke" strokeMiterlimit="10" />
+                </svg>
+                <span style={{ position: "absolute", left: 64, top: "50%", transform: "translateY(-50%)", color: CREAM, fontSize: 24, lineHeight: 1, fontFamily: "inherit" }}>
+                  5 en 1
+                </span>
+                {/* "MICRO CORE" pill */}
+                <svg viewBox="0 0 207.26 48.25" xmlns="http://www.w3.org/2000/svg" style={{ width: 207, height: 48, position: "absolute", left: 189, top: 1, overflow: "visible" }}>
+                  <path d="M24.120 0.000C24.120 0.000 183.140 0.000 183.140 0.000C196.461 0.000 207.260 10.799 207.260 24.120C207.260 24.120 207.260 24.130 207.260 24.130C207.260 37.451 196.461 48.250 183.140 48.250C183.140 48.250 24.120 48.250 24.120 48.250C10.799 48.250 0.000 37.451 0.000 24.130C0.000 24.130 0.000 24.120 0.000 24.120C0.000 10.799 10.799 0.000 24.120 0.000Z" fill="none" stroke={CREAM} strokeWidth="1.36" vectorEffect="non-scaling-stroke" strokeMiterlimit="10" />
+                </svg>
+                <span style={{ position: "absolute", left: 218, top: "50%", transform: "translateY(-50%)", color: CREAM, fontSize: 24, lineHeight: 1, fontWeight: 700, fontFamily: "inherit" }}>
+                  MICRO CORE
                 </span>
               </div>
 
