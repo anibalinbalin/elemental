@@ -3,6 +3,7 @@ import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
 import "./globals.css";
 import { LayoutShell } from "./layout-shell";
+import { Analytics } from "@vercel/analytics/next";
 
 export const metadata: Metadata = {
   title: "Elemental",
@@ -21,6 +22,7 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col font-sans">
         <LayoutShell>{children}</LayoutShell>
+        <Analytics />
       </body>
     </html>
   );
