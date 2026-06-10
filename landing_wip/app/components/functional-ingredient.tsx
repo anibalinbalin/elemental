@@ -1,6 +1,7 @@
 "use client";
 
 import { VisuallyHidden } from "@silk-hq/components";
+import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { useShape } from "@/lib/shape-context";
 import { CursorDrivenParticleImage } from "./cursor-driven-particle-crest";
@@ -49,6 +50,7 @@ const scienceHighlights = [
 
 export function FunctionalIngredient() {
   const shape = useShape();
+  const [sheetOpen, setSheetOpen] = useState(false);
 
   return (
     <section id="como-funciona" className="bg-surface-1">
@@ -96,7 +98,7 @@ export function FunctionalIngredient() {
                 llega activo igual. No cambies tu rutina. Se adapta a ella.
               </p>
               <div className="pt-2">
-                <LongSheet.Root>
+                <LongSheet.Root presented={sheetOpen} onPresentedChange={setSheetOpen}>
                   <LongSheet.Trigger asChild>
                     <button
                       type="button"
@@ -113,7 +115,7 @@ export function FunctionalIngredient() {
                   </LongSheet.Trigger>
                   <LongSheet.Portal>
                     <LongSheet.View>
-                      <LongSheet.Backdrop />
+                      <LongSheet.Backdrop onClick={() => setSheetOpen(false)} />
                       <LongSheet.Content>
                         <article className="ExampleLongSheet-article">
                           <LongSheet.Trigger action="dismiss" asChild>

@@ -79,7 +79,7 @@ export function Microbiota() {
                   </LongSheet.Trigger>
                   <LongSheet.Portal>
                     <LongSheet.View>
-                      <LongSheet.Backdrop />
+                      <LongSheet.Backdrop onClick={() => setFormulaOpen(false)} />
                       <LongSheet.Content>
                         <article className="ExampleLongSheet-article">
                           <LongSheet.Trigger action="dismiss" asChild>
