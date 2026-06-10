@@ -6,6 +6,7 @@ import { Supporters } from "./supporters";
 import { OriginStory } from "./origin-story";
 import { ScienceBlog } from "./science-blog";
 import { Community } from "./community";
+import { ClosingCta } from "./closing-cta";
 import { Footer } from "./footer";
 
 /**
@@ -26,6 +27,7 @@ export function LandingSections() {
         <OriginStory />
         <ScienceBlog />
         <Community />
+        <ClosingCta />
       </main>
       <Footer />
     </>

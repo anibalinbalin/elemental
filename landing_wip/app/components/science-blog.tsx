@@ -89,7 +89,7 @@ export function ScienceBlog() {
                     {article.title}
                   </h3>
                   <span className="mt-auto pt-4 inline-block text-xs font-medium text-muted-foreground uppercase tracking-wider group-hover:text-foreground transition-colors">
-                    Ver mas
+                    Ver más
                   </span>
                 </div>
               </a>

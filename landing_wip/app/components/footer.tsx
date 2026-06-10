@@ -1,7 +1,6 @@
 "use client";
 
 import { HugeiconsIcon } from "@hugeicons/react";
-import Facebook01Icon from "@hugeicons/core-free-icons/Facebook01Icon";
 import InstagramIcon from "@hugeicons/core-free-icons/InstagramIcon";
 import Mail01Icon from "@hugeicons/core-free-icons/Mail01Icon";
 import { SectionReveal } from "./section-reveal";
@@ -10,29 +9,38 @@ import { QuizSheetTrigger } from "./quiz-sheet";
 const colLeft = [
   { label: "Microbiota", href: "#microbiota" },
   { label: "Producto", href: "#producto" },
-  { label: "Ciencia", href: "#ciencia" },
+  { label: "Ciencia", href: "#ciencia-cotidiana" },
   { label: "Cómo funciona", href: "#como-funciona" },
   { label: "Origen", href: "#origen" },
   { label: "Comunidad", href: "#comunidad" },
 ];
 
 const colRight = [
-  { label: "Términos", href: "#" },
-  { label: "Garantía", href: "#" },
-  { label: "Envíos", href: "#" },
-  { label: "FAQ", href: "#" },
+  { label: "Términos", href: "/ayuda#terminos" },
+  { label: "Garantía", href: "/ayuda#garantia" },
+  { label: "Envíos", href: "/ayuda#envios" },
+  { label: "FAQ", href: "/ayuda#faq" },
 ];
 
 const socialIcons = [
-  { icon: Facebook01Icon, label: "Facebook" },
-  { icon: InstagramIcon, label: "Instagram" },
-  { icon: Mail01Icon, label: "Email" },
+  {
+    icon: InstagramIcon,
+    label: "Instagram",
+    href: "https://www.instagram.com/elementalbloomco",
+    external: true,
+  },
+  {
+    icon: Mail01Icon,
+    label: "Email",
+    href: "mailto:hola@elementalbloomco.com",
+    external: false,
+  },
 ];
 
 export function Footer() {
   return (
     <footer>
-      <div className="bg-surface-1 text-foreground">
+      <div className="bg-surface-1 text-foreground border-t border-border">
         <div className="mx-auto max-w-7xl px-6 pt-20 lg:pt-28 pb-12">
           <SectionReveal>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-16">
@@ -82,7 +90,10 @@ export function Footer() {
               {socialIcons.map((social) => (
                 <a
                   key={social.label}
-                  href="#"
+                  href={social.href}
+                  {...(social.external
+                    ? { target: "_blank", rel: "noopener noreferrer" }
+                    : {})}
                   aria-label={social.label}
                   className="w-9 h-9 rounded-full bg-neutral-100 flex items-center justify-center hover:bg-neutral-200 transition-colors"
                 >

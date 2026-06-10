@@ -60,11 +60,14 @@ export function useHideOnScroll({ threshold = 8, revealAtTop = 64 } = {}) {
   return hidden;
 }
 
+/* No permanent will-change here: a backdrop-filter descendant inside a
+ * will-change:transform ancestor makes Safari/Chrome snapshot the backdrop in
+ * split tiles, drawing a hard vertical seam across the pill wherever a
+ * composited layer edge (e.g. the pinned particle-band canvas) sits behind it. */
 function navMotion(hidden: boolean): CSSProperties {
   return {
     transform: hidden ? "translateY(-100%)" : "translateY(0)",
     transition: `transform ${hidden ? 240 : 300}ms var(--ease-out-quint)`,
-    willChange: "transform",
   };
 }
 
@@ -90,10 +93,12 @@ export function NavbarPill({ sheetOpen = false }: { sheetOpen?: boolean }) {
   const hidden = hiddenByScroll || (sheetOpen && isMobile);
   return (
     <div
-      className="fixed inset-x-0 top-0 z-[100] flex justify-center px-4 pt-4"
+      className="fixed inset-x-0 top-0 isolate z-[100] flex justify-center px-4 pt-4"
       style={navMotion(hidden)}
     >
-      <nav className="flex items-center gap-1 rounded-xl border border-white/10 bg-[#171717]/70 p-1.5 shadow-[0_12px_34px_-14px_rgba(0,0,0,0.55)] backdrop-blur-[14px]">
+      {/* will-change:backdrop-filter keeps the backdrop snapshot fresh while
+          animated canvas/blend layers render below (stale-tile seam fix). */}
+      <nav className="flex items-center gap-1 rounded-xl border border-white/10 bg-[#171717]/70 p-1.5 shadow-[0_12px_34px_-14px_rgba(0,0,0,0.55)] backdrop-blur-[14px] [will-change:backdrop-filter]">
         <Link
           href="/"
           className="rounded-lg px-3 py-2.5 font-mono text-xs font-semibold uppercase tracking-[0.2em] text-white"

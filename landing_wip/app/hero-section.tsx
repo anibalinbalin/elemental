@@ -39,8 +39,12 @@ export function HeroSection() {
             </div>
           </div>
 
+          {/* isolate: keep the soft-light PerlinNoise blend inside this panel.
+              Without it the blend participates in the page stacking context and
+              the navbar's backdrop-blur snapshot goes stale in tiles (vertical
+              seam in the pill that clears on hover/repaint). */}
           <div
-            className="relative w-full overflow-hidden rounded-3xl"
+            className="relative isolate w-full overflow-hidden rounded-3xl"
             style={{ aspectRatio: "4549 / 6361" }}
           >
             {/* Base layer: Paper key art (rotation baked into the webp) */}

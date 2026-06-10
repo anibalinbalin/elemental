@@ -63,7 +63,7 @@ export function ParticleBand() {
       ScrollTrigger.create({
         trigger: pinRef.current,
         start: "top top",
-        end: "+=160%",
+        end: "+=100%",
         scrub: 1,
         pin: pinRef.current,
         pinSpacing: true,

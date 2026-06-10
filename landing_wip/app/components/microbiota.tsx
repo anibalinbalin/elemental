@@ -74,7 +74,7 @@ export function Microbiota() {
                       type="button"
                       className="text-sm font-medium underline underline-offset-4 hover:text-muted-foreground transition-colors cursor-pointer"
                     >
-                      Ver formula
+                      Ver fórmula
                     </button>
                   </LongSheet.Trigger>
                   <LongSheet.Portal>
@@ -101,7 +101,7 @@ export function Microbiota() {
                           </LongSheet.Trigger>
                           <div className="ExampleLongSheet-articleContent">
                             <LongSheet.Title className="ExampleLongSheet-title" asChild>
-                              <h1>Formula MICROCORE</h1>
+                              <h1>Fórmula MICROCORE</h1>
                             </LongSheet.Title>
                             <h2 className="ExampleLongSheet-subtitle">
                               Una sola cucharada. Cinco funciones.

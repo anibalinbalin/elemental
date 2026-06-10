@@ -356,6 +356,34 @@
   line-height: 1.6;
 }
 
+/* Product recommendation */
+.QuizSheet-product {
+  padding: 18px;
+  background: var(--card);
+  border: 1.5px solid var(--border);
+  border-radius: 14px;
+}
+.QuizSheet-productTieIn {
+  font-size: 15px;
+  line-height: 1.6;
+}
+.QuizSheet-productRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+.QuizSheet-product .QuizSheet-btn:active {
+  transform: scale(0.97);
+}
+.QuizSheet-product .QuizSheet-btn:disabled {
+  opacity: 0.6;
+  cursor: wait;
+  transform: none;
+}
+
 /* Menu tabs */
 .QuizSheet-tabs {
   display: flex;

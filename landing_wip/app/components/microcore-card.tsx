@@ -72,6 +72,14 @@ export function MicrocoreCard() {
                     >
                       Comprar ahora
                     </BuyButton>
+                    <div className="flex flex-col gap-1">
+                      <span className="text-xs text-muted-foreground">
+                        Envío a todo Uruguay
+                      </span>
+                      <span className="text-xs text-muted-foreground">
+                        Pago seguro con Mercado Pago
+                      </span>
+                    </div>
                   </div>
                 </div>
 
