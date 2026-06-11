@@ -1,9 +1,17 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import { useRef } from "react";
 import { useReducedMotion } from "@/lib/use-reduced-motion";
 import { InViewMount } from "./in-view-mount";
-import { ImageLoupe } from "./image-loupe";
+
+// The microbiota "microscope" loupe (loupe-original): a WebGL glass lens with a
+// real winder dial and a living shimmer. Lazy-loaded so its three.js /
+// framer-motion deps and the hi-res source only fetch client-side when the
+// section is reached, never on the initial homepage paint.
+const MicrobiotaLoupeMarj = dynamic(() => import("./microbiota-loupe-marj"), {
+  ssr: false,
+});
 
 /**
  * Paper composite for the "Todo empieza en la microbiota" section (files IG-0 /
@@ -14,6 +22,10 @@ import { ImageLoupe } from "./image-loupe";
  * the shader only mounts while the panel is near the viewport.
  */
 const BG = "/images/microbiota-paper.webp";
+// Higher-resolution build of the SAME composite (3000px, with native fine grain)
+// fed only to the marj microscope so it stays crisp when magnified — the card
+// behind keeps the light 1100px BG. Same content + cover framing, so they register.
+const BG_HI = "/images/microbiota-paper-hi.webp";
 
 const PerlinNoise = dynamic(
   () =>
@@ -31,11 +43,13 @@ export function MicrobiotaShader({
   loupeHidden?: boolean;
 }) {
   const reducedMotion = useReducedMotion();
+  const cardRef = useRef<HTMLDivElement>(null);
 
   return (
     // Outer box owns the layout (aspect + rounded class) but does NOT clip, so the
     // loupe can sit ON the card with its full bezel visible past the image edges.
     <div
+      ref={cardRef}
       className={className}
       style={{ position: "relative", aspectRatio: "5233 / 7361" }}
     >
@@ -78,8 +92,9 @@ export function MicrobiotaShader({
           />
         </InViewMount>
       </div>
-      {/* Microscope loupe — rests on top of the card, never clipped by its edges. */}
-      <ImageLoupe src={BG} hidden={loupeHidden} />
+      {/* Microscope loupe — rests on top of the card, never clipped by its edges.
+          Samples the hi-res source (BG_HI) so it stays crisp when magnified. */}
+      <MicrobiotaLoupeMarj src={BG_HI} containerRef={cardRef} hidden={loupeHidden} />
     </div>
   );
 }
