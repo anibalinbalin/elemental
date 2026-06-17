@@ -176,11 +176,12 @@ export function Footer() {
           </div>
         </div>
 
-        {/* Full-bleed wordmark */}
-        <div className="mt-14 px-4 pb-6 lg:mt-20">
+        {/* Full-bleed wordmark — white, oversized so it bleeds past both edges
+            (clipped by the block's overflow-hidden), like the Figma. */}
+        <div className="mt-12 pb-5 lg:mt-16">
           <p
             className="select-none whitespace-nowrap text-center font-bold leading-none tracking-tight"
-            style={{ color: INK, fontSize: "clamp(2.25rem, 12.8vw, 15rem)" }}
+            style={{ color: "#fffff9", fontSize: "clamp(3rem, 15.5vw, 18rem)" }}
           >
             elemental bloom
           </p>
