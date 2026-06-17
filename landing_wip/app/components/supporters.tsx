@@ -25,7 +25,7 @@ export function Supporters() {
                 src={logo.src}
                 alt={logo.alt}
                 loading="lazy"
-                className="h-20 w-auto object-contain sm:h-24"
+                className="h-60 w-auto object-contain sm:h-72"
               />
             ))}
           </div>
