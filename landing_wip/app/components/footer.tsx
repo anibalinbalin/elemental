@@ -176,15 +176,15 @@ export function Footer() {
           </div>
         </div>
 
-        {/* Full-bleed wordmark — white, oversized so it bleeds past both edges
-            (clipped by the block's overflow-hidden), like the Figma. */}
-        <div className="mt-12 pb-5 lg:mt-16">
-          <p
-            className="select-none whitespace-nowrap text-center font-bold leading-none tracking-tight"
-            style={{ color: "#fffff9", fontSize: "clamp(3rem, 15.5vw, 18rem)" }}
-          >
-            elemental bloom
-          </p>
+        {/* Full-bleed wordmark — the exact Figma vector (outlined letterforms,
+            falls back to #F9F9F9 white as an <img>), oversized so it bleeds
+            past both edges, clipped by the block's overflow-hidden. */}
+        <div className="mt-12 flex justify-center pb-6 lg:mt-16">
+          <img
+            src="/images/wordmark-elemental-bloom.svg"
+            alt="Elemental Bloom"
+            className="block w-[112%] max-w-none shrink-0 select-none"
+          />
         </div>
       </div>
     </footer>
