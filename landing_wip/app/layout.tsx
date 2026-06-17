@@ -4,6 +4,13 @@ import { Analytics } from "@vercel/analytics/next";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import "./globals.css";
 import { LayoutShell } from "./layout-shell";
+import { Analytics } from "@vercel/analytics/next";
+import { GoogleAnalytics } from "@next/third-parties/google";
+
+// GA4 Measurement ID (G-XXXXXXXXXX). Set NEXT_PUBLIC_GA_ID in the Vercel
+// project env (and .env.local) to enable Google Analytics. When unset, the
+// gtag.js script is not injected — no tracking, no extra requests.
+const gaId = process.env.NEXT_PUBLIC_GA_ID;
 
 // GA4 Measurement ID (G-XXXXXXXXXX). Set NEXT_PUBLIC_GA_ID in the Vercel
 // project env (and .env.local) to enable Google Analytics. When unset, the

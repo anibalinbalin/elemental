@@ -7,7 +7,7 @@ const nextConfig: NextConfig = {
     "claude-code-sec.tailf626.ts.net",
   ],
   // Serve modern formats for any next/image usage.
-  images: {
+  images: { unoptimized: true,
     formats: ["image/avif", "image/webp"],
   },
   experimental: {
