@@ -1,6 +1,9 @@
 "use client";
 
-import { useEffect, useRef, type CSSProperties } from "react";
+import dynamic from "next/dynamic";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { InViewMount } from "./in-view-mount";
+import type { LoupeLensState } from "./loupe-lens";
 
 /**
  * Microscope loupe confined to a single image. Reuses the loupe.css microscope
@@ -12,7 +15,77 @@ import { useEffect, useRef, type CSSProperties } from "react";
  * Drag the lens to move it; drag the outer dial ring (the wing) to change zoom
  * (1.5–4x). A living-noise canvas keeps the lens alive; it only animates while
  * the image is on screen and freezes under prefers-reduced-motion.
+ *
+ * A/B: the magnifier has two variants behind a switch. "css" (default) is the
+ * flat background-scale above. "glass" swaps in `GlassLens` — a WebGL
+ * ray-traced glass lens with real refraction + chromatic aberration. Pick via
+ * the `variant` prop or the `?loupe=glass` URL param; the same pointer/dial
+ * logic drives both, so only the magnification optics differ.
  */
+const GlassLens = dynamic(
+  () => import("./loupe-lens").then((m) => ({ default: m.GlassLens })),
+  { ssr: false },
+);
+
+/**
+ * Resolve the loupe variant: explicit prop wins, else the `?loupe=glass` URL
+ * param. The URL is only read in an effect (after mount) so the server and the
+ * first client render agree on "css" — reading `window` during render would
+ * desync hydration and React would keep the server branch, never swapping in
+ * the glass lens.
+ */
+function useLoupeVariant(override?: "css" | "glass"): "css" | "glass" {
+  const [variant, setVariant] = useState<"css" | "glass">(override ?? "css");
+  useEffect(() => {
+    if (override) {
+      setVariant(override);
+      return;
+    }
+    if (new URLSearchParams(window.location.search).get("loupe") === "glass") {
+      setVariant("glass");
+    }
+  }, [override]);
+  return variant;
+}
+
+/** Glass optics, tunable live for the A/B via URL knobs. Empty = strong defaults. */
+type GlassOptics = {
+  ior?: number;
+  chromaticAberration?: number;
+  refractionScale?: number;
+  oblateZScale?: number;
+  lensThickness?: number;
+  bevelStart?: number;
+};
+
+/**
+ * Read per-knob glass overrides from the URL so strengths can be compared
+ * without a rebuild, e.g.
+ *   ?loupe=glass&ab=0.12&refr=1.3&ior=1.6   (extreme)
+ *   ?loupe=glass&ab=0.01&refr=0.5&ior=1.4   (the toned-down marj loupe original)
+ * Absent knobs fall through to the strong defaults in loupe-lens.tsx.
+ */
+function useGlassOptics(): GlassOptics {
+  const [optics, setOptics] = useState<GlassOptics>({});
+  useEffect(() => {
+    const q = new URLSearchParams(window.location.search);
+    const num = (k: string) => {
+      const v = q.get(k);
+      if (v == null) return undefined;
+      const n = Number(v);
+      return Number.isFinite(n) ? n : undefined;
+    };
+    setOptics({
+      ior: num("ior"),
+      chromaticAberration: num("ab"),
+      refractionScale: num("refr"),
+      oblateZScale: num("oblate"),
+      lensThickness: num("thick"),
+      bevelStart: num("bevel"),
+    });
+  }, []);
+  return optics;
+}
 const MIN_ZOOM = 1.5;
 const MAX_ZOOM = 4;
 const DEFAULT_ZOOM = 2.5;
@@ -51,13 +124,34 @@ function DialTicks() {
   return <g>{ticks}</g>;
 }
 
-export function ImageLoupe({ src, hidden = false }: { src: string; hidden?: boolean }) {
+export function ImageLoupe({
+  src,
+  hidden = false,
+  variant: variantProp,
+}: {
+  src: string;
+  hidden?: boolean;
+  variant?: "css" | "glass";
+}) {
+  const variant = useLoupeVariant(variantProp);
+  const isGlass = variant === "glass";
+  const glassOptics = useGlassOptics();
+
   const stageRef = useRef<HTMLDivElement>(null);
   const loupeRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLDivElement>(null);
   const dialRef = useRef<HTMLDivElement>(null);
   const magRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  // Shared with GlassLens: the pointer/dial loop writes the live lens center,
+  // zoom, and container size here every frame (container CSS px).
+  const lensStateRef = useRef<LoupeLensState>({
+    x: 0,
+    y: 0,
+    zoom: DEFAULT_ZOOM,
+    w: 0,
+    h: 0,
+  });
 
   // Hide the loupe while an overlay (e.g. the formula sheet) is open so it
   // doesn't float over the sheet.
@@ -71,7 +165,6 @@ export function ImageLoupe({ src, hidden = false }: { src: string; hidden?: bool
     const loupe = loupeRef.current!;
     const trigger = triggerRef.current!;
     const dial = dialRef.current!;
-    const mag = magRef.current!;
     const canvas = canvasRef.current!;
     const ctx = canvas.getContext("2d", { alpha: true });
 
@@ -104,8 +197,20 @@ export function ImageLoupe({ src, hidden = false }: { src: string; hidden?: bool
       loupe.style.setProperty("--loupe-x", `${s.x}px`);
       loupe.style.setProperty("--loupe-y", `${s.y}px`);
       loupe.style.setProperty("--dial-rotation", `${s.dialRotation}deg`);
-      mag.style.backgroundSize = `${w * s.zoom}px ${h * s.zoom}px`;
-      mag.style.backgroundPosition = `${HALF - s.x * s.zoom}px ${HALF - s.y * s.zoom}px`;
+      // Feed the WebGL glass lens (no-op for the CSS variant, which reads `mag`).
+      const ls = lensStateRef.current;
+      ls.x = s.x;
+      ls.y = s.y;
+      ls.zoom = s.zoom;
+      ls.w = w;
+      ls.h = h;
+      // Read fresh each frame: the CSS `mag` node only exists in the css variant,
+      // and may unmount if the variant flips to glass after mount.
+      const mag = magRef.current;
+      if (mag) {
+        mag.style.backgroundSize = `${w * s.zoom}px ${h * s.zoom}px`;
+        mag.style.backgroundPosition = `${HALF - s.x * s.zoom}px ${HALF - s.y * s.zoom}px`;
+      }
     }
 
     const start = dims();
@@ -278,17 +383,23 @@ export function ImageLoupe({ src, hidden = false }: { src: string; hidden?: bool
       >
         <div ref={triggerRef} className="loupe-trigger" role="region" tabIndex={0} aria-label="Microscope loupe">
           <div className="loupe-lens">
-            <div
-              ref={magRef}
-              style={{
-                position: "absolute",
-                inset: 0,
-                zIndex: 1,
-                borderRadius: "inherit",
-                backgroundImage: `url(${src})`,
-                backgroundRepeat: "no-repeat",
-              }}
-            />
+            {isGlass ? (
+              <InViewMount>
+                <GlassLens src={src} stateRef={lensStateRef} {...glassOptics} />
+              </InViewMount>
+            ) : (
+              <div
+                ref={magRef}
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  zIndex: 1,
+                  borderRadius: "inherit",
+                  backgroundImage: `url(${src})`,
+                  backgroundRepeat: "no-repeat",
+                }}
+              />
+            )}
             <canvas ref={canvasRef} className="loupe-canvas" width={96} height={96} />
           </div>
         </div>

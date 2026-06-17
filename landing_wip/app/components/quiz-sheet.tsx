@@ -10,6 +10,8 @@ import React, {
 } from "react";
 import { Sheet, Scroll } from "@silk-hq/components";
 import { motion, AnimatePresence } from "framer-motion";
+import { BuyButton } from "./buy-button";
+import { PRODUCT, formatPrice } from "@/lib/product";
 import "./quiz-sheet.css";
 
 /* ─────────────────────────────────────────────────────────
@@ -40,6 +42,7 @@ import "./quiz-sheet.css";
  *   200ms   lead text fades in
  *   350ms   pillars cascade (stagger 80ms)
  *   700ms   closing card slides up
+ *   850ms   product card slides up
  * ───────────────────────────────────────────────────────── */
 
 /* ─── Quiz data ─── */
@@ -174,6 +177,7 @@ type ProfileResult = {
   lead: string;
   pillars: string[];
   closing: string;
+  tieIn: string;
 };
 
 const RESULTS: Record<number, ProfileResult> = {
@@ -189,6 +193,8 @@ const RESULTS: Record<number, ProfileResult> = {
     ],
     closing:
       "MicroCore fue diseñado para acompañar el bienestar desde adentro, combinando ingredientes funcionales en un formato fácil de integrar a tu rutina.",
+    tieIn:
+      "Para tu perfil, una cucharada diaria de MicroCore, en frío o caliente, es la forma más simple de darle soporte constante a tu digestión y tu energía.",
   },
   2: {
     crest: "Tu perfil MicroCore",
@@ -202,6 +208,8 @@ const RESULTS: Record<number, ProfileResult> = {
     ],
     closing:
       "MicroCore combina nutrición funcional y bienestar digestivo para acompañar estilos de vida modernos de forma simple y natural.",
+    tieIn:
+      "Con una cucharada diaria de MicroCore, en frío o caliente, podés sostener tu energía y tu ánimo sin sumarle pasos a tu rutina.",
   },
   3: {
     crest: "Tu perfil MicroCore",
@@ -215,6 +223,8 @@ const RESULTS: Record<number, ProfileResult> = {
     ],
     closing:
       "MicroCore fue creado justamente para integrarse de forma práctica a rutinas modernas de wellness y alimentación funcional.",
+    tieIn:
+      "Si ya cuidás tu bienestar, MicroCore se integra fácil: una cucharada diaria que acompaña tu digestión, tu piel y tu ánimo.",
   },
 };
 
@@ -300,6 +310,7 @@ const RESULT_TIMING = {
   pillars: 0.35,
   pillarStagger: 0.08,
   closing: 0.7,
+  product: 0.85,
 } as const;
 
 const RESULT_SPRING = { type: "spring" as const, stiffness: 350, damping: 28 } as const;
@@ -780,6 +791,31 @@ function QuizBody() {
           {r.closing}
         </motion.div>
 
+        <motion.div
+          className="QuizSheet-product mt-5"
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: RESULT_TIMING.product, ...RESULT_SPRING }}
+        >
+          <p className="font-mono text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
+            MicroCore
+          </p>
+          <p className="QuizSheet-productTieIn mt-2">{r.tieIn}</p>
+          <div className="QuizSheet-productRow">
+            <span className="flex items-baseline gap-1.5 whitespace-nowrap">
+              <span className="text-xl font-bold tracking-tight">
+                {formatPrice(PRODUCT.unitPrice)}
+              </span>
+              <span className="font-mono text-xs uppercase text-muted-foreground">
+                / 300 g
+              </span>
+            </span>
+            <BuyButton className="QuizSheet-btn QuizSheet-btnPrimary">
+              Comprar ahora
+            </BuyButton>
+          </div>
+        </motion.div>
+
         <div className="QuizSheet-nav mt-6">
           <button
             type="button"
@@ -824,9 +860,17 @@ function QuizBody() {
 
 /* ─── Exported compound component ─── */
 
-export function QuizSheet({ children }: { children: React.ReactNode }) {
+export function QuizSheet({
+  children,
+  presented,
+  onPresentedChange,
+}: {
+  children: React.ReactNode;
+  presented?: boolean;
+  onPresentedChange?: (presented: boolean) => void;
+}) {
   return (
-    <QuizSheetRoot>
+    <QuizSheetRoot presented={presented} onPresentedChange={onPresentedChange}>
       {children}
       <Sheet.Portal>
         <QuizSheetView>

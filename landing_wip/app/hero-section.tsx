@@ -5,8 +5,13 @@ import { Button } from "@/components/ui/button";
 import { InViewMount } from "./components/in-view-mount";
 
 export function HeroSection() {
+  // Hero panel ends in a barely-rounded bottom edge so it reads as a distinct
+  // block while the same raw cream (#fffff9 / surface-1) continues underneath
+  // into the next section. The soft shadow lets the curved edge separate from
+  // the identical-cream section below; without it the cream-on-cream rounding
+  // would be invisible.
   return (
-    <section className="relative bg-[#fffff9] min-h-screen flex items-center">
+    <section className="relative bg-[#fffff9] min-h-screen flex items-center rounded-b-[32px] shadow-[0_24px_50px_-32px_rgba(23,23,23,0.18)]">
       <div
         className="pointer-events-none absolute inset-x-0 -top-[120px] h-[120px]"
         style={{ background: "linear-gradient(to bottom, transparent, #fffff9)" }}
@@ -39,8 +44,13 @@ export function HeroSection() {
             </div>
           </div>
 
+          {/* TODO: swap to green hero image + higher-impact pack render (pending designer asset) */}
+          {/* isolate: keep the soft-light PerlinNoise blend inside this panel.
+              Without it the blend participates in the page stacking context and
+              the navbar's backdrop-blur snapshot goes stale in tiles (vertical
+              seam in the pill that clears on hover/repaint). */}
           <div
-            className="relative w-full overflow-hidden rounded-3xl"
+            className="relative isolate w-full overflow-hidden rounded-3xl"
             style={{ aspectRatio: "4549 / 6361" }}
           >
             {/* Base layer: Paper key art (rotation baked into the webp) */}
