@@ -1,62 +1,78 @@
 "use client";
 
-import { cn } from "@/lib/utils";
-import { useShape } from "@/lib/shape-context";
-import { PlaceholderImage } from "./placeholder-image";
 import { SectionReveal } from "./section-reveal";
 
-export function OriginStory() {
-  const shape = useShape();
+// Origin story (EB-web-02 Figma): near-white text panel on the left, founder
+// photo full-bleed on the right. Heading is regular weight (not bold), dark
+// near-black ink with a dark-grey body. Colors sampled from the Figma frame.
+const BG = "#f9f9f9";
+const INK = "#1a1a1a";
+const BODY = "#3a3a3a";
 
+export function OriginStory() {
   return (
-    <section id="origen" className="bg-surface-2">
-      <div className="mx-auto max-w-7xl px-6 py-20 lg:py-28">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-          <SectionReveal>
-            <div className="flex flex-col gap-6">
-              <h2 className="text-3xl lg:text-5xl font-bold tracking-tight">
-                Nació de una búsqueda personal de bienestar
-              </h2>
-              <p className="text-muted-foreground leading-relaxed">
+    <section style={{ backgroundColor: BG }}>
+      <div className="grid lg:grid-cols-[1.15fr_1fr]">
+        {/* Founder photo — first on mobile, right column on desktop. */}
+        <SectionReveal
+          delay={0.08}
+          className="relative order-1 min-h-[72vw] sm:min-h-[440px] lg:order-2 lg:min-h-0"
+        >
+          <img
+            src="/images/founder.webp"
+            alt="Laura, fundadora y nutricionista de Elemental Bloom, con un batido de açaí"
+            className="absolute inset-0 h-full w-full object-cover object-center"
+          />
+        </SectionReveal>
+
+        {/* Story text — second on mobile, left column on desktop. */}
+        <SectionReveal className="order-2 flex items-center lg:order-1">
+          <div className="mx-auto w-full max-w-xl px-6 py-16 sm:px-10 lg:py-24 lg:pl-16 lg:pr-10">
+            <h2
+              className="text-[2rem] font-normal leading-[1.06] tracking-tight sm:text-[2.5rem] lg:text-[3.25rem]"
+              style={{ color: INK }}
+            >
+              Nació de una búsqueda personal de bienestar
+            </h2>
+
+            <div
+              className="mt-8 flex flex-col gap-5 text-[15px] leading-relaxed sm:text-base"
+              style={{ color: BODY }}
+            >
+              <p>
                 Laura es nutricionista. En años de consulta clínica vio cómo
                 cambios reales en la alimentación transformaban la digestión, la
                 piel, la energía de sus pacientes. También vio lo más difícil:
                 mantener esos cambios cuando la vida es caótica.
               </p>
-              <p className="text-muted-foreground leading-relaxed">
+              <p>
                 MICROCORE nació de esa observación, un alimento funcional que
                 hace el trabajo aunque el día sea complicado. Sin cápsulas, sin
                 rutinas extra. Se mezcla con lo que ya comés.
               </p>
-              <blockquote className="border-l-2 border-foreground pl-4 mt-2">
-                <p className="text-sm italic leading-relaxed">
+
+              <div>
+                <p className="italic">
                   &ldquo;Quería algo que mis propios pacientes pudieran usar de
-                  verdad todos los días, sin esfuerzo adicional.&rdquo;
+                  verdad, todos los días, sin esfuerzo adicional.&rdquo;
                 </p>
-                <footer className="mt-2">
-                  <cite className="not-italic text-xs font-bold">
-                    Lic. en nutrición Laura Fuentes,
-                  </cite>{" "}
-                  <span className="text-xs text-muted-foreground">
-                    Fundadora
-                  </span>
-                </footer>
-              </blockquote>
-              <p className="text-sm text-muted-foreground">
-                Así nació <span className="font-bold">Elemental Bloom.</span>
+                <p
+                  className="mt-1 font-semibold not-italic"
+                  style={{ color: INK }}
+                >
+                  Laura, Fundadora y Nutricionista
+                </p>
+              </div>
+
+              <p>
+                Así nació{" "}
+                <span className="font-semibold" style={{ color: INK }}>
+                  Elemental Bloom.
+                </span>
               </p>
             </div>
-          </SectionReveal>
-
-          <SectionReveal delay={0.1}>
-            <PlaceholderImage
-              className={cn("w-full", shape.container)}
-              aspectRatio="4/5"
-              src="/images/founder.webp"
-              alt="Laura, fundadora y nutricionista de Elemental Bloom"
-            />
-          </SectionReveal>
-        </div>
+          </div>
+        </SectionReveal>
       </div>
     </section>
   );

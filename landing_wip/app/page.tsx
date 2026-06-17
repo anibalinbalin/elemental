@@ -1,6 +1,5 @@
-import { HeroSection } from "./hero-section";
+import { HeroSplit } from "./hero-split";
 import { LandingSections } from "./components/landing-sections";
-import { ParticleBand } from "./components/particle-band";
 import { PRODUCT } from "@/lib/product";
 
 const productJsonLd = {
@@ -32,8 +31,9 @@ export default function Home() {
           __html: JSON.stringify(productJsonLd).replace(/</g, "\\u003c"),
         }}
       />
-      <HeroSection />
-      <ParticleBand />
+      <div id="inicio" className="scroll-mt-24">
+        <HeroSplit />
+      </div>
       <LandingSections />
     </>
   );

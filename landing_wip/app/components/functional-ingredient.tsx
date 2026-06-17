@@ -2,9 +2,7 @@
 
 import { VisuallyHidden } from "@silk-hq/components";
 import { useState } from "react";
-import { cn } from "@/lib/utils";
-import { useShape } from "@/lib/shape-context";
-import { CursorDrivenParticleImage } from "./cursor-driven-particle-crest";
+import { ScienceBadge } from "./science-badge";
 import { SectionReveal } from "./section-reveal";
 import { LongSheet } from "./silk-long-sheet";
 
@@ -49,66 +47,75 @@ const scienceHighlights = [
 ];
 
 export function FunctionalIngredient() {
-  const shape = useShape();
   const [sheetOpen, setSheetOpen] = useState(false);
 
   return (
-    <section id="como-funciona" className="bg-surface-1">
-      <div className="mx-auto max-w-7xl px-6 py-20 lg:py-28">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+    <section
+      id="como-funciona"
+      // Lime on top (so the top corner notches blend with the testimonial lime
+      // above) → #fffff9 on the bottom (so the bottom corner notches reveal the
+      // Supporters section below, not green). The cream block covers the seam.
+      style={{ background: "linear-gradient(#C8F670 50%, #fffff9 50%)" }}
+    >
+      {/* Floating rounded cream block (EB-web-02): #f0f1e5 with rounded top AND
+          bottom. Top notches reveal lime; bottom notches reveal #fffff9. */}
+      <div className="relative overflow-hidden rounded-[2.75rem] bg-[#f0f1e5] lg:rounded-[3.5rem]">
+        {/* Hint of another image peeking in from the left edge (EB-web-02). */}
+        <div className="pointer-events-none absolute left-0 top-1/2 hidden aspect-square w-[clamp(380px,40vw,600px)] -translate-x-[72%] -translate-y-1/2 overflow-hidden rounded-full lg:block">
+          <img
+            src="/images/ingredient-hint.webp"
+            alt=""
+            aria-hidden
+            className="h-full w-full object-cover"
+          />
+        </div>
+        {/* Static CIENCIA CLARA seal, top-right. */}
+        <ScienceBadge
+          spin={false}
+          className="absolute right-6 top-6 z-20 w-[96px] sm:w-[120px] lg:right-12 lg:top-10 lg:w-[132px]"
+        />
+        <div className="relative z-10 mx-auto max-w-7xl px-6 py-20 lg:py-28">
+          <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-16">
+          {/* LEFT: açaí-bowl circle (EB-web-02) with the science seal overlapping. */}
           <SectionReveal>
-            {/* Particle coat of arms — reinforces "desarrollado en Uruguay".
-             * Tuned values baked in as constants (no DialKit in production). */}
-            <div
-              className={cn(
-                "relative w-full overflow-hidden bg-surface-2",
-                shape.container
-              )}
-              style={{ aspectRatio: "1/1" }}
-            >
-              <CursorDrivenParticleImage
-                className="!min-h-0"
-                src="/coat-of-arms-uruguay.svg"
-                particleDensity={5}
-                particleSize={1.5}
-                scale={0.75}
-                alphaThreshold={128}
-                dispersionStrength={15}
-                returnSpeed={0.08}
-                friction={0.85}
-                interactionRadius={75}
-              />
+            <div className="relative mx-auto w-full max-w-[520px]">
+              <div className="aspect-square w-full overflow-hidden rounded-full">
+                <img
+                  src="/images/mix-in-bowls.webp"
+                  alt="Bowl de açaí con granola, avena y el pouch de MICROKORE"
+                  className="h-full w-full object-cover"
+                />
+              </div>
             </div>
           </SectionReveal>
 
+          {/* RIGHT: heading + copy + Ver cómo usarlo (sheet preserved verbatim). */}
           <SectionReveal delay={0.1}>
             <div className="flex flex-col gap-6">
-              <h2 className="text-3xl lg:text-5xl font-bold tracking-tight">
-                Ingrediente funcional termorresistente desarrollado en Uruguay.
+              <h2 className="text-4xl font-bold leading-[1.05] tracking-tight text-foreground lg:text-5xl xl:text-[3.4rem]">
+                Ingrediente funcional termoresistente desarrollado en Uruguay.
               </h2>
-              <p className="text-muted-foreground leading-relaxed">
+              <p className="leading-relaxed text-foreground/80">
                 Los probióticos comunes mueren con el calor. Por eso la mayoría
                 viene en cápsulas que no podés mezclar con nada caliente.
-                MICROCORE está formulado con Bacillus Coagulans esporulado,
+              </p>
+              <p className="leading-relaxed text-foreground/80">
+                <strong className="font-semibold text-foreground">
+                  MICROCORE está formulado con Bacillus coagulans esporulado,
+                </strong>{" "}
                 sobrevive al calor, al frío y al ácido estomacal. Llega activo
                 donde tiene que llegar.
               </p>
-              <p className="text-muted-foreground leading-relaxed">
+              <p className="leading-relaxed text-foreground/80">
                 Mezclalo en tu yogur, tu avena o tu smoothie. Frío o caliente,
-                llega activo igual. No cambies tu rutina. Se adapta a ella.
+                llega activo igual. No cambia tu rutina. Se adapta a ella.
               </p>
               <div className="pt-2">
                 <LongSheet.Root presented={sheetOpen} onPresentedChange={setSheetOpen}>
                   <LongSheet.Trigger asChild>
                     <button
                       type="button"
-                      className={cn(
-                        "inline-flex items-center justify-center",
-                        "border border-foreground",
-                        "px-8 py-3 text-sm font-medium",
-                        "hover:bg-foreground hover:text-background transition-colors cursor-pointer",
-                        shape.button
-                      )}
+                      className="inline-flex h-12 items-center rounded-full bg-[#171717] px-7 text-[15px] font-medium text-white transition-[transform,background-color] duration-150 hover:bg-[#262626] active:scale-[0.98]"
                     >
                       Ver cómo usarlo
                     </button>
@@ -249,6 +256,7 @@ export function FunctionalIngredient() {
               </div>
             </div>
           </SectionReveal>
+          </div>
         </div>
       </div>
     </section>

@@ -17,20 +17,20 @@ export function MicrocoreCard() {
           <SectionReveal>
             <div
               className={cn(
-                "bg-surface-3 shadow-surface-4",
+                "bg-bordeaux text-bordeaux-foreground shadow-surface-4",
                 "p-8 lg:p-16",
                 shape.container
               )}
             >
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                 <div className="flex flex-col gap-6">
-                  <span className="text-xs font-mono uppercase tracking-widest text-muted-foreground">
+                  <span className="text-xs font-mono uppercase tracking-widest text-bordeaux-foreground/70">
                     Microcore
                   </span>
-                  <h2 className="text-3xl lg:text-5xl font-bold tracking-tight">
+                  <h2 className="text-3xl lg:text-5xl font-bold tracking-tight text-bordeaux-foreground">
                     MICROCORE
                   </h2>
-                  <p className="text-lg text-muted-foreground leading-relaxed">
+                  <p className="text-lg text-bordeaux-foreground/80 leading-relaxed">
                     Una sola cucharada. Cinco funciones. Sin cápsulas. Frío o
                     caliente, llega activo igual.
                   </p>
@@ -39,33 +39,33 @@ export function MicrocoreCard() {
                     <span
                       className={cn(
                         "inline-flex items-center gap-1.5",
-                        "bg-neutral-200 px-3 py-1.5",
+                        "bg-lime/15 border border-bordeaux-foreground/30 text-bordeaux-foreground px-3 py-1.5",
                         "text-xs font-mono",
                         shape.button
                       )}
                     >
                       5 en 1
                     </span>
-                    <span className="text-xs text-muted-foreground font-mono uppercase">
+                    <span className="text-xs text-bordeaux-foreground/70 font-mono uppercase">
                       Microcore
                     </span>
                   </div>
 
                   <div className="flex flex-col gap-4 pt-4">
                     <div className="flex items-baseline gap-2">
-                      <span className="text-3xl font-bold tracking-tight">
+                      <span className="text-3xl font-bold tracking-tight text-bordeaux-foreground">
                         {formatPrice(PRODUCT.unitPrice)}
                       </span>
-                      <span className="text-xs font-mono uppercase text-muted-foreground">
+                      <span className="text-xs font-mono uppercase text-bordeaux-foreground/70">
                         / 300 g
                       </span>
                     </div>
                     <BuyButton
                       className={cn(
                         "inline-flex items-center justify-center",
-                        "bg-foreground text-background",
+                        "bg-lime text-lime-foreground",
                         "px-8 py-3 text-sm font-medium",
-                        "hover:opacity-90 transition-opacity",
+                        "hover:bg-lime/90 transition-colors",
                         "disabled:opacity-60 disabled:cursor-wait",
                         shape.button
                       )}
@@ -73,10 +73,10 @@ export function MicrocoreCard() {
                       Comprar ahora
                     </BuyButton>
                     <div className="flex flex-col gap-1">
-                      <span className="text-xs text-muted-foreground">
+                      <span className="text-xs text-bordeaux-foreground/70">
                         Envío a todo Uruguay
                       </span>
-                      <span className="text-xs text-muted-foreground">
+                      <span className="text-xs text-bordeaux-foreground/70">
                         Pago seguro con Mercado Pago
                       </span>
                     </div>

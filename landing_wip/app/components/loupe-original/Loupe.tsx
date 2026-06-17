@@ -101,6 +101,7 @@ function Loupe({
   onReady,
   sourceFit = "stamp",
   livingNoise = false,
+  sizeScale = 1,
 }: {
   selectedStamp: Stamp;
   dragConstraints: React.RefObject<HTMLElement | null>;
@@ -109,6 +110,8 @@ function Loupe({
   gridCellSize: number;
   activeStampContainerRef: React.RefObject<HTMLElement | null>;
   onReady?: (stampId: string) => void;
+  /** Multiplier on the lens + dial sizes (e.g. 0.7 = 30% smaller). */
+  sizeScale?: number;
   // "stamp" (default): the original demo look — a centered stamp on a stone grid.
   // "cover": sample the real image full-bleed (background-size: cover) so the lens
   // content lines up with a page that paints the same image, e.g. the homepage card.
@@ -125,8 +128,8 @@ function Loupe({
   const isMobile = useIsMobile();
   const isZoomed = useStampStore((s) => s.isZoomed);
 
-  const lensSize = isMobile ? 135 : 300;
-  const dialSize = isMobile ? 190 : 400;
+  const lensSize = (isMobile ? 135 : 300) * sizeScale;
+  const dialSize = (isMobile ? 190 : 400) * sizeScale;
 
   const magnifierControls = useAnimation();
   const dialDragControls = useDragControls();
@@ -530,6 +533,7 @@ function Loupe({
         className="marj-loupe-dial pointer-events-none absolute inset-0 z-50"
         inscription="ELEMENTAL  ·  10× MICROBIOTA MICROSCOPE  ·  elementalbloomco.com"
         size={dialSize}
+        sizeScale={sizeScale}
         tickCount={isMobile ? 120 : 180}
         tickLength={isMobile ? 4 : 8}
         tickWidth={1}

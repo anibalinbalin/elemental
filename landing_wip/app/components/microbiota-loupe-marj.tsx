@@ -62,6 +62,7 @@ export default function MicrobiotaLoupeMarj({
         gridCellSize={40}
         sourceFit="cover"
         livingNoise
+        sizeScale={0.7}
       />
     </>
   );

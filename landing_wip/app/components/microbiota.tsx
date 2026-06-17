@@ -1,25 +1,56 @@
 "use client";
 
 import { useState } from "react";
+import { HugeiconsIcon } from "@hugeicons/react";
 import DigestionIcon from "@hugeicons/core-free-icons/DigestionIcon";
-import HappyIcon from "@hugeicons/core-free-icons/HappyIcon";
-import Shield01Icon from "@hugeicons/core-free-icons/Shield01Icon";
 import FlashIcon from "@hugeicons/core-free-icons/FlashIcon";
-import Leaf01Icon from "@hugeicons/core-free-icons/Leaf01Icon";
 import { VisuallyHidden } from "@silk-hq/components";
-import { cn } from "@/lib/utils";
-import { useShape } from "@/lib/shape-context";
 import { MicrobiotaShader } from "./microbiota-shader";
 import { SectionReveal } from "./section-reveal";
-import { FeatureIcon } from "./feature-icon";
 import { LongSheet } from "./silk-long-sheet";
 
-const features = [
-  { label: "Digestión", icon: DigestionIcon },
-  { label: "Estado de ánimo", icon: HappyIcon },
-  { label: "Inflamación", icon: Shield01Icon },
-  { label: "Energía", icon: FlashIcon },
-  { label: "Piel", icon: Leaf01Icon },
+/* Bare thin-line icons matching the EB-web-02 Figma function row. Intestine and
+ * bolt come from Hugeicons; the wave, burst and skin-dots are drawn inline since
+ * the Figma uses custom glyphs Hugeicons doesn't carry. All render in currentColor. */
+function IconWave() {
+  return (
+    <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="h-full w-full">
+      <path d="M2 24q5.5-9 11 0t11 0 11 0 11 0" />
+    </svg>
+  );
+}
+
+function IconBurst() {
+  return (
+    <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" className="h-full w-full">
+      <path d="M31 24h8M28.95 19.05l5.65-5.65M24 17V9M19.05 19.05l-5.65-5.65M17 24H9M19.05 28.95l-5.65 5.65M24 31v8M28.95 28.95l5.65 5.65" />
+    </svg>
+  );
+}
+
+function IconDots() {
+  return (
+    <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" className="h-full w-full">
+      <path d="M7 24h34" />
+      <g fill="currentColor" stroke="none">
+        <circle cx="13" cy="15" r="1.3" />
+        <circle cx="22" cy="13" r="1.3" />
+        <circle cx="31" cy="15" r="1.3" />
+        <circle cx="38" cy="13" r="1.3" />
+        <circle cx="16" cy="33" r="1.3" />
+        <circle cx="25" cy="35" r="1.3" />
+        <circle cx="34" cy="33" r="1.3" />
+      </g>
+    </svg>
+  );
+}
+
+const functions = [
+  { label: "Digestión", render: () => <HugeiconsIcon icon={DigestionIcon} size={40} strokeWidth={1.7} /> },
+  { label: "Estado de ánimo", render: () => <IconWave /> },
+  { label: "Inflamación", render: () => <IconBurst /> },
+  { label: "Energía", render: () => <HugeiconsIcon icon={FlashIcon} size={40} strokeWidth={1.7} /> },
+  { label: "Piel", render: () => <IconDots /> },
 ];
 
 const nutritionFacts = [
@@ -32,37 +63,45 @@ const nutritionFacts = [
   { nutrient: "Sodio", amount: "15 mg", dailyValue: "1" },
 ];
 
-
 export function Microbiota() {
-  const shape = useShape();
   const [formulaOpen, setFormulaOpen] = useState(false);
 
   return (
     <section id="microbiota" className="bg-surface-1">
       <div className="mx-auto max-w-7xl px-6 py-20 lg:py-28">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+        <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-16">
           <SectionReveal>
-            <div className="flex flex-col gap-8">
-              <h2 className="text-3xl lg:text-5xl font-bold tracking-tight">
+            <div className="flex flex-col gap-7">
+              <h2 className="text-[2.75rem] font-bold leading-[1.0] tracking-tight text-foreground sm:text-6xl lg:text-7xl">
                 Todo empieza en la
                 <br />
                 microbiota
               </h2>
-              <p className="text-muted-foreground leading-relaxed max-w-md">
-                La microbiota intestinal participa en procesos clave del cuerpo.
-                Cuando ese equilibrio se altera, el cuerpo lo siente. MICROCORE
-                fue diseñado para apoyar ese equilibrio.
+              <p className="max-w-md text-lg leading-relaxed text-foreground">
+                La microbiota intestinal participa en procesos clave del cuerpo:
               </p>
 
-              <div className="flex flex-wrap gap-6">
-                {features.map((feature) => (
-                  <FeatureIcon
-                    key={feature.label}
-                    label={feature.label}
-                    icon={feature.icon}
-                  />
+              <div className="flex flex-wrap gap-x-7 gap-y-6">
+                {functions.map((f) => (
+                  <div
+                    key={f.label}
+                    className="flex w-[68px] flex-col items-center gap-3 text-center"
+                  >
+                    <span className="flex h-11 w-11 items-center justify-center text-[#171717]">
+                      {f.render()}
+                    </span>
+                    <span className="text-[11px] font-medium uppercase leading-tight tracking-[0.08em] text-foreground/70">
+                      {f.label}
+                    </span>
+                  </div>
                 ))}
               </div>
+
+              <p className="max-w-md leading-relaxed text-foreground/80">
+                Cuando ese equilibrio se altera, el cuerpo lo siente.{" "}
+                <strong className="font-semibold text-foreground">MICROCORE</strong>{" "}
+                fue diseñado para apoyar ese equilibrio.
+              </p>
 
               <div>
                 <LongSheet.Root
@@ -72,7 +111,7 @@ export function Microbiota() {
                   <LongSheet.Trigger asChild>
                     <button
                       type="button"
-                      className="text-sm font-medium underline underline-offset-4 hover:text-muted-foreground transition-colors cursor-pointer"
+                      className="inline-flex h-12 items-center rounded-full bg-[#171717] px-7 text-[15px] font-medium text-white transition-[transform,background-color] duration-150 hover:bg-[#262626] active:scale-[0.98]"
                     >
                       Ver fórmula
                     </button>
@@ -216,10 +255,13 @@ export function Microbiota() {
           </SectionReveal>
 
           <SectionReveal delay={0.1}>
-            <MicrobiotaShader
-              className={cn("w-full", shape.container)}
-              loupeHidden={formulaOpen}
-            />
+            <div className="mx-auto w-full max-w-[560px]">
+              <MicrobiotaShader
+                className="w-full rounded-full"
+                aspect="1 / 1"
+                loupeHidden={formulaOpen}
+              />
+            </div>
           </SectionReveal>
         </div>
       </div>

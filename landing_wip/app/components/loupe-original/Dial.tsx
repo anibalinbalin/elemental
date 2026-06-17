@@ -29,6 +29,9 @@ interface Props {
   value?: number;
   onChange?: (value: number) => void;
   disabled?: boolean;
+  /** Multiplier on hardcoded pixel details (ticks, font, strokes) so they scale
+   * with a resized dial. Matches the loupe's sizeScale. */
+  sizeScale?: number;
 }
 
 export default function Dial({
@@ -50,10 +53,11 @@ export default function Dial({
   onAngleChange,
   className,
   disabled,
+  sizeScale = 1,
 }: Props) {
   const isMobile = useIsMobile();
 
-  const padding = isMobile ? 14 : 20;
+  const padding = (isMobile ? 14 : 20) * sizeScale;
   const size = requestedSize - padding * 2;
 
   const tickCount = Math.floor(requestedTickCount / 5) * 5 - 1;
@@ -165,8 +169,9 @@ export default function Dial({
     };
   }, [handlePointerMove, handlePointerUp]);
 
+  const tl = tickLength * sizeScale;
   const ticks = Array.from({ length: tickCount }, (_, i) => {
-    const radius2 = size / 2 + (isMobile ? 8 : 12); // Increased radius by 10
+    const radius2 = size / 2 + (isMobile ? 8 : 12) * sizeScale; // Increased radius by 10
 
     const angleOffset = snapAngle; // One step offset
     const angle = (i / tickCount) * 360 - angleOffset;
@@ -174,10 +179,10 @@ export default function Dial({
     const radians = (angle * Math.PI) / 180;
     const isLongTick = i % 5 === 0;
 
-    const x1 = center + (radius2 - tickLength) * Math.cos(radians);
-    const y1 = center + (radius2 - tickLength) * Math.sin(radians);
-    const x2 = center + (isLongTick ? radius2 + tickLength * 0.5 : radius2) * Math.cos(radians);
-    const y2 = center + (isLongTick ? radius2 + tickLength * 0.5 : radius2) * Math.sin(radians);
+    const x1 = center + (radius2 - tl) * Math.cos(radians);
+    const y1 = center + (radius2 - tl) * Math.sin(radians);
+    const x2 = center + (isLongTick ? radius2 + tl * 0.5 : radius2) * Math.cos(radians);
+    const y2 = center + (isLongTick ? radius2 + tl * 0.5 : radius2) * Math.sin(radians);
 
     return (
       <line
@@ -201,11 +206,11 @@ export default function Dial({
     }
   }, [value, minValue, maxValue, minAngle, maxAngle, rotation]);
 
-  const fontSize = isMobile ? 6 : 10;
+  const fontSize = (isMobile ? 6 : 10) * sizeScale;
   const textRadius = isMobile ? radius - 2 : radius - 8;
   const highlightRadius = isMobile ? radius - 10 : radius - 22;
   const baseRadius = isMobile ? radius - 4 : radius - 10;
-  const textOffset = isMobile ? 250 : 550;
+  const textOffset = (isMobile ? 250 : 550) * sizeScale;
 
   const handleRadius = 20; // radius of the invisible group-sizing circle
 
@@ -304,7 +309,7 @@ export default function Dial({
           stroke="rgba(0,0,0,0.75)"
           filter="url(#blur-5)"
           className="base"
-          strokeWidth={4}
+          strokeWidth={4 * sizeScale}
         />
 
         <circle
@@ -315,7 +320,7 @@ export default function Dial({
           className="highlight"
           stroke="white"
           filter="url(#blur-2)"
-          strokeWidth={2}
+          strokeWidth={2 * sizeScale}
         />
         <path
           stroke="transparent"
@@ -338,10 +343,10 @@ export default function Dial({
 
         <defs>
           <filter id="blur-2">
-            <feGaussianBlur in="SourceGraphic" stdDeviation="2" />
+            <feGaussianBlur in="SourceGraphic" stdDeviation={2 * sizeScale} />
           </filter>
           <filter id="blur-5">
-            <feGaussianBlur in="SourceGraphic" stdDeviation="5" />
+            <feGaussianBlur in="SourceGraphic" stdDeviation={5 * sizeScale} />
           </filter>
           <linearGradient id="wing-surface" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stopColor="#4a4540" />

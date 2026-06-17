@@ -1,16 +1,20 @@
 "use client";
 
 import type { ComponentType } from "react";
-import { cn } from "@/lib/utils";
-import { useShape } from "@/lib/shape-context";
-import { PlaceholderImage } from "./placeholder-image";
 import { CerebroShader } from "./cerebro-shader";
 import { DeporteShader } from "./deporte-shader";
 import { IntestinoShader } from "./intestino-shader";
 import { SectionReveal } from "./section-reveal";
 
-// Per-category Paper shaders that fill a card's image slot. Categories not
-// listed here fall back to a plain placeholder.
+// EB-web-02 Figma: floating cream block (#f0f1e5, rounded top + bottom like the
+// "Ingrediente funcional" section) on a near-white surround, with a regular-
+// weight heading and three bare cards (rounded image, underlined title, "Ver
+// más" beneath — no card box/shadow).
+const BG = "#f9f9f9";
+const BLOCK = "#f0f1e5";
+const INK = "#1a1a1a";
+
+// Per-category Paper shaders that fill a card's image slot.
 const CARD_SHADERS: Record<string, ComponentType<{ className?: string }>> = {
   Cerebro: CerebroShader,
   Deporte: DeporteShader,
@@ -38,64 +42,48 @@ const articles = [
 ];
 
 export function ScienceBlog() {
-  const shape = useShape();
-
   return (
-    <section id="ciencia-cotidiana" className="bg-surface-1">
-      <div className="mx-auto max-w-7xl px-6 py-20 lg:py-28">
-        <SectionReveal>
-          <div className="mb-12 flex flex-wrap items-end justify-between gap-4">
-            <h2 className="text-3xl lg:text-5xl font-bold tracking-tight">
+    <section id="ciencia-cotidiana" style={{ backgroundColor: BG }}>
+      <div
+        className="overflow-hidden rounded-[2.75rem] lg:rounded-[3.5rem]"
+        style={{ backgroundColor: BLOCK }}
+      >
+        <div className="mx-auto max-w-7xl px-6 py-20 sm:px-10 lg:px-14 lg:py-28">
+          <SectionReveal>
+            <h2
+              className="text-4xl font-normal tracking-tight lg:text-5xl"
+              style={{ color: INK }}
+            >
               Ciencia cotidiana
             </h2>
-            <a
-              href="/blog"
-              className="text-sm font-medium underline underline-offset-4 hover:text-muted-foreground transition-colors"
-            >
-              Ver todas las notas
-            </a>
-          </div>
-        </SectionReveal>
+          </SectionReveal>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {articles.map((article, i) => {
-            const Shader = CARD_SHADERS[article.category];
-            return (
-            <SectionReveal key={article.slug} delay={i * 0.08} className="h-full">
-              <a
-                href={`/blog/${article.slug}`}
-                className={cn(
-                  "group flex h-full flex-col",
-                  "bg-surface-3 shadow-surface-3",
-                  "overflow-hidden",
-                  "hover:shadow-surface-5 transition-shadow",
-                  shape.container
-                )}
-              >
-                {Shader ? (
-                  <Shader className="w-full" />
-                ) : (
-                  <PlaceholderImage
-                    className="w-full"
-                    aspectRatio="16/10"
-                    label={article.category}
-                  />
-                )}
-                <div className="flex flex-1 flex-col p-6">
-                  <span className="text-xs font-mono uppercase tracking-wider text-muted-foreground">
-                    {article.category}
-                  </span>
-                  <h3 className="mt-2 text-lg font-bold leading-snug">
-                    {article.title}
-                  </h3>
-                  <span className="mt-auto pt-4 inline-block text-xs font-medium text-muted-foreground uppercase tracking-wider group-hover:text-foreground transition-colors">
-                    Ver más
-                  </span>
-                </div>
-              </a>
-            </SectionReveal>
-            );
-          })}
+          <div className="mt-12 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:mt-16 lg:grid-cols-3">
+            {articles.map((article, i) => {
+              const Shader = CARD_SHADERS[article.category];
+              return (
+                <SectionReveal key={article.slug} delay={i * 0.08}>
+                  <a href={`/blog/${article.slug}`} className="group block">
+                    <div className="overflow-hidden rounded-3xl">
+                      {Shader ? <Shader className="w-full" /> : null}
+                    </div>
+                    <h3
+                      className="mt-5 text-xl font-medium underline decoration-1 underline-offset-[5px]"
+                      style={{ color: INK }}
+                    >
+                      {article.title}
+                    </h3>
+                    <span
+                      className="mt-1.5 inline-block text-sm transition-opacity group-hover:opacity-70"
+                      style={{ color: INK }}
+                    >
+                      Ver más
+                    </span>
+                  </a>
+                </SectionReveal>
+              );
+            })}
+          </div>
         </div>
       </div>
     </section>

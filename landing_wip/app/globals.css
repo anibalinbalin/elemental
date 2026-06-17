@@ -4,19 +4,20 @@
 @import "@silk-hq/components/layered-styles.css";
 @import "tailwindcss";
 
-/* Brand typeface: Geist Sans + Geist Mono, self-hosted via the `geist`
- * package (next/font/local). The CSS variables --font-geist-sans and
- * --font-geist-mono are defined on <html> in app/layout.tsx; this file
- * just maps them into Tailwind's --font-sans / --font-mono (see @theme).
- * Geist has normal vertical metrics, so the ascent/descent overrides that
- * the old Monument Grotesk @font-face blocks needed are gone. */
+/* Brand typeface: Inter (variable sans) + JetBrains Mono (mono, weights
+ * 400/500), self-hosted at build time via next/font/google. The CSS
+ * variables --font-inter and --font-jetbrains-mono are defined on <html>
+ * in app/layout.tsx; this file just maps them into Tailwind's --font-sans /
+ * --font-mono (see @theme). Both have normal vertical metrics, so the
+ * ascent/descent overrides the old Monument Grotesk @font-face blocks
+ * needed are gone. */
 
 /* ─────────────────────────────────────────────────────────────
  * Fluid Functionalism theme — surfaces, shadows, and color tokens.
  * Ported from fluidfunctionalism/app/globals.css. Light is the default;
  * dark is opt-in via a `.dark` class (we intentionally drop FF's
  * prefers-color-scheme auto-flip so this landing page stays light).
- * Brand typeface is Geist Sans (see the @font note above).
+ * Brand typeface is Inter (see the @font note above).
  * ───────────────────────────────────────────────────────────── */
 @custom-variant dark (&:is(.dark *));
 
@@ -79,6 +80,14 @@
   /* Surface-relative interactive overlays (work on any elevation) */
   --hover: color-mix(in oklab, var(--foreground) 6%, transparent);
   --active: color-mix(in oklab, var(--foreground) 10%, transparent);
+
+  /* Brand accents — from the PDF brand guide (burgundy + green/lime). Tunable. */
+  --bordeaux: #5b1e2d;
+  --bordeaux-foreground: #fff6ef;
+  --brand-green: #3f6f2f;
+  --brand-green-foreground: #f4f8ee;
+  --lime: #9fcf63;
+  --lime-foreground: #1c2a10;
 }
 
 .dark {
@@ -128,8 +137,8 @@
 }
 
 @theme inline {
-  --font-sans: var(--font-geist-sans), Arial, Helvetica, sans-serif;
-  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, Arial, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -147,6 +156,14 @@
   --color-destructive-light: var(--destructive-light);
   --color-hover: var(--hover);
   --color-active: var(--active);
+
+  /* Brand accents — bg-bordeaux / bg-brand-green / bg-lime utilities */
+  --color-bordeaux: var(--bordeaux);
+  --color-bordeaux-foreground: var(--bordeaux-foreground);
+  --color-brand-green: var(--brand-green);
+  --color-brand-green-foreground: var(--brand-green-foreground);
+  --color-lime: var(--lime);
+  --color-lime-foreground: var(--lime-foreground);
 
   /* Surface ladder — bg-surface-1..8 utilities */
   --color-surface-1: var(--surface-1);
@@ -181,6 +198,11 @@ body {
 @keyframes spinner-dash {
   0%, 100% { stroke-dasharray: 15 85; }
   50%      { stroke-dasharray: 40 60; }
+}
+
+/* Hero science seal — slow rotation of the circular text ring. */
+@keyframes badge-spin {
+  to { transform: rotate(360deg); }
 }
 
 button,
