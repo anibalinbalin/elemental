@@ -14,6 +14,12 @@ type LongSheetContextType = {
 
 const LongSheetContext = createContext<LongSheetContextType | null>(null);
 
+// Lets <LongSheet.Content> dismiss the sheet when the user clicks the empty
+// area around the centered panel (the long-sheet scroller covers the backdrop,
+// so the backdrop's own click never fires). Provided by <LongSheet.Root> from
+// its controlled `onPresentedChange`.
+const LongSheetDismissContext = createContext<(() => void) | null>(null);
+
 // ================================================================================================
 // Root
 // ================================================================================================
@@ -24,11 +30,19 @@ type LongSheetRootProps = Omit<SheetRootProps, "license"> & {
 };
 
 const LongSheetRoot = React.forwardRef<React.ElementRef<typeof Sheet.Root>, LongSheetRootProps>(
-  ({ children, ...restProps }, ref) => {
+  ({ children, onPresentedChange, ...restProps }, ref) => {
+    const dismiss = useCallback(() => onPresentedChange?.(false), [onPresentedChange]);
     return (
-      <Sheet.Root license="non-commercial" {...restProps} ref={ref}>
-        {children}
-      </Sheet.Root>
+      <LongSheetDismissContext.Provider value={dismiss}>
+        <Sheet.Root
+          license="non-commercial"
+          onPresentedChange={onPresentedChange}
+          {...restProps}
+          ref={ref}
+        >
+          {children}
+        </Sheet.Root>
+      </LongSheetDismissContext.Provider>
     );
   }
 );
@@ -108,6 +122,7 @@ const LongSheetContent = React.forwardRef<
 >(({ children, className, ...restProps }, ref) => {
   const scrollRef = useRef<any>(null);
   const context = useContext(LongSheetContext);
+  const dismiss = useContext(LongSheetDismissContext);
   if (!context) {
     throw new Error("LongSheetContent must be used within a LongSheetContext.Provider");
   }
@@ -121,6 +136,20 @@ const LongSheetContent = React.forwardRef<
     [restingOutside, setTrack]
   );
 
+  // Click-outside-to-close via a native listener on the catcher. Silk's
+  // <Scroll> gesture layer can swallow React's delegated (bubble-phase) click
+  // before it reaches the root, so a direct target-phase listener on the
+  // element itself is the reliable path. dismiss() is the controlled
+  // onPresentedChange(false), which drives Silk's exit animation.
+  const catcherRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = catcherRef.current;
+    if (!el || !dismiss) return;
+    const onClick = () => dismiss();
+    el.addEventListener("click", onClick);
+    return () => el.removeEventListener("click", onClick);
+  }, [dismiss]);
+
   return (
     <Sheet.Content
       className={`LongSheet-content ${className ?? ""}`.trim()}
@@ -131,6 +160,11 @@ const LongSheetContent = React.forwardRef<
       <Scroll.Root className="LongSheet-scrollRoot" componentRef={scrollRef} asChild>
         <Scroll.View className="LongSheet-scrollView" onScroll={scrollHandler}>
           <Scroll.Content className="LongSheet-scrollContent">
+            <div
+              ref={catcherRef}
+              className="LongSheet-clickOutsideCatcher"
+              aria-hidden="true"
+            />
             <div className="LongSheet-innerContent">{children}</div>
           </Scroll.Content>
         </Scroll.View>
