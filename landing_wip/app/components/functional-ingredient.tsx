@@ -2,8 +2,8 @@
 
 import { VisuallyHidden } from "@silk-hq/components";
 import { useState } from "react";
-import { ScienceBadge } from "./science-badge";
 import { SectionReveal } from "./section-reveal";
+import { ScienceSticker } from "./science-sticker";
 import { LongSheet } from "./silk-long-sheet";
 
 const usageSteps = [
@@ -52,6 +52,7 @@ export function FunctionalIngredient() {
   return (
     <section
       id="como-funciona"
+      className="relative"
       // Lime on top (so the top corner notches blend with the testimonial lime
       // above) → #fffff9 on the bottom (so the bottom corner notches reveal the
       // Supporters section below, not green). The cream block covers the seam.
@@ -69,11 +70,6 @@ export function FunctionalIngredient() {
             className="h-full w-full object-cover"
           />
         </div>
-        {/* Static CIENCIA CLARA seal, top-right. */}
-        <ScienceBadge
-          spin={false}
-          className="absolute right-6 top-6 z-20 w-[96px] sm:w-[120px] lg:right-12 lg:top-10 lg:w-[132px]"
-        />
         <div className="relative z-10 mx-auto max-w-7xl px-6 py-20 lg:py-28">
           <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-16">
           {/* LEFT: açaí-bowl circle (EB-web-02) with the science seal overlapping. */}
@@ -259,6 +255,11 @@ export function FunctionalIngredient() {
           </div>
         </div>
       </div>
+
+      {/* CIENCIA CLARA seal as a peel-off page sticker: drag to move, hover to
+          lift a corner, × to peel it off (leaves an adhesive residue). Lives
+          outside the cream block's overflow-hidden so it can peel/roam freely. */}
+      <ScienceSticker />
     </section>
   );
 }

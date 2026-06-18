@@ -278,3 +278,173 @@ a {
     transform: none;
   }
 }
+
+/* ── Peel-and-drag sticker (ReactBits technique, ported from tgs_nextjs) ── */
+.sticker-container {
+  --sticker-start: calc(-1 * var(--sticker-p));
+  --sticker-end: calc(100% + var(--sticker-p));
+  position: relative;
+  transform: rotate(var(--peel-direction));
+  transform-origin: center;
+}
+.sticker-container * {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.sticker-main {
+  clip-path: polygon(
+    var(--sticker-start) var(--sticker-start),
+    var(--sticker-end) var(--sticker-start),
+    var(--sticker-end) var(--sticker-end),
+    var(--sticker-start) var(--sticker-end)
+  );
+  transition: clip-path 0.6s ease-out;
+}
+.sticker-main > * { transform: rotate(calc(-1 * var(--peel-direction))); }
+.sticker-container:hover .sticker-main,
+.sticker-container.touch-active .sticker-main {
+  clip-path: polygon(
+    var(--sticker-start) var(--sticker-peelback-hover),
+    var(--sticker-end) var(--sticker-peelback-hover),
+    var(--sticker-end) var(--sticker-end),
+    var(--sticker-start) var(--sticker-end)
+  );
+}
+.sticker-container:active .sticker-main {
+  clip-path: polygon(
+    var(--sticker-start) var(--sticker-peelback-active),
+    var(--sticker-end) var(--sticker-peelback-active),
+    var(--sticker-end) var(--sticker-end),
+    var(--sticker-start) var(--sticker-end)
+  );
+}
+.sticker-image { transform: rotate(var(--sticker-rotate)); }
+.flap {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: calc(-100% - var(--sticker-p) - var(--sticker-p));
+  clip-path: polygon(
+    var(--sticker-start) var(--sticker-start),
+    var(--sticker-end) var(--sticker-start),
+    var(--sticker-end) var(--sticker-start),
+    var(--sticker-start) var(--sticker-start)
+  );
+  transform: scaleY(-1);
+  transition: clip-path 0.45s ease-out, top 0.45s ease-out;
+}
+.flap > * { transform: rotate(calc(-1 * var(--peel-direction))); }
+.sticker-container:hover .flap,
+.sticker-container.touch-active .flap {
+  clip-path: polygon(
+    var(--sticker-start) var(--sticker-start),
+    var(--sticker-end) var(--sticker-start),
+    var(--sticker-end) var(--sticker-peelback-hover),
+    var(--sticker-start) var(--sticker-peelback-hover)
+  );
+  top: calc(-100% + 2 * var(--sticker-peelback-hover) - 1px);
+}
+.sticker-container:active .flap {
+  clip-path: polygon(
+    var(--sticker-start) var(--sticker-start),
+    var(--sticker-end) var(--sticker-start),
+    var(--sticker-end) var(--sticker-peelback-active),
+    var(--sticker-start) var(--sticker-peelback-active)
+  );
+  top: calc(-100% + 2 * var(--sticker-peelback-active) - 1px);
+}
+.sticker-image, .flap-image, .flap-back { width: var(--sticker-width, 100px); }
+.sticker-main, .flap { will-change: clip-path, transform; }
+/* Peeled-back underside — a warm paper disc, shaded toward the fold (top, since
+   the flap is scaleY(-1)) with a bright specular rim at the curling edge. */
+.flap-back {
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background:
+    radial-gradient(135% 120% at 50% 100%, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0) 45%),
+    linear-gradient(to top, #f6f1e6 0%, #ece5d5 46%, #d8cfba 84%, #c4b9a0 100%);
+  box-shadow:
+    inset 0 9px 13px -7px rgba(60, 45, 20, 0.5),
+    inset 0 -4px 7px -2px rgba(255, 255, 255, 0.7);
+}
+.sticker-draggable {
+  position: absolute;
+  cursor: grab;
+  transform: translateZ(0);
+}
+.sticker-draggable:active { cursor: grabbing; }
+@media (hover: none) and (pointer: coarse) {
+  .sticker-draggable { cursor: default; }
+  .sticker-container { touch-action: none; }
+}
+.sticker-draggable:has(.sticker-dragging) {
+  z-index: 50;
+  isolation: isolate;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+/* Disable SVG filters mid-drag — the peel clip-path hard-clips them into
+   rectangular artifacts otherwise. */
+.sticker-container.sticker-dragging .sticker-main,
+.sticker-container.sticker-dragging .sticker-lighting,
+.sticker-container.sticker-dragging .flap-lighting {
+  filter: none !important;
+}
+/* SVG filters off during drag → swap in a CSS drop-shadow on the (unclipped)
+   container so the lifted sticker keeps its depth instead of going flat. */
+.sticker-container.sticker-dragging {
+  filter: drop-shadow(2px 12px 9px rgba(0, 0, 0, 0.32));
+}
+/* Progressive peel held ~⅓ open while dragging. */
+.sticker-container.sticker-dragging .sticker-main {
+  clip-path: polygon(
+    var(--sticker-start) var(--sticker-peelback-drag, var(--sticker-peelback-active)),
+    var(--sticker-end)   var(--sticker-peelback-drag, var(--sticker-peelback-active)),
+    var(--sticker-end)   var(--sticker-end),
+    var(--sticker-start) var(--sticker-end)
+  );
+  transition: clip-path 0.1s ease-out;
+}
+.sticker-container.sticker-dragging .flap {
+  clip-path: polygon(
+    var(--sticker-start)  var(--sticker-start),
+    var(--sticker-end)    var(--sticker-start),
+    var(--sticker-end)    var(--sticker-peelback-drag, var(--sticker-peelback-active)),
+    var(--sticker-start)  var(--sticker-peelback-drag, var(--sticker-peelback-active))
+  );
+  top: calc(-100% + 2 * var(--sticker-peelback-drag, var(--sticker-peelback-active)) - 1px);
+  transition: clip-path 0.1s ease-out, top 0.1s ease-out;
+}
+
+/* ── Placed-sticker peel: flap hidden until a corner is lifted (hover) or the
+   sticker is being peeled off (removal). Peel amount is GSAP-driven via
+   --sticker-peelback-drag, so these states use no CSS transition. ── */
+.page-sticker .sticker-container .flap { visibility: hidden; }
+.page-sticker .sticker-container.sticker-peel-hover .flap,
+.page-sticker .sticker-container.sticker-peel-removing .flap { visibility: visible; }
+
+.sticker-container.sticker-peel-hover .sticker-main,
+.sticker-container.sticker-peel-removing .sticker-main {
+  clip-path: polygon(
+    var(--sticker-start) var(--sticker-peelback-drag, var(--sticker-start)),
+    var(--sticker-end)   var(--sticker-peelback-drag, var(--sticker-start)),
+    var(--sticker-end)   var(--sticker-end),
+    var(--sticker-start) var(--sticker-end)
+  );
+  transition: none;
+}
+.sticker-container.sticker-peel-removing .sticker-main { filter: none !important; }
+.sticker-container.sticker-peel-hover .flap,
+.sticker-container.sticker-peel-removing .flap {
+  clip-path: polygon(
+    var(--sticker-start)  var(--sticker-start),
+    var(--sticker-end)    var(--sticker-start),
+    var(--sticker-end)    var(--sticker-peelback-drag, var(--sticker-start)),
+    var(--sticker-start)  var(--sticker-peelback-drag, var(--sticker-start))
+  );
+  top: calc(-100% + 2 * var(--sticker-peelback-drag, var(--sticker-start)) - 1px);
+  transition: none;
+}
