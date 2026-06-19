@@ -5,7 +5,12 @@
 /* ───────── LongSheet.css ───────── */
 .LongSheet-view {
   /* SELF-LAYOUT */
-  z-index: 1;
+  /* Must sit above the page's stacking contexts. The sections this sheet
+     opens from use `relative z-10` inner content whose parent section is
+     `relative` with z-index:auto (NOT a stacking context), so that z-10
+     competes directly with this portaled view in the root stacking context.
+     The navbar is z-100. 200 keeps the full-screen sheet above everything. */
+  z-index: 200;
   top: 0;
   bottom: initial;
   /* Adding 60px to make it fully visible below iOS Safari's
@@ -32,11 +37,21 @@
 
 .LongSheet-scrollContent {
   /* SELF-LAYOUT */
-  height: auto;
+  position: relative; /* anchor for the click-outside catcher */
+  box-sizing: border-box;
+  /* Fill the viewport so a panel shorter than it can center vertically.
+     `min-height: 100%` fails here because Silk's scroller height isn't a
+     "definite" length for percentage resolution, so it collapses to the
+     content height and the panel pins to the top. Silk's own viewport
+     variable (max(100dvh,100lvh)) is a definite length and works. */
+  min-height: var(--silk-100-lvh-dvh-pct);
 
   /* INNER-LAYOUT */
   display: grid;
-  place-items: center;
+  /* `safe center` vertically centers the panel when it fits, but falls back
+     to top-aligned (no clipping / scroll-up loss) when content overflows. */
+  align-content: safe center;
+  justify-items: center;
 }
 
 .LongSheet-innerContent {
@@ -44,6 +59,9 @@
   margin: max(env(safe-area-inset-top, 0px), 0.75rem) 0
     max(env(safe-area-inset-bottom, 0px), 0.75rem);
   width: 100%;
+  /* Sit above the click-outside catcher so panel clicks don't dismiss. */
+  position: relative;
+  z-index: 1;
 
   /* APPEARANCE */
   border-radius: 24px;
@@ -58,6 +76,16 @@
     margin: 0.75rem 0;
     width: calc(100% - 1.5rem);
   }
+}
+
+.LongSheet-clickOutsideCatcher {
+  /* Fills the scroll area behind the centered panel. Clicks that land here
+     (the empty space around the panel) dismiss the sheet — Silk's own
+     <Scroll.Content> doesn't forward onClick, and its scroller covers the
+     backdrop, so this is the reliable click-outside target. */
+  position: absolute;
+  inset: 0;
+  z-index: 0;
 }
 
 /* ───────── ExampleLongSheet.css ───────── */

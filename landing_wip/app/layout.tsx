@@ -4,6 +4,7 @@ import { Analytics } from "@vercel/analytics/next";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import "./globals.css";
 import { LayoutShell } from "./layout-shell";
+import { Agentation } from "agentation";
 
 // GA4 Measurement ID (G-XXXXXXXXXX). Set NEXT_PUBLIC_GA_ID in the Vercel
 // project env (and .env.local) to enable Google Analytics. When unset, the
@@ -71,6 +72,7 @@ export default function RootLayout({
         {/* loupe.css provides the microscope visual reused by the image loupe. */}
         <link rel="stylesheet" href="/loupe.css" />
         <LayoutShell>{children}</LayoutShell>
+        {process.env.NODE_ENV === "development" && <Agentation />}
         <Analytics />
       </body>
       {gaId ? <GoogleAnalytics gaId={gaId} /> : null}
