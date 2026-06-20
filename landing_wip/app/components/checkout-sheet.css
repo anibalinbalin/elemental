@@ -1,0 +1,82 @@
+/* Checkout (shipping) sheet — form-specific styles.
+ * Reuses Silk layout + inputs/buttons from quiz-sheet.css. */
+
+.CheckoutSheet-pad {
+  padding: 1rem 1.25rem 1.5rem;
+}
+@media (min-width: 800px) {
+  .CheckoutSheet-pad {
+    padding: 1.25rem 1.75rem 1.75rem;
+  }
+}
+
+.CheckoutSheet-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 22px;
+}
+
+.CheckoutSheet-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+@media (max-width: 460px) {
+  .CheckoutSheet-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.CheckoutSheet-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.CheckoutSheet-label {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--muted-foreground);
+  letter-spacing: 0.01em;
+}
+
+/* Native select restyled to match .QuizSheet-emailInput */
+.CheckoutSheet-select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 40px;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M6 9l6 6 6-6'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  cursor: pointer;
+}
+
+.CheckoutSheet-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 6px;
+  padding: 14px 16px;
+  background: var(--surface-2);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  font-size: 15px;
+}
+.CheckoutSheet-summary strong {
+  font-weight: 700;
+}
+
+.CheckoutSheet-error {
+  color: #dc2626;
+  font-size: 13px;
+  margin: 2px 0 0;
+}
+
+.CheckoutSheet-secure {
+  text-align: center;
+  font-size: 12px;
+  color: var(--muted-foreground);
+  margin: 10px 0 0;
+}

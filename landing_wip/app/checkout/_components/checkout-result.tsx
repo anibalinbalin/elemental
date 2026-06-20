@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { PRODUCT } from "@/lib/product";
 
 type CheckoutResultProps = {
   variant: "success" | "pending" | "failure";
@@ -34,6 +35,11 @@ export function CheckoutResult({ variant, paymentId }: CheckoutResultProps) {
         </span>
         <h1 className="text-3xl font-bold tracking-tight">{title}</h1>
         <p className="text-muted-foreground leading-relaxed">{message}</p>
+        {variant === "success" ? (
+          <p className="text-sm text-muted-foreground">
+            {PRODUCT.deliveryEstimate}.
+          </p>
+        ) : null}
         {paymentId ? (
           <p className="text-xs font-mono text-muted-foreground">
             Referencia de pago: {paymentId}
