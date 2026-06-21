@@ -52,19 +52,59 @@
   cursor: pointer;
 }
 
-.CheckoutSheet-summary {
+/* Brand + step indicator in the top bar */
+.CheckoutSheet-brand {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
+  gap: 10px;
+  min-width: 0;
+}
+.CheckoutSheet-mark {
+  height: 16px;
+  width: auto;
+  color: var(--foreground);
+  flex: 0 0 auto;
+}
+.CheckoutSheet-step {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+  white-space: nowrap;
+}
+
+/* Free-shipping accent */
+.CheckoutSheet-free {
+  color: var(--foreground);
+  font-weight: 700;
+}
+
+/* Order summary with price breakdown */
+.CheckoutSheet-summary {
   margin-top: 6px;
   padding: 14px 16px;
   background: var(--surface-2);
   border: 1.5px solid var(--border);
   border-radius: 12px;
-  font-size: 15px;
+  font-size: 14px;
 }
-.CheckoutSheet-summary strong {
+.CheckoutSheet-sumRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 3px 0;
+  color: var(--muted-foreground);
+}
+.CheckoutSheet-sumTotal {
+  margin-top: 6px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+  color: var(--foreground);
+  font-size: 16px;
+}
+.CheckoutSheet-sumTotal strong {
   font-weight: 700;
 }
 
@@ -75,8 +115,19 @@
 }
 
 .CheckoutSheet-secure {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
   text-align: center;
   font-size: 12px;
   color: var(--muted-foreground);
   margin: 10px 0 0;
+}
+.CheckoutSheet-lock {
+  display: inline-flex;
+}
+.CheckoutSheet-lock svg {
+  width: 13px;
+  height: 13px;
 }
