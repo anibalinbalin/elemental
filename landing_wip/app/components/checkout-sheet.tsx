@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Sheet, Scroll } from "@silk-hq/components";
 import { motion } from "framer-motion";
 import { PRODUCT, formatPrice } from "@/lib/product";
@@ -9,7 +9,8 @@ import "./quiz-sheet.css";
 import "./checkout-sheet.css";
 
 /* Shipping-details sheet shown before redirecting to Mercado Pago.
- * Reuses the Silk + QuizSheet visual language (see quiz-sheet.css). */
+ * Silk layout mirrors the proven LongSheet recipe (centered, above navbar,
+ * click-outside to dismiss); field/button styles reuse quiz-sheet.css. */
 
 const X_SVG = (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
@@ -24,8 +25,8 @@ const LOCK_SVG = (
   </svg>
 );
 
-/* EB monogram — same vectors as the navbar logo, inlined for the checkout
- * sheet so the form reads as a real Elemental Bloom checkout. */
+/* EB monogram — same vectors as the navbar logo, inlined so the sheet reads
+ * as a real Elemental Bloom checkout. */
 function EbMark({ className }: { className?: string }) {
   return (
     <svg
@@ -76,6 +77,36 @@ export function CheckoutSheet({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Silk track: switch to "top" once the user scrolls a tall card, so the
+  // swipe-to-dismiss anchor follows; reset to "bottom" when resting outside.
+  const [track, setTrack] = useState<"top" | "bottom">("bottom");
+  const [restingOutside, setRestingOutside] = useState(false);
+  const catcherRef = useRef<HTMLDivElement>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const scrollRef = useRef<any>(null);
+
+  useEffect(() => {
+    if (restingOutside) setTrack("bottom");
+  }, [restingOutside]);
+
+  // Click-outside-to-close via a native listener on the catcher (Silk's Scroll
+  // can swallow React's delegated click before it reaches the root).
+  useEffect(() => {
+    const el = catcherRef.current;
+    if (!el || !onPresentedChange) return;
+    const onClick = () => onPresentedChange(false);
+    el.addEventListener("click", onClick);
+    return () => el.removeEventListener("click", onClick);
+  }, [onPresentedChange]);
+
+  const scrollHandler = useCallback(
+    ({ progress }: { progress: number }) => {
+      if (restingOutside) return;
+      setTrack(progress < 0.5 ? "bottom" : "top");
+    },
+    [restingOutside]
+  );
+
   const valid = REQUIRED.every((f) => form[f].trim().length > 0);
 
   function set(field: Field, value: string) {
@@ -111,9 +142,9 @@ export function CheckoutSheet({
     >
       <Sheet.Portal>
         <Sheet.View
-          className="QuizSheet-view CheckoutSheet-view"
+          className="CheckoutSheet-view"
           contentPlacement="center"
-          tracks="bottom"
+          tracks={track}
           swipeOvershoot={false}
           nativeEdgeSwipePrevention={true}
           enteringAnimationSettings={{
@@ -122,16 +153,29 @@ export function CheckoutSheet({
             damping: 45,
             mass: 1.5,
           }}
+          onTravelStatusChange={(status) =>
+            setRestingOutside(status === "idleOutside")
+          }
         >
-          <Sheet.Backdrop className="QuizSheet-backdrop" themeColorDimming="auto" />
-          <Sheet.Content className="QuizSheet-content" asChild>
-            <Scroll.Root className="QuizSheet-scrollRoot" asChild>
+          <Sheet.Backdrop className="CheckoutSheet-backdrop" themeColorDimming="auto" />
+          <Sheet.Content className="CheckoutSheet-content" asChild>
+            <Scroll.Root
+              className="CheckoutSheet-scrollRoot"
+              componentRef={scrollRef}
+              asChild
+            >
               <Scroll.View
-                className="QuizSheet-scrollView"
+                className="CheckoutSheet-scrollView"
+                onScroll={scrollHandler}
                 onFocusInside={{ scrollIntoView: true }}
               >
-                <Scroll.Content className="QuizSheet-scrollContent">
-                  <div className="QuizSheet-innerContent">
+                <Scroll.Content className="CheckoutSheet-scrollContent">
+                  <div
+                    ref={catcherRef}
+                    className="CheckoutSheet-clickOutsideCatcher"
+                    aria-hidden="true"
+                  />
+                  <div className="CheckoutSheet-card">
                     <div className="CheckoutSheet-pad">
                       <div className="QuizSheet-topBar">
                         <div className="CheckoutSheet-brand">
@@ -241,7 +285,9 @@ export function CheckoutSheet({
                           </div>
                           <div className="CheckoutSheet-sumRow CheckoutSheet-sumTotal">
                             <strong>Total</strong>
-                            <strong>{formatPrice(PRODUCT.unitPrice * quantity)}</strong>
+                            <strong>
+                              {formatPrice(PRODUCT.unitPrice * quantity)}
+                            </strong>
                           </div>
                         </div>
 

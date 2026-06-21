@@ -1,12 +1,66 @@
-/* Checkout (shipping) sheet — form-specific styles.
- * Reuses Silk layout + inputs/buttons from quiz-sheet.css. */
+/* Checkout (shipping) sheet.
+ * Layout follows the proven LongSheet recipe (silk-long-sheet.css): a
+ * full-viewport scroller that vertically centers a width-capped card and
+ * sits above the sticky navbar. Field/button styles reuse quiz-sheet.css. */
 
-/* Sit above the sticky navbar (z-50) so the backdrop + sheet cover it,
- * instead of the navbar clipping the sheet's header/close button. */
+/* ---- Silk layout (centered, above navbar) ---- */
 .CheckoutSheet-view {
+  /* Above the page (relative z-10 sections) and the sticky navbar (z-50/100). */
   z-index: 200;
+  top: 0;
+  bottom: initial;
+  /* +60px so it's fully visible below iOS Safari's bottom UI. */
+  height: calc(var(--silk-100-lvh-dvh-pct) + 60px);
 }
 
+.CheckoutSheet-backdrop {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.CheckoutSheet-content {
+  box-sizing: border-box;
+}
+
+.CheckoutSheet-scrollRoot {
+  width: 100%;
+  height: 100%;
+  background-color: transparent;
+  scroll-behavior: smooth;
+}
+
+.CheckoutSheet-scrollContent {
+  position: relative; /* anchor for the click-outside catcher */
+  box-sizing: border-box;
+  /* Fill the viewport so a card shorter than it centers vertically. Silk's
+     viewport var is a "definite" length (min-height:100% would collapse). */
+  min-height: var(--silk-100-lvh-dvh-pct);
+  padding: 0 12px;
+  display: grid;
+  /* center when it fits, fall back to top-aligned (no clip) when it overflows */
+  align-content: safe center;
+  justify-items: center;
+}
+
+.CheckoutSheet-clickOutsideCatcher {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.CheckoutSheet-card {
+  position: relative; /* above the catcher so card clicks don't dismiss */
+  z-index: 1;
+  margin: max(env(safe-area-inset-top, 0px), 0.75rem) 0
+    max(env(safe-area-inset-bottom, 0px), 0.75rem);
+  width: 100%;
+  max-width: 480px;
+  border-radius: 24px;
+  overflow: clip;
+  background-color: var(--surface-1);
+  box-shadow: 0 12px 32px -10px rgb(0 0 0 / 0.28), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+
+/* ---- Card padding ---- */
 .CheckoutSheet-pad {
   padding: 1rem 1.25rem 1.5rem;
 }
@@ -16,49 +70,7 @@
   }
 }
 
-.CheckoutSheet-form {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  margin-top: 22px;
-}
-
-.CheckoutSheet-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-@media (max-width: 460px) {
-  .CheckoutSheet-row {
-    grid-template-columns: 1fr;
-  }
-}
-
-.CheckoutSheet-field {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.CheckoutSheet-label {
-  font-size: 12.5px;
-  font-weight: 600;
-  color: var(--muted-foreground);
-  letter-spacing: 0.01em;
-}
-
-/* Native select restyled to match .QuizSheet-emailInput */
-.CheckoutSheet-select {
-  appearance: none;
-  -webkit-appearance: none;
-  padding-right: 40px;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M6 9l6 6 6-6'/></svg>");
-  background-repeat: no-repeat;
-  background-position: right 14px center;
-  cursor: pointer;
-}
-
-/* Brand + step indicator in the top bar */
+/* ---- Brand + step indicator in the top bar ---- */
 .CheckoutSheet-brand {
   display: flex;
   align-items: center;
@@ -78,6 +90,46 @@
   text-transform: uppercase;
   color: var(--muted-foreground);
   white-space: nowrap;
+}
+
+/* ---- Form ---- */
+.CheckoutSheet-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 22px;
+}
+.CheckoutSheet-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+@media (max-width: 460px) {
+  .CheckoutSheet-row {
+    grid-template-columns: 1fr;
+  }
+}
+.CheckoutSheet-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.CheckoutSheet-label {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--muted-foreground);
+  letter-spacing: 0.01em;
+}
+
+/* Native select restyled to match .QuizSheet-emailInput */
+.CheckoutSheet-select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 40px;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M6 9l6 6 6-6'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  cursor: pointer;
 }
 
 /* Free-shipping accent */
@@ -136,4 +188,10 @@
 .CheckoutSheet-lock svg {
   width: 13px;
   height: 13px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .CheckoutSheet-scrollRoot {
+    scroll-behavior: auto;
+  }
 }
