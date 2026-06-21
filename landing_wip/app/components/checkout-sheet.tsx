@@ -64,6 +64,33 @@ const EMPTY: ShippingDetails = {
 type Field = keyof ShippingDetails;
 const REQUIRED: Field[] = ["name", "phone", "address", "city", "department"];
 
+// "Remember me" for repeat purchases — store the shipping details on the
+// buyer's device (no account, no server). Read back to pre-fill next time.
+const STORAGE_KEY = "eb-shipping-v1";
+
+function readSavedShipping(): ShippingDetails | null {
+  try {
+    const raw = window.localStorage.getItem(STORAGE_KEY);
+    if (!raw) return null;
+    const o = JSON.parse(raw) as Record<string, unknown>;
+    const str = (k: string) => (typeof o[k] === "string" ? (o[k] as string) : "");
+    const department = str("department");
+    return {
+      name: str("name"),
+      phone: str("phone"),
+      address: str("address"),
+      city: str("city"),
+      // Only keep a real departamento so the <select> shows it; else blank.
+      department: (URUGUAY_DEPARTMENTS as readonly string[]).includes(department)
+        ? department
+        : "",
+      notes: str("notes"),
+    };
+  } catch {
+    return null;
+  }
+}
+
 export function CheckoutSheet({
   presented,
   onPresentedChange,
@@ -88,6 +115,14 @@ export function CheckoutSheet({
   useEffect(() => {
     if (restingOutside) setTrack("bottom");
   }, [restingOutside]);
+
+  // Pre-fill from a previous order on this device. Runs after mount (not in the
+  // useState initializer) so server and first client render both start empty —
+  // no hydration mismatch.
+  useEffect(() => {
+    const saved = readSavedShipping();
+    if (saved) setForm(saved);
+  }, []);
 
   // Click-outside-to-close via a native listener on the catcher (Silk's Scroll
   // can swallow React's delegated click before it reaches the root).
@@ -126,6 +161,12 @@ export function CheckoutSheet({
       if (!res.ok) throw new Error(`checkout respondió ${res.status}`);
       const data: { init_point?: string } = await res.json();
       if (!data.init_point) throw new Error("falta init_point");
+      // Remember these details on this device for the next purchase.
+      try {
+        window.localStorage.setItem(STORAGE_KEY, JSON.stringify(form));
+      } catch {
+        // ignore storage failures (private mode / quota)
+      }
       window.location.href = data.init_point;
     } catch (err) {
       console.error("[checkout-sheet] checkout falló", err);
