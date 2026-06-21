@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { preferenceClient } from "@/lib/mercadopago";
 import { PRODUCT } from "@/lib/product";
+import { normalizeShipping } from "@/lib/shipping";
 
 export const runtime = "nodejs";
 
@@ -11,15 +12,24 @@ function resolveBaseUrl(request: NextRequest): string {
 }
 
 export async function POST(request: NextRequest) {
-  let quantity = 1;
-  try {
-    const body = await request.json().catch(() => ({}));
-    quantity = Math.min(
-      PRODUCT.maxQuantity,
-      Math.max(1, Math.floor(Number(body?.quantity) || 1))
+  const body = await request.json().catch(() => ({}) as Record<string, unknown>);
+
+  const quantity = Math.min(
+    PRODUCT.maxQuantity,
+    Math.max(1, Math.floor(Number((body as { quantity?: unknown })?.quantity) || 1))
+  );
+
+  // Shipping address is required: the product is physical and we fulfill it
+  // ourselves, so we must capture where to send it before taking payment.
+  const shipping = normalizeShipping((body as { shipping?: unknown })?.shipping);
+  if (!shipping) {
+    return NextResponse.json(
+      {
+        error:
+          "Faltan datos de envío. Completá nombre, teléfono, dirección, ciudad y departamento.",
+      },
+      { status: 400 }
     );
-  } catch {
-    quantity = 1;
   }
 
   const baseUrl = resolveBaseUrl(request);
@@ -40,6 +50,20 @@ export async function POST(request: NextRequest) {
             currency_id: PRODUCT.currencyId,
           },
         ],
+        payer: {
+          name: shipping.name,
+          phone: { number: shipping.phone },
+        },
+        // Source of truth for the shipping address: returned verbatim on the
+        // payment, read by the webhook to build the store's order email.
+        metadata: {
+          shipping_name: shipping.name,
+          shipping_phone: shipping.phone,
+          shipping_address: shipping.address,
+          shipping_city: shipping.city,
+          shipping_department: shipping.department,
+          shipping_notes: shipping.notes,
+        },
         back_urls: {
           success: `${baseUrl}/checkout/success`,
           pending: `${baseUrl}/checkout/pending`,

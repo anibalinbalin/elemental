@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { CheckoutSheet } from "./checkout-sheet";
 
 type BuyButtonProps = {
   className?: string;
@@ -8,46 +9,26 @@ type BuyButtonProps = {
   children: React.ReactNode;
 };
 
+// Opens the shipping-details sheet; the sheet collects the address and then
+// redirects to Mercado Pago. Keeps the same className/children API so every
+// existing call site (product card, quiz result) keeps working unchanged.
 export function BuyButton({ className, quantity = 1, children }: BuyButtonProps) {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  async function startCheckout() {
-    setLoading(true);
-    setError(null);
-    try {
-      const res = await fetch("/api/checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ quantity }),
-      });
-      if (!res.ok) throw new Error(`checkout respondió ${res.status}`);
-      const data: { init_point?: string } = await res.json();
-      if (!data.init_point) throw new Error("falta init_point");
-      window.location.href = data.init_point;
-    } catch (err) {
-      console.error("[buy-button] checkout falló", err);
-      setError("No se pudo iniciar el pago. Probá de nuevo.");
-      setLoading(false);
-    }
-  }
+  const [open, setOpen] = useState(false);
 
   return (
-    <div className="flex flex-col gap-2">
+    <>
       <button
         type="button"
-        onClick={startCheckout}
-        disabled={loading}
-        aria-busy={loading}
+        onClick={() => setOpen(true)}
         className={className}
       >
-        {loading ? "Redirigiendo…" : children}
+        {children}
       </button>
-      {error ? (
-        <p role="alert" className="text-xs text-red-600">
-          {error}
-        </p>
-      ) : null}
-    </div>
+      <CheckoutSheet
+        presented={open}
+        onPresentedChange={setOpen}
+        quantity={quantity}
+      />
+    </>
   );
 }

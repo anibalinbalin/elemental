@@ -74,7 +74,7 @@ export function MicrocoreCard() {
                     </BuyButton>
                     <div className="flex flex-col gap-1">
                       <span className="text-xs text-bordeaux-foreground/70">
-                        Envío a todo Uruguay
+                        {PRODUCT.deliveryEstimate}
                       </span>
                       <span className="text-xs text-bordeaux-foreground/70">
                         Pago seguro con Mercado Pago

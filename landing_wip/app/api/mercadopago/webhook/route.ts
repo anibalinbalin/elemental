@@ -80,12 +80,27 @@ export async function POST(request: NextRequest) {
         // Note: MP may deliver the same notification more than once — for one
         // product this can occasionally double-send; fine for MVP, revisit with
         // an order record if it becomes a problem.
+        const md = (payment.metadata ?? {}) as Record<string, unknown>;
+        const mdStr = (key: string): string | undefined => {
+          // MP may return metadata keys snake_cased (as sent) or camelCased.
+          const camel = key.replace(/_([a-z])/g, (_, c) => c.toUpperCase());
+          const v = md[key] ?? md[camel];
+          return typeof v === "string" && v.length > 0 ? v : undefined;
+        };
         try {
           await sendOrderEmails({
             paymentId: payment.id,
             buyerEmail: payment.payer?.email,
             amount: payment.transaction_amount,
             reference: payment.external_reference,
+            shipping: {
+              name: mdStr("shipping_name"),
+              phone: mdStr("shipping_phone"),
+              address: mdStr("shipping_address"),
+              city: mdStr("shipping_city"),
+              department: mdStr("shipping_department"),
+              notes: mdStr("shipping_notes"),
+            },
           });
         } catch (err) {
           console.error("[mp-webhook] no se pudieron enviar los correos", err);

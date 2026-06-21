@@ -9,6 +9,9 @@ export const PRODUCT = {
   currencyId: "UYU",
   maxQuantity: 10,
   image: "/images/product-pouch.webp",
+  // Customer-facing delivery promise. Shown on the product card, checkout
+  // form, success page and emails. TODO: confirmar el plazo/cobertura reales.
+  deliveryEstimate: "Llega en 2 a 5 días hábiles a todo Uruguay",
 } as const;
 
 export function formatPrice(value: number): string {
