@@ -103,12 +103,21 @@ export function CheckoutSheet({
   const [form, setForm] = useState<ShippingDetails>(EMPTY);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Per-field "this is required" flags, set on submit (not on blur) so the
+  // buyer is never nagged while still filling things in.
+  const [errors, setErrors] = useState<Partial<Record<Field, boolean>>>({});
+  // The footer's divider/shadow is a scroll affordance, not decoration: show it
+  // only while fields are actually scrolling underneath. When the form fits, the
+  // footer blends into the card so the shadow can't imply hidden content.
+  const [footerElevated, setFooterElevated] = useState(false);
 
   // Silk track: switch to "top" once the user scrolls a tall card, so the
   // swipe-to-dismiss anchor follows; reset to "bottom" when resting outside.
   const [track, setTrack] = useState<"top" | "bottom">("bottom");
   const [restingOutside, setRestingOutside] = useState(false);
   const catcherRef = useRef<HTMLDivElement>(null);
+  const formRef = useRef<HTMLFormElement>(null);
+  const bottomSentinelRef = useRef<HTMLDivElement>(null);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const scrollRef = useRef<any>(null);
 
@@ -134,6 +143,20 @@ export function CheckoutSheet({
     return () => el.removeEventListener("click", onClick);
   }, [onPresentedChange]);
 
+  // Elevate the footer only when the bottom of the scrollable content is out of
+  // view — i.e. when fields are genuinely hidden beneath it. A sentinel sitting
+  // just above the footer reports this without reading Silk's scroll internals.
+  useEffect(() => {
+    const el = bottomSentinelRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      ([entry]) => setFooterElevated(!entry.isIntersecting),
+      { threshold: 0 }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
   const scrollHandler = useCallback(
     ({ progress }: { progress: number }) => {
       if (restingOutside) return;
@@ -142,14 +165,35 @@ export function CheckoutSheet({
     [restingOutside]
   );
 
-  const valid = REQUIRED.every((f) => form[f].trim().length > 0);
-
   function set(field: Field, value: string) {
     setForm((prev) => ({ ...prev, [field]: value }));
+    // Clear a field's error the moment the buyer starts fixing it.
+    setErrors((prev) => {
+      if (!prev[field]) return prev;
+      const next = { ...prev };
+      delete next[field];
+      return next;
+    });
+  }
+
+  function focusField(field: Field) {
+    const el = formRef.current?.querySelector<HTMLElement>(`[name="${field}"]`);
+    el?.focus();
   }
 
   async function submit() {
-    if (!valid || loading) return;
+    if (loading) return;
+    // The button stays alive even when the form is incomplete: validate on
+    // submit, flag every empty required field, and jump focus to the first.
+    const missing = REQUIRED.filter((f) => form[f].trim().length === 0);
+    if (missing.length > 0) {
+      const map: Partial<Record<Field, boolean>> = {};
+      for (const f of missing) map[f] = true;
+      setErrors(map);
+      focusField(missing[0]);
+      return;
+    }
+    setErrors({});
     setLoading(true);
     setError(null);
     try {
@@ -245,50 +289,68 @@ export function CheckoutSheet({
                       </p>
 
                       <form
+                        id="eb-checkout"
+                        ref={formRef}
                         className="CheckoutSheet-form"
                         onSubmit={(e) => {
                           e.preventDefault();
                           submit();
                         }}
                       >
-                        <FormField label="Nombre y apellido">
+                        <FormField label="Nombre y apellido" error={errors.name}>
                           <input
+                            name="name"
                             className="QuizSheet-emailInput"
                             autoComplete="name"
+                            placeholder="Camila Rodríguez"
+                            aria-invalid={errors.name || undefined}
                             value={form.name}
                             onChange={(e) => set("name", e.target.value)}
                           />
                         </FormField>
-                        <FormField label="Teléfono">
+                        <FormField label="Teléfono" error={errors.phone}>
                           <input
+                            name="phone"
                             className="QuizSheet-emailInput"
                             inputMode="tel"
                             autoComplete="tel"
-                            placeholder="09x xxx xxx"
+                            placeholder="099 123 456"
+                            aria-invalid={errors.phone || undefined}
                             value={form.phone}
                             onChange={(e) => set("phone", e.target.value)}
                           />
                         </FormField>
-                        <FormField label="Dirección (calle y número)">
+                        <FormField
+                          label="Dirección (calle y número)"
+                          error={errors.address}
+                        >
                           <input
+                            name="address"
                             className="QuizSheet-emailInput"
                             autoComplete="street-address"
+                            placeholder="Av. Italia 2345"
+                            aria-invalid={errors.address || undefined}
                             value={form.address}
                             onChange={(e) => set("address", e.target.value)}
                           />
                         </FormField>
                         <div className="CheckoutSheet-row">
-                          <FormField label="Ciudad / localidad">
+                          <FormField label="Ciudad / localidad" error={errors.city}>
                             <input
+                              name="city"
                               className="QuizSheet-emailInput"
                               autoComplete="address-level2"
+                              placeholder="Montevideo"
+                              aria-invalid={errors.city || undefined}
                               value={form.city}
                               onChange={(e) => set("city", e.target.value)}
                             />
                           </FormField>
-                          <FormField label="Departamento">
+                          <FormField label="Departamento" error={errors.department}>
                             <select
+                              name="department"
                               className="QuizSheet-emailInput CheckoutSheet-select"
+                              aria-invalid={errors.department || undefined}
                               value={form.department}
                               onChange={(e) => set("department", e.target.value)}
                             >
@@ -305,54 +367,62 @@ export function CheckoutSheet({
                         </div>
                         <FormField label="Referencia / notas (opcional)">
                           <input
+                            name="notes"
                             className="QuizSheet-emailInput"
                             placeholder="Apto, timbre, entre calles…"
                             value={form.notes}
                             onChange={(e) => set("notes", e.target.value)}
                           />
                         </FormField>
-
-                        <div className="CheckoutSheet-summary">
-                          <div className="CheckoutSheet-sumRow">
-                            <span>
-                              {PRODUCT.title}
-                              {quantity > 1 ? ` × ${quantity}` : ""}
-                            </span>
-                            <span>{formatPrice(PRODUCT.unitPrice * quantity)}</span>
-                          </div>
-                          <div className="CheckoutSheet-sumRow">
-                            <span>Envío a todo Uruguay</span>
-                            <span className="CheckoutSheet-free">Gratis</span>
-                          </div>
-                          <div className="CheckoutSheet-sumRow CheckoutSheet-sumTotal">
-                            <strong>Total</strong>
-                            <strong>
-                              {formatPrice(PRODUCT.unitPrice * quantity)}
-                            </strong>
-                          </div>
-                        </div>
-
-                        {error ? (
-                          <p role="alert" className="CheckoutSheet-error">
-                            {error}
-                          </p>
-                        ) : null}
-
-                        <motion.button
-                          type="submit"
-                          className="QuizSheet-btn QuizSheet-btnPrimary is-full"
-                          disabled={!valid || loading}
-                          aria-busy={loading}
-                          whileTap={{ scale: 0.97 }}
-                          transition={TAP_SPRING}
-                        >
-                          {loading ? "Redirigiendo…" : "Continuar al pago"}
-                        </motion.button>
-                        <p className="CheckoutSheet-secure">
-                          <span className="CheckoutSheet-lock">{LOCK_SVG}</span>
-                          Pago seguro con Mercado Pago
-                        </p>
                       </form>
+                      <div
+                        ref={bottomSentinelRef}
+                        className="CheckoutSheet-bottomSentinel"
+                        aria-hidden="true"
+                      />
+                    </div>
+
+                    {/* Pinned footer — total + CTA stay in view as fields scroll. */}
+                    <div
+                      className={
+                        "CheckoutSheet-footer" +
+                        (footerElevated ? " is-elevated" : "")
+                      }
+                    >
+                      <div className="CheckoutSheet-footerTotal">
+                        <span className="CheckoutSheet-footerTotalLabel">
+                          Total
+                          {quantity > 1 ? ` · ${quantity} u.` : ""}{" "}
+                          <span className="CheckoutSheet-footerTotalFree">
+                            · envío gratis
+                          </span>
+                        </span>
+                        <span className="CheckoutSheet-footerTotalValue">
+                          {formatPrice(PRODUCT.unitPrice * quantity)}
+                        </span>
+                      </div>
+
+                      {error ? (
+                        <p role="alert" className="CheckoutSheet-error">
+                          {error}
+                        </p>
+                      ) : null}
+
+                      <motion.button
+                        type="submit"
+                        form="eb-checkout"
+                        className="QuizSheet-btn QuizSheet-btnPrimary is-full"
+                        disabled={loading}
+                        aria-busy={loading}
+                        whileTap={{ scale: 0.97 }}
+                        transition={TAP_SPRING}
+                      >
+                        {loading ? "Redirigiendo…" : "Continuar al pago"}
+                      </motion.button>
+                      <p className="CheckoutSheet-secure">
+                        <span className="CheckoutSheet-lock">{LOCK_SVG}</span>
+                        Pago seguro con Mercado Pago
+                      </p>
                     </div>
                   </div>
                 </Scroll.Content>
@@ -367,15 +437,20 @@ export function CheckoutSheet({
 
 function FormField({
   label,
+  error,
   children,
 }: {
   label: string;
+  error?: boolean;
   children: React.ReactNode;
 }) {
   return (
     <label className="CheckoutSheet-field">
       <span className="CheckoutSheet-label">{label}</span>
       {children}
+      {error ? (
+        <span className="CheckoutSheet-fieldError">Completá este dato</span>
+      ) : null}
     </label>
   );
 }
