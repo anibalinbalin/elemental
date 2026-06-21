@@ -1,6 +1,12 @@
 /* Checkout (shipping) sheet — form-specific styles.
  * Reuses Silk layout + inputs/buttons from quiz-sheet.css. */
 
+/* Sit above the sticky navbar (z-50) so the backdrop + sheet cover it,
+ * instead of the navbar clipping the sheet's header/close button. */
+.CheckoutSheet-view {
+  z-index: 200;
+}
+
 .CheckoutSheet-pad {
   padding: 1rem 1.25rem 1.5rem;
 }

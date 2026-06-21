@@ -111,7 +111,7 @@ export function CheckoutSheet({
     >
       <Sheet.Portal>
         <Sheet.View
-          className="QuizSheet-view"
+          className="QuizSheet-view CheckoutSheet-view"
           contentPlacement="center"
           tracks="bottom"
           swipeOvershoot={false}
