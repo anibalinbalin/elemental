@@ -371,12 +371,14 @@ export default function Lens({
     <Canvas
       className={className}
       style={{ width, height, borderRadius: 9999, ...style }}
-      gl={{ alpha: true, antialias: false, preserveDrawingBuffer: true, premultipliedAlpha: true }}
+      // Cap DPR at 1.5: the lens is a soft glass blob, so retina (DPR 2-3) just
+      // multiplies the heavy 3×-trace refraction shader 4-9× for no visible gain.
+      // preserveDrawingBuffer dropped — nothing reads this canvas back, so it only
+      // forced a per-frame backbuffer copy and defeated the cheap swap path.
+      dpr={[1, 1.5]}
+      gl={{ alpha: true, antialias: false, premultipliedAlpha: true }}
       orthographic
       camera={{ position: [0, 0, 1], zoom: 1 }}
-      onCreated={({ gl }) => {
-        gl.setPixelRatio(typeof window !== "undefined" ? window.devicePixelRatio || 1 : 1);
-      }}
     >
       {texture && (
         <LensScene

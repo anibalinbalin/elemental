@@ -9,7 +9,10 @@ import {
   Point,
   useAnimation,
   useAnimationFrame,
-  useDragControls,
+  useMotionValue,
+  useMotionValueEvent,
+  useReducedMotion,
+  useSpring,
 } from "framer-motion";
 import {
   CSSProperties,
@@ -42,17 +45,6 @@ const MemoizedLens = memo(Lens);
 const STONE_100 = "#f5f5f4";
 const STONE_200 = "#e7e5e4";
 const STONE_300 = "#d6d3d1";
-
-function getPointerLocalCoords(point: Point, constraint?: HTMLElement | null) {
-  if (!constraint) {
-    return { x: 0, y: 0 };
-  }
-  const rect = constraint.getBoundingClientRect();
-  return {
-    x: point.x - rect.left,
-    y: point.y - rect.top,
-  };
-}
 
 function getPointerOffsetFromElementCenter(point: Point, element?: HTMLElement | null) {
   if (!element) {
@@ -90,6 +82,15 @@ const initial = {
 const directionKeys = ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Shift"];
 const loupeScaleClickIncrement = 0.012;
 const loupeScaleClickMinIntervalMs = 20;
+
+// Drag-follow smoothing. The bezel transform AND the magnified content are both
+// driven from this one spring, so they move as a single locked unit (no desync
+// judder) and the raw per-frame pointer steps get interpolated into a glide.
+// bounce:0 — a microscope is a precision instrument, never overshoots. Keep the
+// visualDuration short so the glass tracks tightly with just a touch of weight:
+// nudge it UP for more lag/heft, toward 0 for a snappier (eventually choppier) 1:1
+// follow. This is pure motion smoothing — it never touches the render resolution.
+const loupeFollowSpring = { visualDuration: 0.1, bounce: 0 } as const;
 
 function Loupe({
   selectedStamp,
@@ -132,7 +133,35 @@ function Loupe({
   const dialSize = (isMobile ? 190 : 400) * sizeScale;
 
   const magnifierControls = useAnimation();
-  const dialDragControls = useDragControls();
+
+  // Single source of truth for the loupe's position. `targetX/Y` is the raw,
+  // clamped destination (set instantly by pointer drag / arrow keys); `x/y` is
+  // the spring-smoothed transform that the bezel actually renders. The bezel
+  // (style transform) and the lens content (via the store bridge below) both read
+  // x/y, so they can never drift apart. Holds the bezel's top-left offset, i.e.
+  // center − radius — matching the old framer drag transform.
+  const targetX = useMotionValue(0);
+  const targetY = useMotionValue(0);
+  const springX = useSpring(targetX, loupeFollowSpring);
+  const springY = useSpring(targetY, loupeFollowSpring);
+
+  // Respect prefers-reduced-motion: consume the raw target (instant follow) instead
+  // of the spring. The spring hooks still run (stable hook order); we just don't
+  // read their smoothed output. Direct manipulation, so no lag for sensitive users.
+  const reduceMotion = useReducedMotion();
+  const x = reduceMotion ? targetX : springX;
+  const y = reduceMotion ? targetY : springY;
+
+  // Bridge the (smoothed) transform into the shared store as the lens *center*
+  // (transform + radius). The Lens shader reads these coords each frame, so the
+  // magnified content stays locked to the glass. Fires only when the value
+  // actually moves — idle when the loupe is at rest.
+  const syncCoords = useCallback(() => {
+    const radius = dialSize / 2;
+    setCoords({ x: x.get() + radius, y: y.get() + radius });
+  }, [x, y, dialSize, setCoords]);
+  useMotionValueEvent(x, "change", syncCoords);
+  useMotionValueEvent(y, "change", syncCoords);
 
   const draggingMagnifier = useRef(false);
   const draggingMagnifierRefOffset = useRef<{ x: number; y: number } | null>({ x: 0, y: 0 });
@@ -143,38 +172,61 @@ function Loupe({
   const lastScaleClickStepRef = useRef(Math.round(scale / loupeScaleClickIncrement));
   const lastScaleClickAtRef = useRef(0);
 
+  // Cached container rect: drag only moves a compositor transform, so the card's
+  // box stays put. Measuring it once per drag (refreshed on scroll/resize) avoids
+  // a forced layout/reflow on every pointermove — the main-thread jank that made
+  // dragging feel laggy.
+  const containerRectRef = useRef<DOMRect | null>(null);
+  const refreshContainerRect = useCallback(() => {
+    containerRectRef.current = dragConstraints.current?.getBoundingClientRect() ?? null;
+  }, [dragConstraints]);
+
+  useEffect(() => {
+    const onViewportChange = () => {
+      if (draggingMagnifier.current) refreshContainerRect();
+    };
+    window.addEventListener("scroll", onViewportChange, { passive: true });
+    window.addEventListener("resize", onViewportChange);
+    return () => {
+      window.removeEventListener("scroll", onViewportChange);
+      window.removeEventListener("resize", onViewportChange);
+    };
+  }, [refreshContainerRect]);
+
   useEffect(() => {
     if (!dragConstraints?.current) {
       return;
     }
 
     if (isZoomed) {
-      setCoords({
-        x: dragConstraints.current.offsetWidth / 2,
-        y: dragConstraints.current.offsetHeight / 2,
-      });
+      // Rest in the top-right corner (the draggable clamp limit) so the loupe sits
+      // off-center and partly overhangs the frame — a built-in hint that it's meant
+      // to be picked up and moved. radius = dialSize / 2 keeps the bezel tangent to
+      // the top and right edges, matching the clamp bounds so the first drag never
+      // jumps.
+      const radius = dialSize / 2;
+      const restX = dragConstraints.current.offsetWidth - radius;
+      const restY = radius;
+      setCoords({ x: restX, y: restY });
 
-      magnifierControls
-        .start({
-          x: dragConstraints.current.offsetWidth / 2 - dialSize / 2,
-          y: dragConstraints.current.offsetHeight / 2 - dialSize / 2,
-          transition: {
-            duration: 0,
-          },
-        })
-        .then(() => {
-          magnifierControls.start({
-            opacity: 1,
-            filter: "blur(0px)",
-          });
-        });
+      // Snap (not spring) to the rest corner on open so the loupe doesn't glide in
+      // from 0,0 — jump() sets the target and the smoothed value together.
+      targetX.set(restX - radius);
+      targetY.set(restY - radius);
+      x.jump(restX - radius);
+      y.jump(restY - radius);
+
+      magnifierControls.start({
+        opacity: 1,
+        filter: "blur(0px)",
+      });
     } else {
       magnifierControls.start({
         opacity: 0,
         filter: "blur(10px)",
       });
     }
-  }, [isZoomed, magnifierControls, dragConstraints, setCoords, dialSize]);
+  }, [isZoomed, magnifierControls, dragConstraints, setCoords, dialSize, targetX, targetY, x, y]);
 
   const [canvasData, setCanvasData] = useState<{
     source: HTMLCanvasElement | HTMLImageElement;
@@ -324,7 +376,15 @@ function Loupe({
   const handlePointerDown = useCallback(
     (event: React.PointerEvent<HTMLDivElement>) => {
       draggingMagnifier.current = true;
-      dialDragControls.start(event);
+      refreshContainerRect();
+      // Capture the pointer to the trigger so pointermove/up keep targeting it
+      // even when the cursor outruns the bezel on a fast flick, or the bezel
+      // clamps at a constraint edge while the cursor keeps going. Without this
+      // the cursor crosses out of the trigger box, pointermove stops firing here
+      // (coords freeze), and pointerleave used to kill the whole drag — the
+      // "drag stops mid-drag" bug. Capture also suppresses pointerleave for the
+      // duration of the gesture, so it can no longer cancel us.
+      event.currentTarget.setPointerCapture(event.pointerId);
       triggerRef.current?.setAttribute("data-dragging", "true");
 
       const draggableCoords = getPointerOffsetFromElementCenter(
@@ -337,46 +397,44 @@ function Loupe({
         y: draggableCoords.y,
       };
     },
-    [dialDragControls, draggingMagnifier, draggingMagnifierRefOffset],
+    [draggingMagnifier, draggingMagnifierRefOffset, refreshContainerRect],
   );
 
   const handlePointerMove = useCallback(
     (event: React.PointerEvent<HTMLDivElement>) => {
-      const container = dragConstraints.current;
-      if (!container) return;
+      if (!draggingMagnifier.current) return;
+      const rect = containerRectRef.current;
+      if (!rect) return;
 
-      const localCoords = getPointerLocalCoords(
-        { x: event.clientX, y: event.clientY },
-        dragConstraints?.current!,
-      );
+      const pointerX = event.clientX - rect.left - (draggingMagnifierRefOffset.current?.x ?? 0);
+      const pointerY = event.clientY - rect.top - (draggingMagnifierRefOffset.current?.y ?? 0);
 
-      if (draggingMagnifier.current && dragConstraints.current) {
-        const coords = {
-          x: localCoords.x - (draggingMagnifierRefOffset.current?.x ?? 0),
-          y: localCoords.y - (draggingMagnifierRefOffset.current?.y ?? 0),
-        };
+      const radius = dialSize / 2;
+      const clampedX = clamp(radius, rect.width - radius, pointerX);
+      const clampedY = clamp(radius, rect.height - radius, pointerY);
 
-        const radius = dialSize / 2;
-
-        const clampedX = clamp(radius, container.offsetWidth - radius, coords.x);
-        const clampedY = clamp(radius, container.offsetHeight - radius, coords.y);
-
-        setCoords({ x: clampedX, y: clampedY });
-      }
+      // Feed the spring target only — the spring drives both the bezel transform
+      // and (via the store bridge) the lens content, so they stay locked + smooth.
+      targetX.set(clampedX - radius);
+      targetY.set(clampedY - radius);
     },
-    [dragConstraints, draggingMagnifier, draggingMagnifierRefOffset, dialSize, setCoords],
+    [draggingMagnifier, draggingMagnifierRefOffset, dialSize, targetX, targetY],
   );
 
-  const handlePointerUp = useCallback(() => {
+  const endDrag = useCallback(() => {
     draggingMagnifier.current = false;
     triggerRef.current?.removeAttribute("data-dragging");
-  }, [draggingMagnifier]);
+  }, []);
 
-  const handlePointerLeave = useCallback(() => {
-    draggingMagnifier.current = false;
-    dialDragControls.cancel();
-    triggerRef.current?.removeAttribute("data-dragging");
-  }, [draggingMagnifier, dialDragControls]);
+  const handlePointerUp = useCallback(
+    (event: React.PointerEvent<HTMLDivElement>) => {
+      if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+        event.currentTarget.releasePointerCapture(event.pointerId);
+      }
+      endDrag();
+    },
+    [endDrag],
+  );
 
   const style = useMemo(
     () =>
@@ -443,38 +501,29 @@ function Loupe({
     vx /= len;
     vy /= len;
 
-    const { x: cx, y: cy } = useLoupeStore.getState().coords;
+    const radius = dialSize / 2;
+
+    // Integrate from the spring *target* (not the smoothed value) so the lag never
+    // compounds, then feed the new target back to the same spring that drives the
+    // pointer drag — arrow-key moves get the identical smooth follow.
+    const cx = targetX.get() + radius;
+    const cy = targetY.get() + radius;
     const newX = cx + vx * speed * dt;
     const newY = cy + vy * speed * dt;
-
-    const radius = dialSize / 2;
 
     const clampedX = clamp(radius, container.offsetWidth - radius, newX);
     const clampedY = clamp(radius, container.offsetHeight - radius, newY);
 
-    useLoupeStore.setState({ coords: { x: clampedX, y: clampedY } });
-
-    magnifierControls.start({
-      x: clampedX - radius,
-      y: clampedY - radius,
-      transition: {
-        duration: 0,
-      },
-    });
+    targetX.set(clampedX - radius);
+    targetY.set(clampedY - radius);
   });
 
   return (
     <motion.div
-      drag
       data-zoomed={isZoomed}
       initial={initial}
-      dragElastic={0.01}
-      dragListener={false}
-      dragControls={dialDragControls}
-      dragMomentum={false}
-      dragConstraints={dragConstraints!}
       animate={magnifierControls}
-      style={style}
+      style={{ x, y, ...style }}
       className={cn(
         // NOTE: classes are namespaced `marj-loupe*` (not `loupe*`) on purpose —
         // the homepage graft ships a GLOBAL public/loupe.css that styles `.loupe`,
@@ -501,7 +550,8 @@ function Loupe({
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
-        onPointerLeave={handlePointerLeave}
+        onPointerCancel={endDrag}
+        onLostPointerCapture={endDrag}
         onKeyDown={handleTriggerKeyDown}
         onKeyUp={handleTriggerKeyUp}
         onBlur={onBlur}
