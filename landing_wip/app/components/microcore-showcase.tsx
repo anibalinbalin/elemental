@@ -50,8 +50,10 @@ export function MicrocoreShowcase() {
       <div className="relative rounded-t-[2.5rem] bg-bordeaux text-bordeaux-foreground">
         <SectionReveal>
           <div className="mx-auto flex max-w-7xl flex-col items-center gap-12 px-6 py-16 xl:min-h-[484px] xl:flex-row xl:gap-8 xl:py-0">
-            {/* LEFT — copy */}
-            <div className="flex w-full flex-col gap-6 xl:flex-1">
+            {/* LEFT — copy. The centred product image is xl:w-[175%], so it bleeds
+                ~100px out of the narrow centre column into this column on xl. Reserve
+                that bleed as right padding so the copy never runs under the pouch. */}
+            <div className="flex w-full flex-col gap-6 xl:flex-1 xl:pr-24">
               <h2 className="whitespace-nowrap text-4xl font-bold tracking-tight xl:text-[2.5rem]">
                 MICRO CORE
               </h2>
@@ -82,14 +84,16 @@ export function MicrocoreShowcase() {
                 taller than the row, so the pouch pokes up past the top. */}
             <div className="relative flex w-full shrink-0 justify-center xl:block xl:w-[clamp(260px,21vw,285px)] xl:self-stretch">
               <img
-                src="/images/product-pedestal.webp"
-                alt="Pouch de MICROKORE sobre pedestal con açaí y cacao"
-                className="w-[clamp(336px,86vw,504px)] xl:absolute xl:bottom-[-40px] xl:left-1/2 xl:w-[175%] xl:max-w-none xl:-translate-x-1/2"
+                src="/images/microcore-ingredients.webp"
+                alt="Pouch de MICROCORE sobre pedestal con açaí, melena de león y polvo de açaí"
+                className="w-[clamp(336px,86vw,504px)] xl:absolute xl:bottom-0 xl:left-1/2 xl:w-[175%] xl:max-w-none xl:-translate-x-1/2"
               />
             </div>
 
-            {/* RIGHT — 5 en 1 pills + ingredient badges */}
-            <div className="flex w-full flex-col gap-7 xl:w-auto xl:shrink-0 xl:items-start">
+            {/* RIGHT — 5 en 1 pills + ingredient badges. Equal flex weight to
+                the copy column (and right-aligned), so the fixed center column —
+                and the pouch centered on it — sits at the section's true center. */}
+            <div className="flex w-full flex-col gap-7 xl:flex-1 xl:items-end">
               <div className="flex flex-wrap items-center gap-3">
                 <span className="relative inline-flex h-9 items-center rounded-full border border-bordeaux-foreground/40 pl-9 pr-4 text-sm">
                   <span className="absolute -left-px top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-bordeaux-foreground/40 bg-bordeaux">
@@ -103,9 +107,9 @@ export function MicrocoreShowcase() {
                   MICRO CORE
                 </span>
               </div>
-              <div className="grid grid-cols-3 gap-x-1.5 gap-y-5 sm:grid-cols-6">
+              <div className="grid grid-cols-3 gap-x-4 gap-y-6">
                 {badges.map((b) => (
-                  <div key={b.label} className="flex w-[78px] flex-col items-center gap-2 text-center">
+                  <div key={b.label} className="flex w-[84px] flex-col items-center gap-2 text-center">
                     <span
                       className="relative flex h-14 w-14 items-center justify-center rounded-full"
                       style={{ backgroundColor: LIME }}
@@ -124,9 +128,6 @@ export function MicrocoreShowcase() {
             </div>
           </div>
         </SectionReveal>
-
-        {/* lime base strip */}
-        <div className="h-3 w-full" style={{ backgroundColor: LIME }} />
       </div>
     </section>
   );

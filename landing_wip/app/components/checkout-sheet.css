@@ -50,23 +50,28 @@
 .CheckoutSheet-card {
   position: relative; /* above the catcher so card clicks don't dismiss */
   z-index: 1;
+  display: flex;
+  flex-direction: column;
   margin: max(env(safe-area-inset-top, 0px), 0.75rem) 0
     max(env(safe-area-inset-bottom, 0px), 0.75rem);
   width: 100%;
   max-width: 480px;
   border-radius: 24px;
-  overflow: clip;
+  /* No `overflow: clip` here on purpose: a clipping ancestor would trap the
+     sticky footer (position:sticky resolves against the nearest scroll/clip
+     box, not Silk's Scroll.View). Children stay inside the radius via padding,
+     so nothing actually needs clipping. */
   background-color: var(--surface-1);
   box-shadow: 0 12px 32px -10px rgb(0 0 0 / 0.28), 0 4px 6px -4px rgb(0 0 0 / 0.1);
 }
 
-/* ---- Card padding ---- */
+/* ---- Card padding (scrolling region: header + fields) ---- */
 .CheckoutSheet-pad {
-  padding: 1rem 1.25rem 1.5rem;
+  padding: 1rem 1.25rem 0.75rem;
 }
 @media (min-width: 800px) {
   .CheckoutSheet-pad {
-    padding: 1.25rem 1.75rem 1.75rem;
+    padding: 1.25rem 1.75rem 0.75rem;
   }
 }
 
@@ -96,8 +101,8 @@
 .CheckoutSheet-form {
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  margin-top: 22px;
+  gap: 12px;
+  margin-top: 18px;
 }
 .CheckoutSheet-row {
   display: grid;
@@ -112,7 +117,7 @@
 .CheckoutSheet-field {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 5px;
 }
 .CheckoutSheet-label {
   font-size: 12.5px;
@@ -121,11 +126,39 @@
   letter-spacing: 0.01em;
 }
 
+/* Compact field sizing — scoped to the checkout card so the quiz sheet's
+   inputs are untouched. The 16px font stays (anything smaller makes iOS
+   Safari zoom on focus); only the vertical padding tightens, ~50px -> ~44px. */
+.CheckoutSheet-card .QuizSheet-emailInput {
+  padding: 11px 14px;
+  border-radius: 11px;
+}
+.CheckoutSheet-card .CheckoutSheet-select {
+  /* Keep room for the chevron on the right. */
+  padding: 11px 40px 11px 14px;
+}
+/* The shared .QuizSheet-btn is a full pill (9999px). In this sheet it sits
+   directly under 11px-radius inputs, so match it to them — scoped to checkout
+   so the quiz sheet's pill stays as-is. */
+.CheckoutSheet-card .QuizSheet-btn {
+  border-radius: 11px;
+}
+.CheckoutSheet-card .QuizSheet-emailInput[aria-invalid="true"] {
+  border-color: #dc2626;
+}
+.CheckoutSheet-card .QuizSheet-emailInput[aria-invalid="true"]:focus {
+  box-shadow: 0 0 0 3px color-mix(in oklab, #dc2626 14%, transparent);
+}
+.CheckoutSheet-fieldError {
+  font-size: 12px;
+  color: #dc2626;
+  margin-top: 1px;
+}
+
 /* Native select restyled to match .QuizSheet-emailInput */
 .CheckoutSheet-select {
   appearance: none;
   -webkit-appearance: none;
-  padding-right: 40px;
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M6 9l6 6 6-6'/></svg>");
   background-repeat: no-repeat;
   background-position: right 14px center;
@@ -138,32 +171,57 @@
   font-weight: 700;
 }
 
-/* Order summary with price breakdown */
-.CheckoutSheet-summary {
-  margin-top: 6px;
-  padding: 14px 16px;
-  background: var(--surface-2);
-  border: 1.5px solid var(--border);
-  border-radius: 12px;
-  font-size: 14px;
+/* ---- Pinned footer: total + CTA stay in view while the fields scroll ----
+   Sticks to the bottom of Silk's Scroll.View when the card is taller than the
+   viewport; when the card fits, it simply rests at the card's bottom edge. */
+.CheckoutSheet-bottomSentinel {
+  height: 1px;
 }
-.CheckoutSheet-sumRow {
+.CheckoutSheet-footer {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px 1.25rem max(env(safe-area-inset-bottom, 0px), 1rem);
+  background: var(--surface-1);
+  /* 1px reserved (transparent) so toggling the divider never shifts layout. */
+  border-top: 1px solid transparent;
+  border-radius: 0 0 24px 24px;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+/* Divider + lift appear only while content scrolls beneath the footer, so a
+   resting/fitting form reads as one seamless surface (no false "overflow"). */
+.CheckoutSheet-footer.is-elevated {
+  border-top-color: var(--border);
+  box-shadow: 0 -10px 16px -14px rgb(0 0 0 / 0.3);
+}
+@media (min-width: 800px) {
+  .CheckoutSheet-footer {
+    padding-left: 1.75rem;
+    padding-right: 1.75rem;
+  }
+}
+.CheckoutSheet-footerTotal {
+  display: flex;
+  align-items: baseline;
   justify-content: space-between;
   gap: 12px;
-  padding: 3px 0;
+}
+.CheckoutSheet-footerTotalLabel {
+  font-size: 14px;
+  font-weight: 600;
   color: var(--muted-foreground);
 }
-.CheckoutSheet-sumTotal {
-  margin-top: 6px;
-  padding-top: 10px;
-  border-top: 1px solid var(--border);
+.CheckoutSheet-footerTotalFree {
   color: var(--foreground);
-  font-size: 16px;
-}
-.CheckoutSheet-sumTotal strong {
   font-weight: 700;
+}
+.CheckoutSheet-footerTotalValue {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--foreground);
 }
 
 .CheckoutSheet-error {
@@ -180,7 +238,7 @@
   text-align: center;
   font-size: 12px;
   color: var(--muted-foreground);
-  margin: 10px 0 0;
+  margin: 0;
 }
 .CheckoutSheet-lock {
   display: inline-flex;
