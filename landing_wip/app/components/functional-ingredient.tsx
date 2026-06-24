@@ -77,8 +77,8 @@ export function FunctionalIngredient() {
             <div className="relative mx-auto w-full max-w-[520px]">
               <div className="aspect-square w-full overflow-hidden rounded-full">
                 <img
-                  src="/images/mix-in-bowls.webp"
-                  alt="Bowl de açaí con granola, avena y el pouch de MICROKORE"
+                  src="/images/microcore-uso.webp"
+                  alt="Bowl de açaí con granola junto al pouch de MICROCORE, un bowl de avena y açaí en polvo"
                   className="h-full w-full object-cover"
                 />
               </div>
