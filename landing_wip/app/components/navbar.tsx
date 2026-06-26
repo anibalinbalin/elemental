@@ -21,7 +21,7 @@ const LINKS = [
   { id: "microbiota", label: "Microbiota" },
   { id: "producto", label: "Producto" },
   { id: "ingredientes", label: "Ciencia" },
-  { id: "producto", label: "Cómo funciona" },
+  { id: "micro-core", label: "Cómo funciona" },
   { id: "origen", label: "Origen" },
   { id: "blog", label: "Ciencia cotidiana" },
   { id: "comunidad", label: "Comunidad" },
