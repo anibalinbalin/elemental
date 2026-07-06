@@ -71,6 +71,9 @@ export function MicrocoreCard() {
                           Precio de lanzamiento
                         </span>
                       )}
+                      <span className="text-xs font-mono uppercase text-bordeaux-foreground/70">
+                        o {formatPrice(PRODUCT.subscriptionPrice)}/mes con suscripción
+                      </span>
                     </div>
                     <BuyButton
                       className={cn(

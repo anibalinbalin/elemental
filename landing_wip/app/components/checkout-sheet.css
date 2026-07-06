@@ -97,6 +97,174 @@
   white-space: nowrap;
 }
 
+/* ---- Plan selector (compra única vs suscripción mensual) ---- */
+.CheckoutSheet-plansHeading {
+  display: block;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--muted-foreground);
+  letter-spacing: 0.01em;
+  margin: 18px 0 8px;
+}
+.CheckoutSheet-plans {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.CheckoutSheet-planCard {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  background: var(--card);
+  border: 1.5px solid var(--border);
+  border-radius: 16px;
+  padding: 14px 16px;
+  transition: border-color 200ms, background 200ms, box-shadow 200ms;
+}
+.CheckoutSheet-planCard:hover {
+  border-color: color-mix(in oklab, var(--foreground) 24%, transparent);
+}
+.CheckoutSheet-planCard:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--foreground) 16%, transparent);
+}
+.CheckoutSheet-planCard.is-selected {
+  border-color: var(--foreground);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--foreground) 8%, transparent);
+}
+
+/* Suscripción — destacada via a quiet lime wash, not a shout. */
+.CheckoutSheet-planCard--featured {
+  border-color: color-mix(in oklab, var(--lime) 55%, var(--border));
+  background: color-mix(in oklab, var(--lime) 8%, var(--card));
+}
+.CheckoutSheet-planCard--featured:hover {
+  border-color: color-mix(in oklab, var(--lime) 75%, var(--border));
+}
+.CheckoutSheet-planCard--featured.is-selected {
+  border-color: color-mix(in oklab, var(--lime) 85%, var(--foreground));
+  background: color-mix(in oklab, var(--lime) 12%, var(--card));
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--lime) 22%, transparent);
+}
+
+.CheckoutSheet-planBadge {
+  position: absolute;
+  top: -9px;
+  right: 14px;
+  background: var(--lime);
+  color: var(--lime-foreground);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 3px 9px;
+  border-radius: 9999px;
+}
+
+/* Radio indicator — same recipe as QuizSheet-mark (dot fills on selection). */
+.CheckoutSheet-planRadioDot {
+  position: relative;
+  flex: 0 0 20px;
+  height: 20px;
+  margin-top: 1px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border);
+  transition: border-color 200ms;
+}
+.CheckoutSheet-planRadioDot::after {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  border-radius: 50%;
+  background: var(--foreground);
+  opacity: 0;
+  transform: scale(0.5);
+  transition: 200ms;
+}
+.CheckoutSheet-planCard.is-selected .CheckoutSheet-planRadioDot {
+  border-color: var(--foreground);
+}
+.CheckoutSheet-planCard.is-selected .CheckoutSheet-planRadioDot::after {
+  opacity: 1;
+  transform: scale(1);
+}
+.CheckoutSheet-planCard--featured.is-selected .CheckoutSheet-planRadioDot {
+  border-color: color-mix(in oklab, var(--lime) 85%, var(--foreground));
+}
+.CheckoutSheet-planCard--featured.is-selected .CheckoutSheet-planRadioDot::after {
+  background: color-mix(in oklab, var(--lime) 85%, var(--foreground));
+}
+
+.CheckoutSheet-planBody {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  flex: 1;
+}
+.CheckoutSheet-planTitle {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--foreground);
+}
+.CheckoutSheet-planPrice {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--foreground);
+}
+.CheckoutSheet-planPriceStrike {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted-foreground);
+  text-decoration: line-through;
+}
+.CheckoutSheet-planPriceUnit {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted-foreground);
+}
+.CheckoutSheet-planDiscountTag {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--lime-foreground);
+  background: var(--lime);
+  border-radius: 9999px;
+  padding: 1px 7px;
+}
+.CheckoutSheet-planCaption {
+  font-size: 12.5px;
+  color: var(--muted-foreground);
+}
+.CheckoutSheet-planBenefits {
+  list-style: none;
+  margin: 4px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.CheckoutSheet-planBenefit {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  color: var(--foreground);
+}
+.CheckoutSheet-planBenefit svg {
+  flex: 0 0 13px;
+  width: 13px;
+  height: 13px;
+  color: color-mix(in oklab, var(--lime) 85%, var(--foreground));
+  stroke-width: 2.5px;
+}
+
 /* ---- Form ---- */
 .CheckoutSheet-form {
   display: flex;
@@ -152,6 +320,11 @@
 .CheckoutSheet-fieldError {
   font-size: 12px;
   color: #dc2626;
+  margin-top: 1px;
+}
+.CheckoutSheet-fieldHint {
+  font-size: 12px;
+  color: var(--muted-foreground);
   margin-top: 1px;
 }
 
