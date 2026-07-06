@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { preferenceClient } from "@/lib/mercadopago";
-import { PRODUCT } from "@/lib/product";
+import { PRODUCT, currentUnitPrice } from "@/lib/product";
 import { normalizeShipping } from "@/lib/shipping";
 
 export const runtime = "nodejs";
@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
             title: PRODUCT.title,
             description: PRODUCT.description,
             quantity,
-            unit_price: PRODUCT.unitPrice,
+            unit_price: currentUnitPrice(),
             currency_id: PRODUCT.currencyId,
           },
         ],

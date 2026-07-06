@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 import { useShape } from "@/lib/shape-context";
 import { SectionReveal } from "./section-reveal";
 import { BuyButton } from "./buy-button";
-import { PRODUCT, formatPrice } from "@/lib/product";
+import { PRODUCT, LAUNCH_MODE, currentUnitPrice, formatPrice } from "@/lib/product";
 
 export function ClosingCta() {
   const shape = useShape();
@@ -20,13 +20,25 @@ export function ClosingCta() {
             <p className="text-lg text-muted-foreground leading-relaxed">
               Una cucharada por día. En lo que ya comés.
             </p>
-            <div className="flex items-baseline gap-2">
-              <span className="text-3xl font-bold tracking-tight">
-                {formatPrice(PRODUCT.unitPrice)}
-              </span>
-              <span className="text-xs font-mono uppercase text-muted-foreground">
-                / 300 g
-              </span>
+            <div className="flex flex-col items-center gap-1">
+              <div className="flex items-baseline gap-2">
+                {LAUNCH_MODE && (
+                  <span className="text-xl font-bold tracking-tight text-muted-foreground/60 line-through">
+                    {formatPrice(PRODUCT.unitPrice)}
+                  </span>
+                )}
+                <span className="text-3xl font-bold tracking-tight">
+                  {formatPrice(currentUnitPrice())}
+                </span>
+                <span className="text-xs font-mono uppercase text-muted-foreground">
+                  / 300 g
+                </span>
+              </div>
+              {LAUNCH_MODE && (
+                <span className="text-xs font-mono uppercase text-muted-foreground">
+                  Precio de lanzamiento
+                </span>
+              )}
             </div>
             <BuyButton
               className={cn(
