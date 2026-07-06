@@ -121,6 +121,130 @@ function buyerHtml(amountLabel: string, ref: string, shipping?: ShippingInfo): s
     ${FOOTER}`;
 }
 
+// ── Suscripción mensual ──────────────────────────────────────────────
+
+export type SubscriptionEmailInfo = {
+  email: string;
+  name?: string;
+  address?: string;
+  city?: string;
+  department?: string;
+};
+
+export async function sendSubscriptionWelcome(info: SubscriptionEmailInfo): Promise<void> {
+  const resend = getResend();
+  if (!resend) {
+    console.warn("[email] RESEND_API_KEY sin definir — no se envía bienvenida de suscripción.");
+    return;
+  }
+
+  const price = formatPrice(PRODUCT.subscriptionPrice);
+  const dest = shippingTo({ address: info.address, city: info.city, department: info.department });
+  const destBlock = dest
+    ? `te enviamos un doypack de MICROCORE (300 g) a <strong>${esc(dest)}</strong>`
+    : "te enviamos un doypack de MICROCORE (300 g)";
+
+  const { error } = await resend.emails.send({
+    from: FROM,
+    to: info.email,
+    replyTo: STORE_EMAIL,
+    subject: "Tu suscripción a MICROCORE está activa",
+    html: `${SHELL_OPEN}${LABEL}
+      <h1 style="font-size:24px;margin:0 0 12px">¡Tu suscripción está activa!</h1>
+      <p style="margin:0 0 20px">${info.name ? `Hola ${esc(info.name)}, c` : "C"}ada 30 días te cobramos ${esc(
+        price
+      )} y ${destBlock}.</p>
+      <p style="margin:0 0 20px">${esc(PRODUCT.deliveryEstimate)}.</p>
+      <p style="margin:0">Podés cancelar cuando quieras desde <a href="https://elementalbloomco.com/mi-suscripcion" style="color:inherit">elementalbloomco.com/mi-suscripcion</a>.</p>
+      ${FOOTER}`,
+  });
+  if (error) {
+    console.error("[email] fallo al enviar bienvenida de suscripción", error);
+  }
+}
+
+export async function sendSubscriptionChargeOk(info: SubscriptionEmailInfo): Promise<void> {
+  const resend = getResend();
+  if (!resend) {
+    console.warn("[email] RESEND_API_KEY sin definir — no se envía confirmación de cobro.");
+    return;
+  }
+
+  const price = formatPrice(PRODUCT.subscriptionPrice);
+  const { error } = await resend.emails.send({
+    from: FROM,
+    to: info.email,
+    replyTo: STORE_EMAIL,
+    subject: "Cobro confirmado — tu MICROCORE está en camino",
+    html: `${SHELL_OPEN}${LABEL}
+      <h1 style="font-size:24px;margin:0 0 12px">Cobro confirmado</h1>
+      <p style="margin:0 0 20px">${info.name ? `Hola ${esc(info.name)}, p` : "P"}rocesamos el cobro mensual de ${esc(
+        price
+      )}. Tu MICROCORE ya se está preparando.</p>
+      <p style="margin:0">${esc(PRODUCT.deliveryEstimate)}.</p>
+      ${FOOTER}`,
+  });
+  if (error) {
+    console.error("[email] fallo al enviar confirmación de cobro", error);
+  }
+}
+
+export async function sendSubscriptionChargeFailed(info: SubscriptionEmailInfo): Promise<void> {
+  const resend = getResend();
+  if (!resend) {
+    console.warn("[email] RESEND_API_KEY sin definir — no se envía aviso de cobro fallido.");
+    return;
+  }
+
+  const price = formatPrice(PRODUCT.subscriptionPrice);
+  const { error } = await resend.emails.send({
+    from: FROM,
+    to: info.email,
+    replyTo: STORE_EMAIL,
+    subject: "No pudimos procesar el cobro de tu suscripción",
+    html: `${SHELL_OPEN}${LABEL}
+      <h1 style="font-size:22px;margin:0 0 12px">No pudimos procesar tu cobro</h1>
+      <p style="margin:0 0 20px">${info.name ? `Hola ${esc(info.name)}, e` : "E"}l cobro mensual de ${esc(
+        price
+      )} no se pudo procesar. Mercado Pago va a reintentar automáticamente en los próximos días.</p>
+      <p style="margin:0">Si el problema sigue, actualizá tu medio de pago en tu cuenta de Mercado Pago o escribinos a <a href="mailto:${STORE_EMAIL}" style="color:inherit">${STORE_EMAIL}</a>.</p>
+      ${FOOTER}`,
+  });
+  if (error) {
+    console.error("[email] fallo al enviar aviso de cobro fallido", error);
+  }
+}
+
+export async function sendSubscriptionMagicLink({
+  email,
+  link,
+}: {
+  email: string;
+  link: string;
+}): Promise<void> {
+  const resend = getResend();
+  if (!resend) {
+    console.warn("[email] RESEND_API_KEY sin definir — no se envía el enlace de acceso.");
+    return;
+  }
+
+  const { error } = await resend.emails.send({
+    from: FROM,
+    to: email,
+    replyTo: STORE_EMAIL,
+    subject: "Gestioná tu suscripción",
+    html: `${SHELL_OPEN}${LABEL}
+      <h1 style="font-size:22px;margin:0 0 12px">Gestioná tu suscripción</h1>
+      <p style="margin:0 0 20px">Entrá acá para ver o cancelar tu suscripción:</p>
+      <p style="margin:0 0 20px"><a href="${esc(link)}" style="color:inherit;font-weight:600">${esc(link)}</a></p>
+      <p style="margin:0;color:#666;font-size:13px">El enlace vence en 30 minutos. Si no pediste este correo, ignoralo.</p>
+      ${FOOTER}`,
+  });
+  if (error) {
+    console.error("[email] fallo al enviar el enlace de gestión de suscripción", error);
+  }
+}
+
 function storeHtml(o: OrderInfo & { amountLabel: string; ref: string }): string {
   const s = o.shipping;
   const shippingTable = s

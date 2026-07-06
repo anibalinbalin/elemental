@@ -6,6 +6,8 @@ export const PRODUCT = {
   description: "Una sola cucharada. Cinco funciones. Sin cápsulas.",
   unitPrice: 1890, // UYU
   launchPrice: 1490, // UYU — precio de lanzamiento (solo compra única)
+  subscriptionPrice: 1590, // UYU — suscripción mensual (-16% vs lista)
+  portions: 15, // porciones por doypack de 300 g
   currencyId: "UYU",
   maxQuantity: 10,
   image: "/images/product-pouch.webp",
@@ -29,4 +31,10 @@ export const LAUNCH_MODE = process.env.NEXT_PUBLIC_LAUNCH_MODE === "true";
 
 export function currentUnitPrice(): number {
   return LAUNCH_MODE ? PRODUCT.launchPrice : PRODUCT.unitPrice;
+}
+
+// La suscripción no participa del precio de lanzamiento: 1590 fijo
+// ("precio congelado" es parte de la promesa del plan).
+export function subscriptionPricePerPortion(): number {
+  return Math.round(PRODUCT.subscriptionPrice / PRODUCT.portions);
 }
