@@ -3,7 +3,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Sheet, Scroll } from "@silk-hq/components";
 import { motion } from "framer-motion";
-import { PRODUCT, formatPrice } from "@/lib/product";
+import { PRODUCT, LAUNCH_MODE, currentUnitPrice, formatPrice } from "@/lib/product";
 import { URUGUAY_DEPARTMENTS, type ShippingDetails } from "@/lib/shipping";
 import "./quiz-sheet.css";
 import "./checkout-sheet.css";
@@ -396,9 +396,15 @@ export function CheckoutSheet({
                           <span className="CheckoutSheet-footerTotalFree">
                             · envío gratis
                           </span>
+                          {LAUNCH_MODE ? " · Precio de lanzamiento" : ""}
                         </span>
-                        <span className="CheckoutSheet-footerTotalValue">
-                          {formatPrice(PRODUCT.unitPrice * quantity)}
+                        <span className="CheckoutSheet-footerTotalValue flex items-baseline gap-1.5">
+                          {LAUNCH_MODE && (
+                            <span className="text-xs font-normal text-muted-foreground line-through">
+                              {formatPrice(PRODUCT.unitPrice * quantity)}
+                            </span>
+                          )}
+                          {formatPrice(currentUnitPrice() * quantity)}
                         </span>
                       </div>
 

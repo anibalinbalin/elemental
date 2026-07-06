@@ -5,6 +5,7 @@ export const PRODUCT = {
   title: "MICROCORE — 300 g",
   description: "Una sola cucharada. Cinco funciones. Sin cápsulas.",
   unitPrice: 1890, // UYU
+  launchPrice: 1490, // UYU — precio de lanzamiento (solo compra única)
   currencyId: "UYU",
   maxQuantity: 10,
   image: "/images/product-pouch.webp",
@@ -19,4 +20,13 @@ export function formatPrice(value: number): string {
     currency: PRODUCT.currencyId,
     maximumFractionDigits: 0,
   }).format(value);
+}
+
+// Precio de lanzamiento: se activa con NEXT_PUBLIC_LAUNCH_MODE=true (env de
+// Vercel + redeploy, sin tocar código). NEXT_PUBLIC_ para que el mismo flag
+// quede inlined en el cliente y sea legible en el server.
+export const LAUNCH_MODE = process.env.NEXT_PUBLIC_LAUNCH_MODE === "true";
+
+export function currentUnitPrice(): number {
+  return LAUNCH_MODE ? PRODUCT.launchPrice : PRODUCT.unitPrice;
 }
