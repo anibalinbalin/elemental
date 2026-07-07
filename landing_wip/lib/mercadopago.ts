@@ -1,4 +1,4 @@
-import { MercadoPagoConfig, Preference, Payment } from "mercadopago";
+import { MercadoPagoConfig, Preference, Payment, PreApproval } from "mercadopago";
 
 // Server-only Mercado Pago clients. Never import this file from a Client
 // Component — it reads the secret access token and pulls in Node APIs.
@@ -19,4 +19,8 @@ export function preferenceClient(): Preference {
 
 export function paymentClient(): Payment {
   return new Payment(getClient());
+}
+
+export function preApprovalClient(): PreApproval {
+  return new PreApproval(getClient());
 }
