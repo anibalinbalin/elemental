@@ -143,7 +143,7 @@ export function Microbiota() {
                               <h1>Fórmula MICROCORE</h1>
                             </LongSheet.Title>
                             <h2 className="ExampleLongSheet-subtitle">
-                              Una sola cucharada. Cinco funciones.
+                              Tres cucharadas al dia. En lo que ya comes.
                             </h2>
                             <section className="ExampleLongSheet-articleBody">
                               <div className="grid gap-4">

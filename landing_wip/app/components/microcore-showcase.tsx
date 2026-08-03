@@ -58,9 +58,9 @@ export function MicrocoreShowcase() {
                 MICRO CORE
               </h2>
               <p className="text-lg font-medium leading-snug">
-                Una sola cucharada. Cinco funciones.
+                Tres cucharadas al dia.
                 <br />
-                Sin cápsulas.
+                En lo que ya comes.
               </p>
               <p className="max-w-md leading-relaxed text-bordeaux-foreground/80">
                 Frío o caliente, llega activo igual. Estudios clínicos

@@ -31,7 +31,7 @@ export function MicrocoreCard() {
                     MICROCORE
                   </h2>
                   <p className="text-lg text-bordeaux-foreground/80 leading-relaxed">
-                    Una sola cucharada. Cinco funciones. Sin cápsulas. Frío o
+                    Tres cucharadas al dia. En lo que ya comes. Frio o
                     caliente, llega activo igual.
                   </p>
 

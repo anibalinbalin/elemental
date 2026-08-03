@@ -12,7 +12,7 @@ const CONTACT_EMAIL = "hola@elementalbloomco.com";
 const faqs = [
   {
     q: "¿Qué es MICROCORE?",
-    a: "Es un probiótico termorresistente en polvo para tu microbiota, desarrollado en Uruguay. Una sola cucharada diaria, sin cápsulas, que podés tomar en frío o en caliente.",
+    a: "Es un probiótico termorresistente en polvo para tu microbiota, desarrollado en Uruguay. Tres cucharadas al dia, sin capsulas, en frio o en caliente.",
   },
   {
     q: "¿Cómo se toma?",
