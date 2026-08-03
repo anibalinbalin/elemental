@@ -1,6 +1,6 @@
 import { HeroSplit } from "./hero-split";
 import { LandingSections } from "./components/landing-sections";
-import { PRODUCT, currentUnitPrice } from "@/lib/product";
+import { PRODUCT, UNIT_PRICE } from "@/lib/product";
 
 const productJsonLd = {
   "@context": "https://schema.org",
@@ -15,7 +15,7 @@ const productJsonLd = {
   image: "https://elementalbloomco.com/images/product-pedestal.webp",
   offers: {
     "@type": "Offer",
-    price: currentUnitPrice(),
+    price: UNIT_PRICE,
     priceCurrency: PRODUCT.currencyId,
     availability: "https://schema.org/InStock",
     url: "https://elementalbloomco.com/#producto",

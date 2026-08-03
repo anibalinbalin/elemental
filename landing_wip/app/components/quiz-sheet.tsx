@@ -11,7 +11,7 @@ import React, {
 import { Sheet, Scroll } from "@silk-hq/components";
 import { motion, AnimatePresence } from "framer-motion";
 import { BuyButton } from "./buy-button";
-import { PRODUCT, LAUNCH_MODE, currentUnitPrice, formatPrice } from "@/lib/product";
+import { PRODUCT, UNIT_PRICE, formatPrice } from "@/lib/product";
 import "./quiz-sheet.css";
 
 /* ─────────────────────────────────────────────────────────
@@ -803,13 +803,8 @@ function QuizBody() {
           <p className="QuizSheet-productTieIn mt-2">{r.tieIn}</p>
           <div className="QuizSheet-productRow">
             <span className="flex items-baseline gap-1.5 whitespace-nowrap">
-              {LAUNCH_MODE && (
-                <span className="text-sm font-bold tracking-tight text-muted-foreground/60 line-through">
-                  {formatPrice(PRODUCT.unitPrice)}
-                </span>
-              )}
               <span className="text-xl font-bold tracking-tight">
-                {formatPrice(currentUnitPrice())}
+                {formatPrice(UNIT_PRICE)}
               </span>
               <span className="font-mono text-xs uppercase text-muted-foreground">
                 / 300 g

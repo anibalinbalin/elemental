@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { eq } from "drizzle-orm";
 import { preApprovalClient } from "@/lib/mercadopago";
-import { PRODUCT } from "@/lib/product";
+import { PRODUCT, PLANS } from "@/lib/product";
 import { normalizeShipping } from "@/lib/shipping";
 import { getDb } from "@/lib/db";
 import { subscribers } from "@/lib/schema";
@@ -84,7 +84,7 @@ export async function POST(request: NextRequest) {
         auto_recurring: {
           frequency: 1,
           frequency_type: "months",
-          transaction_amount: PRODUCT.subscriptionPrice,
+          transaction_amount: PLANS["30d"].unitPrice,
           currency_id: PRODUCT.currencyId,
         },
         back_url: `${baseUrl}/suscripcion/confirmada`,

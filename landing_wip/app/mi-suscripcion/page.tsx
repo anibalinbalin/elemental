@@ -4,7 +4,7 @@ import { eq } from "drizzle-orm";
 import { getDb } from "@/lib/db";
 import { subscribers } from "@/lib/schema";
 import { verifyToken } from "@/lib/subscription-token";
-import { PRODUCT, formatPrice } from "@/lib/product";
+import { PRODUCT, PLANS, formatPrice } from "@/lib/product";
 import { SubscriptionManager, type SubscriberView } from "./subscription-manager";
 
 export const metadata: Metadata = {
@@ -80,7 +80,7 @@ export default async function MiSuscripcionPage({
           expired={expired}
           token={tokenValid ? token : undefined}
           subscriber={subscriber}
-          price={formatPrice(PRODUCT.subscriptionPrice)}
+          price={formatPrice(PLANS["30d"].unitPrice)}
         />
 
         <p className="mt-16 text-sm text-muted-foreground">

@@ -3,13 +3,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Sheet, Scroll } from "@silk-hq/components";
 import { motion } from "framer-motion";
-import {
-  PRODUCT,
-  LAUNCH_MODE,
-  currentUnitPrice,
-  formatPrice,
-  subscriptionPricePerPortion,
-} from "@/lib/product";
+import { PRODUCT, PLANS, DEFAULT_PLAN, formatPrice, type PlanId } from "@/lib/product";
 import { URUGUAY_DEPARTMENTS, type ShippingDetails } from "@/lib/shipping";
 import "./quiz-sheet.css";
 import "./checkout-sheet.css";
@@ -28,12 +22,6 @@ const LOCK_SVG = (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden>
     <rect x="4" y="10" width="16" height="11" rx="2.5" strokeWidth="2" />
     <path d="M8 10V7a4 4 0 0 1 8 0v3" strokeWidth="2" strokeLinecap="round" />
-  </svg>
-);
-
-const CHECK_SVG = (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden>
-    <path d="M5 13l4 4L19 7" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
   </svg>
 );
 
@@ -76,11 +64,6 @@ const EMPTY: ShippingDetails = {
 type Field = keyof ShippingDetails;
 const REQUIRED: Field[] = ["name", "phone", "address", "city", "department"];
 
-// Two purchase modes, one form: "unica" is today's single-purchase checkout,
-// "mensual" swaps the total/endpoint/CTA and adds the email field below.
-type Plan = "unica" | "mensual";
-const PLAN_ORDER: Plan[] = ["unica", "mensual"];
-
 // "Remember me" for repeat purchases — store the shipping details on the
 // buyer's device (no account, no server). Read back to pre-fill next time.
 const STORAGE_KEY = "eb-shipping-v1";
@@ -111,16 +94,12 @@ function readSavedShipping(): ShippingDetails | null {
 export function CheckoutSheet({
   presented,
   onPresentedChange,
-  quantity = 1,
 }: {
   presented?: boolean;
   onPresentedChange?: (presented: boolean) => void;
-  quantity?: number;
 }) {
+  const [plan, setPlan] = useState<PlanId>(DEFAULT_PLAN);
   const [form, setForm] = useState<ShippingDetails>(EMPTY);
-  const [plan, setPlan] = useState<Plan>("unica");
-  const [email, setEmailRaw] = useState("");
-  const [emailError, setEmailError] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   // Per-field "this is required" flags, set on submit (not on blur) so the
@@ -138,12 +117,6 @@ export function CheckoutSheet({
   const catcherRef = useRef<HTMLDivElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
   const bottomSentinelRef = useRef<HTMLDivElement>(null);
-  const emailRef = useRef<HTMLInputElement>(null);
-  // Roving tabindex targets for the plan radiogroup (only 2 options).
-  const planRadioRefs = useRef<Record<Plan, HTMLDivElement | null>>({
-    unica: null,
-    mensual: null,
-  });
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const scrollRef = useRef<any>(null);
 
@@ -207,52 +180,26 @@ export function CheckoutSheet({
     el?.focus();
   }
 
-  function setEmail(value: string) {
-    setEmailRaw(value);
-    if (emailError) setEmailError(false);
-  }
-
-  // Only two options, so any arrow key toggles to the other one — mirrors the
-  // usual roving-tabindex radiogroup recipe without needing a real list.
-  function handlePlansKeyDown(e: React.KeyboardEvent<HTMLDivElement>) {
-    if (!["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.key)) return;
-    e.preventDefault();
-    const idx = PLAN_ORDER.indexOf(plan);
-    const delta = e.key === "ArrowUp" || e.key === "ArrowLeft" ? -1 : 1;
-    const next = PLAN_ORDER[(idx + delta + PLAN_ORDER.length) % PLAN_ORDER.length];
-    setPlan(next);
-    planRadioRefs.current[next]?.focus();
-  }
-
   async function submit() {
     if (loading) return;
     // The button stays alive even when the form is incomplete: validate on
     // submit, flag every empty required field, and jump focus to the first.
     const missing = REQUIRED.filter((f) => form[f].trim().length === 0);
-    const emailMissing = plan === "mensual" && email.trim().length === 0;
-    if (missing.length > 0 || emailMissing) {
+    if (missing.length > 0) {
       const map: Partial<Record<Field, boolean>> = {};
       for (const f of missing) map[f] = true;
       setErrors(map);
-      setEmailError(emailMissing);
-      if (missing.length > 0) focusField(missing[0]);
-      else emailRef.current?.focus();
+      focusField(missing[0]);
       return;
     }
     setErrors({});
-    setEmailError(false);
     setLoading(true);
     setError(null);
     try {
-      const endpoint = plan === "mensual" ? "/api/subscribe" : "/api/checkout";
-      const body =
-        plan === "mensual"
-          ? { email: email.trim(), shipping: form }
-          : { quantity, shipping: form };
-      const res = await fetch(endpoint, {
+      const res = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
+        body: JSON.stringify({ plan, shipping: form }),
       });
       if (!res.ok) throw new Error(`checkout respondió ${res.status}`);
       const data: { init_point?: string } = await res.json();
@@ -332,93 +279,65 @@ export function CheckoutSheet({
                         </Sheet.Trigger>
                       </div>
 
-                      <span className="CheckoutSheet-plansHeading">
-                        Elegí tu plan
-                      </span>
-                      <div
-                        className="CheckoutSheet-plans"
-                        role="radiogroup"
-                        aria-label="Elegí tu plan"
-                        onKeyDown={handlePlansKeyDown}
-                      >
-                        <div
-                          role="radio"
-                          aria-checked={plan === "unica"}
-                          tabIndex={plan === "unica" ? 0 : -1}
-                          ref={(el) => {
-                            planRadioRefs.current.unica = el;
-                          }}
-                          className={
-                            "CheckoutSheet-planCard" +
-                            (plan === "unica" ? " is-selected" : "")
-                          }
-                          onClick={() => setPlan("unica")}
-                        >
-                          <span className="CheckoutSheet-planRadioDot" aria-hidden="true" />
-                          <div className="CheckoutSheet-planBody">
-                            <span className="CheckoutSheet-planTitle">Compra única</span>
-                            <span className="CheckoutSheet-planPrice">
-                              {LAUNCH_MODE && (
-                                <span className="CheckoutSheet-planPriceStrike">
-                                  {formatPrice(PRODUCT.unitPrice)}
+                      <fieldset className="CheckoutSheet-plans">
+                        <legend className="CheckoutSheet-plansLegend">
+                          Elegí tu plan
+                        </legend>
+                        {(Object.entries(PLANS) as [PlanId, typeof PLANS[PlanId]][]).map(
+                          ([id, p]) => {
+                            const total = p.unitPrice * p.quantity;
+                            const selected = plan === id;
+                            return (
+                              <label
+                                key={id}
+                                className={
+                                  "CheckoutSheet-plan" +
+                                  (selected ? " is-selected" : "")
+                                }
+                              >
+                                {id === "30d" && (
+                                  <span className="CheckoutSheet-planBadge">
+                                    Recomendado
+                                  </span>
+                                )}
+                                <input
+                                  type="radio"
+                                  name="plan"
+                                  value={id}
+                                  checked={selected}
+                                  onChange={() => setPlan(id)}
+                                  className="CheckoutSheet-planRadio"
+                                />
+                                <span className="CheckoutSheet-planInfo">
+                                  <span className="CheckoutSheet-planLabel">
+                                    {p.label}
+                                  </span>
+                                  <span className="CheckoutSheet-planPrice">
+                                    {formatPrice(total)}
+                                  </span>
+                                  <span className="CheckoutSheet-planDetail">
+                                    {p.quantity === 1
+                                      ? "1 paquete (15 dias)"
+                                      : `${p.quantity} paquetes · ${formatPrice(p.unitPrice)} c/u`}
+                                  </span>
                                 </span>
-                              )}
-                              {formatPrice(currentUnitPrice())}
-                            </span>
-                            <span className="CheckoutSheet-planCaption">
-                              300 g · 15 porciones
-                            </span>
-                          </div>
-                        </div>
-
-                        <div
-                          role="radio"
-                          aria-checked={plan === "mensual"}
-                          tabIndex={plan === "mensual" ? 0 : -1}
-                          ref={(el) => {
-                            planRadioRefs.current.mensual = el;
-                          }}
-                          className={
-                            "CheckoutSheet-planCard CheckoutSheet-planCard--featured" +
-                            (plan === "mensual" ? " is-selected" : "")
+                              </label>
+                            );
                           }
-                          onClick={() => setPlan("mensual")}
-                        >
-                          <span className="CheckoutSheet-planBadge">Recomendado</span>
-                          <span className="CheckoutSheet-planRadioDot" aria-hidden="true" />
-                          <div className="CheckoutSheet-planBody">
-                            <span className="CheckoutSheet-planTitle">
-                              Suscripción mensual
-                            </span>
-                            <span className="CheckoutSheet-planPrice">
-                              {formatPrice(PRODUCT.subscriptionPrice)}
-                              <span className="CheckoutSheet-planPriceUnit">/mes</span>
-                              <span className="CheckoutSheet-planDiscountTag">-16%</span>
-                            </span>
-                            <span className="CheckoutSheet-planCaption">
-                              {formatPrice(subscriptionPricePerPortion())} por porción
-                            </span>
-                            <ul className="CheckoutSheet-planBenefits">
-                              <li className="CheckoutSheet-planBenefit">
-                                {CHECK_SVG} Envío prioritario
-                              </li>
-                              <li className="CheckoutSheet-planBenefit">
-                                {CHECK_SVG} Precio congelado
-                              </li>
-                              <li className="CheckoutSheet-planBenefit">
-                                {CHECK_SVG} Cancelás cuando quieras
-                              </li>
-                            </ul>
-                          </div>
-                        </div>
-                      </div>
+                        )}
+                      </fieldset>
 
                       <h2 className="text-xl font-semibold leading-tight tracking-tight md:text-2xl">
                         ¿A dónde te lo enviamos?
                       </h2>
                       <p className="mt-2 text-sm text-muted-foreground">
-                        {PRODUCT.deliveryEstimate} ·{" "}
-                        <span className="CheckoutSheet-free">envío sin costo</span>
+                        {PRODUCT.deliveryEstimate}
+                        {plan === "30d" && (
+                          <>
+                            {" · "}
+                            <span className="CheckoutSheet-free">envío sin costo</span>
+                          </>
+                        )}
                       </p>
 
                       <form
@@ -430,25 +349,6 @@ export function CheckoutSheet({
                           submit();
                         }}
                       >
-                        {plan === "mensual" && (
-                          <FormField
-                            label="Email"
-                            error={emailError}
-                            hint="Para confirmarte cada cobro y envío."
-                          >
-                            <input
-                              ref={emailRef}
-                              name="email"
-                              type="email"
-                              className="QuizSheet-emailInput"
-                              autoComplete="email"
-                              placeholder="camila@email.com"
-                              aria-invalid={emailError || undefined}
-                              value={email}
-                              onChange={(e) => setEmail(e.target.value)}
-                            />
-                          </FormField>
-                        )}
                         <FormField label="Nombre y apellido" error={errors.name}>
                           <input
                             name="name"
@@ -543,37 +443,15 @@ export function CheckoutSheet({
                     >
                       <div className="CheckoutSheet-footerTotal">
                         <span className="CheckoutSheet-footerTotalLabel">
-                          {plan === "mensual" ? (
-                            "Total"
-                          ) : (
-                            <>
-                              Total
-                              {quantity > 1 ? ` · ${quantity} u.` : ""}{" "}
-                              <span className="CheckoutSheet-footerTotalFree">
-                                · envío gratis
-                              </span>
-                              {LAUNCH_MODE ? " · Precio de lanzamiento" : ""}
-                            </>
+                          Total · {PLANS[plan].label}
+                          {plan === "30d" && (
+                            <span className="CheckoutSheet-footerTotalFree">
+                              {" "}· envío gratis
+                            </span>
                           )}
                         </span>
-                        <span className="CheckoutSheet-footerTotalValue flex items-baseline gap-1.5">
-                          {plan === "mensual" ? (
-                            <>
-                              {formatPrice(PRODUCT.subscriptionPrice)}
-                              <span className="text-xs font-normal text-muted-foreground">
-                                /mes
-                              </span>
-                            </>
-                          ) : (
-                            <>
-                              {LAUNCH_MODE && (
-                                <span className="text-xs font-normal text-muted-foreground line-through">
-                                  {formatPrice(PRODUCT.unitPrice * quantity)}
-                                </span>
-                              )}
-                              {formatPrice(currentUnitPrice() * quantity)}
-                            </>
-                          )}
+                        <span className="CheckoutSheet-footerTotalValue">
+                          {formatPrice(PLANS[plan].unitPrice * PLANS[plan].quantity)}
                         </span>
                       </div>
 
@@ -592,11 +470,7 @@ export function CheckoutSheet({
                         whileTap={{ scale: 0.97 }}
                         transition={TAP_SPRING}
                       >
-                        {loading
-                          ? "Redirigiendo…"
-                          : plan === "mensual"
-                            ? "Suscribirme"
-                            : "Continuar al pago"}
+                        {loading ? "Redirigiendo…" : "Continuar al pago"}
                       </motion.button>
                       <p className="CheckoutSheet-secure">
                         <span className="CheckoutSheet-lock">{LOCK_SVG}</span>
@@ -617,12 +491,10 @@ export function CheckoutSheet({
 function FormField({
   label,
   error,
-  hint,
   children,
 }: {
   label: string;
   error?: boolean;
-  hint?: string;
   children: React.ReactNode;
 }) {
   return (
@@ -631,8 +503,6 @@ function FormField({
       {children}
       {error ? (
         <span className="CheckoutSheet-fieldError">Completá este dato</span>
-      ) : hint ? (
-        <span className="CheckoutSheet-fieldHint">{hint}</span>
       ) : null}
     </label>
   );
