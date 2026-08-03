@@ -1,7 +1,7 @@
 export const PRODUCT = {
   id: "microcore-300g",
   title: "MICROCORE — 300 g",
-  description: "Una sola cucharada. Cinco funciones. Sin cápsulas.",
+  description: "Tres cucharadas al día. En lo que ya comés.",
   currencyId: "UYU" as const,
   image: "/images/product-pouch.webp",
   deliveryEstimate: "Llega en 2 a 5 días hábiles a todo Uruguay",
