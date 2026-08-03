@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { preferenceClient } from "@/lib/mercadopago";
-import { PRODUCT, currentUnitPrice } from "@/lib/product";
+import { PRODUCT, PLANS, DEFAULT_PLAN, type PlanId } from "@/lib/product";
 import { normalizeShipping } from "@/lib/shipping";
 
 export const runtime = "nodejs";
@@ -14,13 +14,13 @@ function resolveBaseUrl(request: NextRequest): string {
 export async function POST(request: NextRequest) {
   const body = await request.json().catch(() => ({}) as Record<string, unknown>);
 
-  const quantity = Math.min(
-    PRODUCT.maxQuantity,
-    Math.max(1, Math.floor(Number((body as { quantity?: unknown })?.quantity) || 1))
-  );
+  const rawPlan = (body as { plan?: unknown })?.plan;
+  const planId: PlanId =
+    typeof rawPlan === "string" && rawPlan in PLANS
+      ? (rawPlan as PlanId)
+      : DEFAULT_PLAN;
+  const plan = PLANS[planId];
 
-  // Shipping address is required: the product is physical and we fulfill it
-  // ourselves, so we must capture where to send it before taking payment.
   const shipping = normalizeShipping((body as { shipping?: unknown })?.shipping);
   if (!shipping) {
     return NextResponse.json(
@@ -33,8 +33,6 @@ export async function POST(request: NextRequest) {
   }
 
   const baseUrl = resolveBaseUrl(request);
-  // Mercado Pago can't reach localhost, and rejects auto_return to a
-  // non-public URL — so we only wire those up on a real domain.
   const isLocal = /localhost|127\.0\.0\.1/.test(baseUrl);
 
   try {
@@ -43,10 +41,10 @@ export async function POST(request: NextRequest) {
         items: [
           {
             id: PRODUCT.id,
-            title: PRODUCT.title,
+            title: `${PRODUCT.title} — ${plan.label}`,
             description: PRODUCT.description,
-            quantity,
-            unit_price: currentUnitPrice(),
+            quantity: plan.quantity,
+            unit_price: plan.unitPrice,
             currency_id: PRODUCT.currencyId,
           },
         ],
@@ -54,8 +52,6 @@ export async function POST(request: NextRequest) {
           name: shipping.name,
           phone: { number: shipping.phone },
         },
-        // Source of truth for the shipping address: returned verbatim on the
-        // payment, read by the webhook to build the store's order email.
         metadata: {
           shipping_name: shipping.name,
           shipping_phone: shipping.phone,

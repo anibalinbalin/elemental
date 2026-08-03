@@ -5,14 +5,13 @@ import { CheckoutSheet } from "./checkout-sheet";
 
 type BuyButtonProps = {
   className?: string;
-  quantity?: number;
   children: React.ReactNode;
 };
 
 // Opens the shipping-details sheet; the sheet collects the address and then
 // redirects to Mercado Pago. Keeps the same className/children API so every
 // existing call site (product card, quiz result) keeps working unchanged.
-export function BuyButton({ className, quantity = 1, children }: BuyButtonProps) {
+export function BuyButton({ className, children }: BuyButtonProps) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -27,7 +26,6 @@ export function BuyButton({ className, quantity = 1, children }: BuyButtonProps)
       <CheckoutSheet
         presented={open}
         onPresentedChange={setOpen}
-        quantity={quantity}
       />
     </>
   );

@@ -1,5 +1,5 @@
 import { Resend } from "resend";
-import { PRODUCT, formatPrice } from "./product";
+import { PRODUCT, PLANS, formatPrice } from "./product";
 
 // Server-only. Sends order emails on an approved payment.
 
@@ -138,7 +138,7 @@ export async function sendSubscriptionWelcome(info: SubscriptionEmailInfo): Prom
     return;
   }
 
-  const price = formatPrice(PRODUCT.subscriptionPrice);
+  const price = formatPrice(PLANS["30d"].unitPrice);
   const dest = shippingTo({ address: info.address, city: info.city, department: info.department });
   const destBlock = dest
     ? `te enviamos un doypack de MICROCORE (300 g) a <strong>${esc(dest)}</strong>`
@@ -170,7 +170,7 @@ export async function sendSubscriptionChargeOk(info: SubscriptionEmailInfo): Pro
     return;
   }
 
-  const price = formatPrice(PRODUCT.subscriptionPrice);
+  const price = formatPrice(PLANS["30d"].unitPrice);
   const { error } = await resend.emails.send({
     from: FROM,
     to: info.email,
@@ -196,7 +196,7 @@ export async function sendSubscriptionChargeFailed(info: SubscriptionEmailInfo):
     return;
   }
 
-  const price = formatPrice(PRODUCT.subscriptionPrice);
+  const price = formatPrice(PLANS["30d"].unitPrice);
   const { error } = await resend.emails.send({
     from: FROM,
     to: info.email,

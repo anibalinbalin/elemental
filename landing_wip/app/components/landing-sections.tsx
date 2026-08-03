@@ -27,7 +27,9 @@ export function LandingSections() {
           <MicrocoreCard />
         </div>
         {/* Figma MICRO CORE section, stacked alongside the current card for A/B. */}
-        <MicrocoreShowcase />
+        <div id="micro-core" className="scroll-mt-24">
+          <MicrocoreShowcase />
+        </div>
         <Testimonial />
         <div id="ingredientes" className="scroll-mt-24">
           <FunctionalIngredient />
