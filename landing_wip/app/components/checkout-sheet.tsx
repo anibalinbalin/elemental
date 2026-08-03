@@ -312,8 +312,15 @@ export function CheckoutSheet({
                                   <span className="CheckoutSheet-planLabel">
                                     {p.label}
                                   </span>
-                                  <span className="CheckoutSheet-planPrice">
-                                    {formatPrice(total)}
+                                  <span className="CheckoutSheet-planPriceRow">
+                                    <span className="CheckoutSheet-planPrice">
+                                      {formatPrice(total)}
+                                    </span>
+                                    {id === "30d" && (
+                                      <span className="CheckoutSheet-planDiscount">
+                                        -{Math.round((1 - p.unitPrice / PLANS["15d"].unitPrice) * 100)}%
+                                      </span>
+                                    )}
                                   </span>
                                   <span className="CheckoutSheet-planDetail">
                                     {p.quantity === 1
