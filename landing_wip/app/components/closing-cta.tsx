@@ -30,7 +30,7 @@ export function ClosingCta() {
                 </span>
               </div>
               <span className="text-sm font-medium text-lime">
-                Lleva 2 y ahorra 16% — {formatPrice(PLANS["30d"].unitPrice)} c/u
+                Lleva 2 y ahorra 16%, {formatPrice(PLANS["30d"].unitPrice)} c/u
               </span>
             </div>
             <BuyButton

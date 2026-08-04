@@ -62,7 +62,7 @@ export function MicrocoreCard() {
                         </span>
                       </div>
                       <span className="text-sm text-lime font-medium">
-                        Lleva 2 y ahorra 16% — {formatPrice(PLANS["30d"].unitPrice)} c/u
+                        Lleva 2 y ahorra 16%, {formatPrice(PLANS["30d"].unitPrice)} c/u
                       </span>
                     </div>
                     <BuyButton
