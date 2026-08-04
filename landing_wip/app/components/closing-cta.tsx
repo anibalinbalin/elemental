@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 import { useShape } from "@/lib/shape-context";
 import { SectionReveal } from "./section-reveal";
 import { BuyButton } from "./buy-button";
-import { PRODUCT, UNIT_PRICE, formatPrice } from "@/lib/product";
+import { PRODUCT, UNIT_PRICE, PLANS, formatPrice } from "@/lib/product";
 
 export function ClosingCta() {
   const shape = useShape();
@@ -18,14 +18,19 @@ export function ClosingCta() {
               Empezá hoy con MICROCORE
             </h2>
             <p className="text-lg text-muted-foreground leading-relaxed">
-              Una cucharada por día. En lo que ya comés.
+              Tres cucharadas al dia. En lo que ya comes.
             </p>
-            <div className="flex items-baseline gap-2">
-              <span className="text-3xl font-bold tracking-tight">
-                {formatPrice(UNIT_PRICE)}
-              </span>
-              <span className="text-xs font-mono uppercase text-muted-foreground">
-                / 300 g
+            <div className="flex flex-col gap-1">
+              <div className="flex items-baseline gap-2">
+                <span className="text-3xl font-bold tracking-tight">
+                  {formatPrice(UNIT_PRICE)}
+                </span>
+                <span className="text-xs font-mono uppercase text-muted-foreground">
+                  / 300 g
+                </span>
+              </div>
+              <span className="text-sm font-medium text-lime">
+                Lleva 2 y ahorra 16% — {formatPrice(PLANS["30d"].unitPrice)} c/u
               </span>
             </div>
             <BuyButton
