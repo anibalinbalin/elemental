@@ -5,7 +5,7 @@ import { useShape } from "@/lib/shape-context";
 import { PouchViewer } from "../pouch-viewer";
 import { SectionReveal } from "./section-reveal";
 import { BuyButton } from "./buy-button";
-import { PRODUCT, UNIT_PRICE, formatPrice } from "@/lib/product";
+import { PRODUCT, UNIT_PRICE, PLANS, formatPrice } from "@/lib/product";
 
 export function MicrocoreCard() {
   const shape = useShape();
@@ -52,12 +52,17 @@ export function MicrocoreCard() {
                   </div>
 
                   <div className="flex flex-col gap-4 pt-4">
-                    <div className="flex items-baseline gap-2">
-                      <span className="text-3xl font-bold tracking-tight text-bordeaux-foreground">
-                        {formatPrice(UNIT_PRICE)}
-                      </span>
-                      <span className="text-xs font-mono uppercase text-bordeaux-foreground/70">
-                        / 300 g
+                    <div className="flex flex-col gap-1">
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-3xl font-bold tracking-tight text-bordeaux-foreground">
+                          {formatPrice(UNIT_PRICE)}
+                        </span>
+                        <span className="text-xs font-mono uppercase text-bordeaux-foreground/70">
+                          / 300 g
+                        </span>
+                      </div>
+                      <span className="text-sm text-lime font-medium">
+                        Lleva 2 y ahorra 16% — {formatPrice(PLANS["30d"].unitPrice)} c/u
                       </span>
                     </div>
                     <BuyButton
