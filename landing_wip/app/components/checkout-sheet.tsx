@@ -334,7 +334,7 @@ export function CheckoutSheet({
                         )}
                       </fieldset>
 
-                      <h2 className="text-xl font-semibold leading-tight tracking-tight md:text-2xl">
+                      <h2 className="mt-6 text-xl font-semibold leading-tight tracking-tight md:text-2xl">
                         ¿A dónde te lo enviamos?
                       </h2>
                       <p className="mt-2 text-sm text-muted-foreground">
