@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 import { useShape } from "@/lib/shape-context";
 import { SectionReveal } from "./section-reveal";
 import { BuyButton } from "./buy-button";
-import { PRODUCT, UNIT_PRICE, PLANS, formatPrice } from "@/lib/product";
+import { PRODUCT, UNIT_PRICE, PLANS, TWO_PACK_SAVINGS_PCT, formatPrice } from "@/lib/product";
 
 export function ClosingCta() {
   const shape = useShape();
@@ -30,7 +30,7 @@ export function ClosingCta() {
                 </span>
               </div>
               <span className="text-sm font-medium text-lime">
-                Lleva 2 y ahorra 16%, {formatPrice(PLANS["30d"].unitPrice)} c/u
+                Lleva 2 y ahorra {TWO_PACK_SAVINGS_PCT}%, {formatPrice(PLANS["30d"].unitPrice)} c/u
               </span>
             </div>
             <BuyButton

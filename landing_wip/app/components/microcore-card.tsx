@@ -5,7 +5,7 @@ import { useShape } from "@/lib/shape-context";
 import { PouchViewer } from "../pouch-viewer";
 import { SectionReveal } from "./section-reveal";
 import { BuyButton } from "./buy-button";
-import { PRODUCT, UNIT_PRICE, PLANS, formatPrice } from "@/lib/product";
+import { PRODUCT, UNIT_PRICE, PLANS, TWO_PACK_SAVINGS_PCT, formatPrice } from "@/lib/product";
 
 export function MicrocoreCard() {
   const shape = useShape();
@@ -62,7 +62,7 @@ export function MicrocoreCard() {
                         </span>
                       </div>
                       <span className="text-sm text-lime font-medium">
-                        Lleva 2 y ahorra 16%, {formatPrice(PLANS["30d"].unitPrice)} c/u
+                        Lleva 2 y ahorra {TWO_PACK_SAVINGS_PCT}%, {formatPrice(PLANS["30d"].unitPrice)} c/u
                       </span>
                     </div>
                     <BuyButton
