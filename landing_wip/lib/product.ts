@@ -11,12 +11,14 @@ export type PlanId = "15d" | "30d";
 
 export const PLANS: Record<PlanId, { label: string; quantity: number; unitPrice: number }> = {
   "15d": { label: "15 días", quantity: 1, unitPrice: 1890 },
-  "30d": { label: "30 días", quantity: 2, unitPrice: 1590 },
+  "30d": { label: "30 días", quantity: 2, unitPrice: 1500 },
 };
 
 export const DEFAULT_PLAN: PlanId = "30d";
 
 export const UNIT_PRICE = PLANS["15d"].unitPrice;
+
+export const TWO_PACK_SAVINGS_PCT = Math.round((1 - PLANS["30d"].unitPrice / UNIT_PRICE) * 100);
 
 export function formatPrice(value: number): string {
   return new Intl.NumberFormat("es-UY", {
